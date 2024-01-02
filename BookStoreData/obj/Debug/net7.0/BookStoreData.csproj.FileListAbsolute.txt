@@ -1,0 +1,15 @@
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\obj\Debug\net7.0\BookStoreData.csproj.AssemblyReference.cache
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\obj\Debug\net7.0\BookStoreData.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\obj\Debug\net7.0\BookStoreData.AssemblyInfoInputs.cache
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\obj\Debug\net7.0\BookStoreData.AssemblyInfo.cs
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\obj\Debug\net7.0\BookStoreData.csproj.CoreCompileInputs.cache
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\bin\Debug\net7.0\BookStoreData.deps.json
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\bin\Debug\net7.0\BookStoreData.runtimeconfig.json
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\bin\Debug\net7.0\BookStoreData.dll
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\bin\Debug\net7.0\BookStoreData.pdb
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\obj\Debug\net7.0\BookStoreData.dll
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\obj\Debug\net7.0\refint\BookStoreData.dll
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\obj\Debug\net7.0\BookStoreData.pdb
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\obj\Debug\net7.0\BookStoreData.genruntimeconfig.cache
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\obj\Debug\net7.0\ref\BookStoreData.dll
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA\BookStoreData\obj\Debug\net7.0\BookStoreData.sourcelink.json
