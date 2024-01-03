@@ -22,3 +22,15 @@ C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreModels\ob
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreModels\obj\Debug\net8.0\refint\BookStoreViewModels.dll
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreModels\obj\Debug\net8.0\BookStoreViewModels.pdb
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreModels\obj\Debug\net8.0\ref\BookStoreViewModels.dll
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\bin\Debug\net8.0\BookStoreViewModels.deps.json
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\bin\Debug\net8.0\BookStoreViewModels.dll
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\bin\Debug\net8.0\BookStoreViewModels.pdb
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\obj\Debug\net8.0\BookStoreViewModels.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\obj\Debug\net8.0\BookStoreViewModels.AssemblyInfoInputs.cache
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\obj\Debug\net8.0\BookStoreViewModels.AssemblyInfo.cs
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\obj\Debug\net8.0\BookStoreViewModels.csproj.CoreCompileInputs.cache
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\obj\Debug\net8.0\BookStoreViewModels.sourcelink.json
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\obj\Debug\net8.0\BookStoreViewModels.dll
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\obj\Debug\net8.0\refint\BookStoreViewModels.dll
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\obj\Debug\net8.0\BookStoreViewModels.pdb
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreModels\obj\Debug\net8.0\ref\BookStoreViewModels.dll

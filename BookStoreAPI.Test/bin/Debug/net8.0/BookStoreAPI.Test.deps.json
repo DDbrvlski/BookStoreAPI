@@ -3130,6 +3130,7 @@
       },
       "BookStoreAPI/1.0.0": {
         "dependencies": {
+          "BookStoreBusinessLogic": "1.0.0",
           "BookStoreData": "1.0.0",
           "BookStoreViewModels": "1.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.0",
@@ -3147,6 +3148,14 @@
         },
         "compile": {
           "BookStoreAPI.dll": {}
+        }
+      },
+      "BookStoreBusinessLogic/1.0.0": {
+        "runtime": {
+          "BookStoreBusinessLogic.dll": {}
+        },
+        "compile": {
+          "BookStoreBusinessLogic.dll": {}
         }
       },
       "BookStoreData/1.0.0": {
@@ -6488,6 +6497,11 @@
       "hashPath": "system.windows.extensions.7.0.0.nupkg.sha512"
     },
     "BookStoreAPI/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "BookStoreBusinessLogic/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
