@@ -20,7 +20,7 @@ namespace BookStoreAPI.Services.Customers
         Task<Customer> CreateCustomerAsync(CustomerPostViewModel customerPost);
         Task DeactivateCustomerAsync(int customerId);
         Task<Customer?> GetCustomerByDataAsync(Expression<Func<Customer, bool>> customerFunction);
-        Task<Customer?> GetCustomerByTokenAsync();
+        Task<Customer> GetCustomerByTokenAsync();
     }
 
     public class CustomerService
@@ -66,7 +66,7 @@ namespace BookStoreAPI.Services.Customers
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-        public async Task<Customer?> GetCustomerByTokenAsync()
+        public async Task<Customer> GetCustomerByTokenAsync()
         {
             var user = await userContextService.GetUserByTokenAsync();
             if (user == null)

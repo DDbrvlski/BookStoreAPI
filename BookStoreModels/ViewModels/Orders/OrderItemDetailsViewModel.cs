@@ -1,4 +1,5 @@
 ﻿using BookStoreViewModels.ViewModels.Helpers;
+using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
 
 namespace BookStoreViewModels.ViewModels.Orders
 {
@@ -11,5 +12,6 @@ namespace BookStoreViewModels.ViewModels.Orders
         public decimal? FullPriceBrutto { get; set; }
         public int? Quantity { get; set; }
         public string? ImageURL { get; set; }
+        public List<AuthorViewModel> Authors { get; set; }
     }
 }

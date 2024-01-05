@@ -1,4 +1,5 @@
 ﻿using BookStoreAPI.Services.Discounts.DiscountCodes;
+using BookStoreViewModels.ViewModels.Orders;
 using BookStoreViewModels.ViewModels.Products.DiscountCodes;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,5 +44,12 @@ namespace BookStoreAPI.Controllers.Products.BookItems
             return NoContent();
         }
 
+        [HttpGet]
+        [Route("Order")]
+        public async Task<ActionResult<OrderDiscountCheckViewModel>> ApplyDiscountForOrder(OrderDiscountCheckViewModel orderDiscountModel)
+        {
+            var orderDiscount = await discountCodeService.ApplyDiscountCodeToOrderAsync(orderDiscountModel);
+            return Ok(orderDiscount);
+        }
     }
 }

@@ -54,6 +54,11 @@ namespace BookStoreAPI.Services.Auth
                 throw new UnauthorizedException("Wprowadzono błędne dane logowania.");
             }
 
+            if (!user.EmailConfirmed)
+            {
+                throw new UnauthorizedException("Adres email nie został potwierdzony.");
+            }
+
             string token = await GenerateTokenAsync(user, loginData.Audience);
             return token;
         }

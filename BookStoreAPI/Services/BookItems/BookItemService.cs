@@ -2,7 +2,6 @@
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreAPI.Services.Reviews;
-using BookStoreAPI.Services.Users;
 using BookStoreAPI.Services.Wishlists;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;

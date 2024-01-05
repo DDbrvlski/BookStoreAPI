@@ -125,6 +125,9 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AddressTypeID")
+                        .HasColumnType("int");
+
                     b.Property<int?>("CityID")
                         .HasColumnType("int");
 
@@ -143,9 +146,6 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Position")
-                        .HasColumnType("int");
-
                     b.Property<string>("Postcode")
                         .HasColumnType("nvarchar(max)");
 
@@ -157,11 +157,39 @@ namespace BookStoreAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AddressTypeID");
+
                     b.HasIndex("CityID");
 
                     b.HasIndex("CountryID");
 
                     b.ToTable("Address");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.Customers.AddressDictionaries.AddressType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AddressType");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Customers.AddressDictionaries.City", b =>
@@ -579,6 +607,40 @@ namespace BookStoreAPI.Migrations
                     b.HasIndex("ShippingID");
 
                     b.ToTable("Order");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.Orders.OrderAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AddressID")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("OrderID")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressID");
+
+                    b.HasIndex("OrderID");
+
+                    b.ToTable("OrderAddress");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Orders.OrderItems", b =>
@@ -2213,6 +2275,10 @@ namespace BookStoreAPI.Migrations
 
             modelBuilder.Entity("BookStoreData.Models.Customers.Address", b =>
                 {
+                    b.HasOne("BookStoreData.Models.Customers.AddressDictionaries.AddressType", "AddressType")
+                        .WithMany()
+                        .HasForeignKey("AddressTypeID");
+
                     b.HasOne("BookStoreData.Models.Customers.AddressDictionaries.City", "City")
                         .WithMany()
                         .HasForeignKey("CityID");
@@ -2220,6 +2286,8 @@ namespace BookStoreAPI.Migrations
                     b.HasOne("BookStoreData.Models.Customers.AddressDictionaries.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryID");
+
+                    b.Navigation("AddressType");
 
                     b.Navigation("City");
 
@@ -2311,6 +2379,25 @@ namespace BookStoreAPI.Migrations
                     b.Navigation("Payment");
 
                     b.Navigation("Shipping");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.Orders.OrderAddress", b =>
+                {
+                    b.HasOne("BookStoreData.Models.Customers.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookStoreData.Models.Orders.Order", "Order")
+                        .WithMany("OrderAddresses")
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Address");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Orders.OrderItems", b =>
@@ -2807,6 +2894,8 @@ namespace BookStoreAPI.Migrations
 
             modelBuilder.Entity("BookStoreData.Models.Orders.Order", b =>
                 {
+                    b.Navigation("OrderAddresses");
+
                     b.Navigation("OrderItems");
                 });
 

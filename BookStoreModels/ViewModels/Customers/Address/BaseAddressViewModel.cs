@@ -10,6 +10,6 @@ namespace BookStoreViewModels.ViewModels.Customers.Address
         public string? Postcode { get; set; }
         public int? CityID { get; set; }
         public int? CountryID { get; set; }
-        public int? Position { get; set; }
+        public int? AddressTypeID { get; set; }
     }
 }

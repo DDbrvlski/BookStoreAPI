@@ -1,18 +1,18 @@
-﻿using BookStoreViewModels.ViewModels.Helpers;
-using BookStoreViewModels.ViewModels.Payments;
-using BookStoreViewModels.ViewModels.Shippings.Dictionaries;
+﻿using BookStoreViewModels.ViewModels.Customers;
+using BookStoreViewModels.ViewModels.Customers.Address;
+using BookStoreViewModels.ViewModels.Helpers;
 
 namespace BookStoreViewModels.ViewModels.Orders
 {
-    public class OrderPostViewModel : BaseViewModel
+    public class OrderPostViewModel
     {
-        public DateTime OrderDate { get; set; }
-        public int? CustomerID { get; set; }
-        public int? OrderStatusID { get; set; }
         public int? DeliveryMethodID { get; set; }
-        public PaymentPostViewModel? Payment { get; set; }
-        public ShippingPostViewModel? Shipping { get; set; }
+        public int? PaymentMethodID { get; set; }
+        public int? DiscountCodeID { get; set; }
+        public CustomerGuestViewModel? CustomerGuest { get; set; }
+        public BaseAddressViewModel InvoiceAddress { get; set; }
+        public BaseAddressViewModel? DeliveryAddress { get; set; }
 
-        public List<OrderItemsListViewModel>? ListOfOrderItems { get; set; }
+        public List<OrderItemsListViewModel>? CartItems { get; set; }
     }
 }

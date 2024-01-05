@@ -1,0 +1,10 @@
+﻿using BookStoreViewModels.ViewModels.Helpers;
+
+namespace BookStoreViewModels.ViewModels.Orders
+{
+    public class OrderViewModel : BaseViewModel
+    {
+        public decimal FullBruttoPrice { get; set; }
+        public List<OrderItemDetailsViewModel> OrderItems { get; set; }
+    }
+}

@@ -16,8 +16,7 @@ namespace BookStoreAPI.Controllers.Customers.Dictionaries.Address
     {
         public CityController
             (BookStoreContext context, 
-            IBaseService<City> baseService, 
-            
+            IBaseService<City> baseService,
             ILogger<City> logger)
             : base(context, baseService, logger)
         {

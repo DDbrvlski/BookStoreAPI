@@ -12,7 +12,7 @@ namespace BookStoreData.Models.Orders
 {
     public class Order : BaseEntity
     {
-        public DateTime OrderDate { get; set; }
+        public DateTime OrderDate { get; set; } = DateTime.Now;
 
         //OrderStatus
         [Required(ErrorMessage = "Status zamówienia jest wymagany.")]
@@ -51,8 +51,8 @@ namespace BookStoreData.Models.Orders
         public virtual Shipping Shipping { get; set; }
 
         //Customer
-        [Required(ErrorMessage = "Sposób dostawy jest wymagany.")]
-        [Display(Name = "Sposób dostawy")]
+        [Required(ErrorMessage = "Klient jest wymagany.")]
+        [Display(Name = "Klient")]
         public int? CustomerID { get; set; }
 
         [ForeignKey("CustomerID")]
@@ -68,5 +68,8 @@ namespace BookStoreData.Models.Orders
 
         [JsonIgnore]
         public List<OrderItems>? OrderItems { get; set; }
+
+        [JsonIgnore]
+        public List<OrderAddress>? OrderAddresses { get; set; }
     }
 }

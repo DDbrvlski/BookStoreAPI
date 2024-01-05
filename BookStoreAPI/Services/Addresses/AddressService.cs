@@ -2,6 +2,7 @@
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
+using BookStoreData.Models.Orders;
 using BookStoreViewModels.ViewModels.Customers.Address;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ namespace BookStoreAPI.Services.Addresses
 {
     public interface IAddressService
     {
+        Task<List<Address>> AddAddressesAsync(List<BaseAddressViewModel> addresses);
         Task AddAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> addresses);
         Task UpdateAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> newAddresses);
         Task DeactivateAllAddressesForCustomerAsync(int customerId);
@@ -21,11 +23,11 @@ namespace BookStoreAPI.Services.Addresses
         {
             return await context.CustomerAddress
                 .Where(x => x.CustomerID == customerId && x.IsActive)
-                .OrderBy(x => x.Address.Position)
+                .OrderBy(x => x.Address.AddressTypeID)
                 .Select(x => new BaseAddressViewModel()
                 {
                     Id = (int)x.AddressID,
-                    Position = x.Address.Position,
+                    AddressTypeID = x.Address.AddressTypeID,
                     CityID = x.Address.CityID,
                     CountryID = x.Address.CountryID,
                     HouseNumber = x.Address.HouseNumber,
@@ -35,21 +37,43 @@ namespace BookStoreAPI.Services.Addresses
                 })
                 .ToListAsync();
         }
+        public async Task<List<Address>> AddAddressesAsync(List<BaseAddressViewModel> addresses)
+        {
+            var newAddresses = addresses
+                    .Where(address => address != null)
+                    .Select(address => new Address()
+                        .CopyProperties(address))
+                    .ToList();
+
+            await context.Address.AddRangeAsync(newAddresses);
+            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+
+            return newAddresses;
+        }
+        public async Task AddAddressesForOrderAsync(int orderId, List<BaseAddressViewModel> addresses)
+        {
+            if (addresses.Any())
+            {
+                var newAddresses = await AddAddressesAsync(addresses);
+
+                var orderAddresses = newAddresses
+                    .Select(address => new OrderAddress
+                    {
+                        OrderID = orderId,
+                        AddressID = address.Id
+                    })
+                    .ToList();
+
+                context.OrderAddress.AddRange(orderAddresses);
+
+                await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+            }
+        }
         public async Task AddAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> addresses)
         {
             if (addresses.Any())
             {
-                var newAddresses = addresses
-                    .Where(address => address != null)
-                    .Select(address => new Address
-                    {
-                    }
-                    .CopyProperties(address))
-                    .ToList();
-
-                context.Address.AddRange(newAddresses);
-
-                await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                var newAddresses = await AddAddressesAsync(addresses);
 
                 var customerAddresses = newAddresses
                     .Select(address => new CustomerAddress
@@ -72,11 +96,11 @@ namespace BookStoreAPI.Services.Addresses
                     .Where(x => x.IsActive && x.CustomerID == customerId)
                     .ToListAsync();
 
-                var address = oldAddresses.First(x => x.Address.Position == 1);
-                var maillingAddress = oldAddresses.First(x => x.Address.Position == 2);
+                var address = oldAddresses.First(x => x.Address.AddressTypeID == 1);
+                var maillingAddress = oldAddresses.First(x => x.Address.AddressTypeID == 2);
 
-                var newAddress = newAddresses.First(x => x.Position == 1);
-                var newMaillingAddress = newAddresses.First(x => x.Position == 2);
+                var newAddress = newAddresses.First(x => x.AddressTypeID == 1);
+                var newMaillingAddress = newAddresses.First(x => x.AddressTypeID == 2);
 
                 List<BaseAddressViewModel> addressesToAdd = new();
 

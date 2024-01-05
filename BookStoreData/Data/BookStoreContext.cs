@@ -42,6 +42,7 @@ namespace BookStoreData.Data
         public DbSet<City> City { get; set; }
         public DbSet<Country> Country { get; set; }
         public DbSet<Address> Address { get; set; }
+        public DbSet<AddressType> AddressType { get; set; }
         public DbSet<Customer> Customer { get; set; }
         public DbSet<CustomerAddress> CustomerAddress { get; set; }
 
@@ -60,6 +61,7 @@ namespace BookStoreData.Data
         //Orders
         public DbSet<DeliveryMethod> DeliveryMethod { get; set; }
         public DbSet<OrderStatus> OrderStatus { get; set; }
+        public DbSet<OrderAddress> OrderAddress { get; set; }
         public DbSet<OrderItems> OrderItems { get; set; }
         public DbSet<Order> Order { get; set; }
 
@@ -127,6 +129,12 @@ namespace BookStoreData.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<OrderAddress>()
+                .HasOne(oa => oa.Order)
+                .WithMany(o => o.OrderAddresses)
+                .HasForeignKey(oa => oa.OrderID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<BookItem>()
                 .HasOne(b => b.Language)

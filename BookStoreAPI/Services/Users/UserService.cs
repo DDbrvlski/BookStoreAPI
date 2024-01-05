@@ -58,11 +58,11 @@ namespace BookStoreAPI.Services.Users
 
             return await context.CustomerAddress
                 .Where(x => x.IsActive && x.CustomerID == user.CustomerID)
-                .OrderBy(x => x.Address.Position)
+                .OrderBy(x => x.Address.AddressTypeID)
                 .Select(x => new AddressDetailsViewModel()
                 {
                     Id = (int)x.AddressID,
-                    Position = x.Address.Position,
+                    AddressTypeID = x.Address.AddressTypeID,
                     CityID = x.Address.CityID,
                     CityName = x.Address.City.Name,
                     CountryID = x.Address.CountryID,

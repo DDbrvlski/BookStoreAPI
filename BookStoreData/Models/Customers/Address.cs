@@ -13,9 +13,17 @@ namespace BookStoreData.Models.Customers
         public string? StreetNumber { get; set; }
         public string? HouseNumber { get; set; }
         public string? Postcode { get; set; }
-        public int? Position { get; set; } // 1 = address, 2 = mailing address
+        //public int? Position { get; set; } // 1 = address, 2 = mailing address, null = delivery address
         #endregion
         #region Foreign Keys
+        //AddressType
+        [Display(Name = "Typ adresu")]
+        public int? AddressTypeID { get; set; } // 1 = address, 2 = mailing address, 3 = invoice address, 4 = delivery address
+
+        [ForeignKey("AddressTypeID")]
+        [JsonIgnore]
+        public virtual AddressType? AddressType { get; set; }
+
         //City
         [Display(Name = "Miasto")]
         public int? CityID { get; set; }
