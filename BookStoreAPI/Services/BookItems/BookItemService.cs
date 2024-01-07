@@ -2,6 +2,7 @@
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreAPI.Services.Reviews;
+using BookStoreAPI.Services.Stock;
 using BookStoreAPI.Services.Wishlists;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
@@ -24,7 +25,13 @@ namespace BookStoreAPI.Services.BookItems
         Task DeactivateBookItemAsync(int bookItemId);
     }
 
-    public class BookItemService(BookStoreContext context, IBookReviewService bookReviewService, IWishlistService wishlistService, IBookDiscountService bookDiscountService) : IBookItemService
+    public class BookItemService
+        (BookStoreContext context, 
+        IBookReviewService bookReviewService, 
+        IWishlistService wishlistService,
+        IBookDiscountService bookDiscountService,
+        IStockAmountService stockAmountService)
+        : IBookItemService
     {
         public async Task<BookItemDetailsCMSViewModel> GetBookItemByIdForCMSAsync(int bookItemId)
         {
@@ -40,9 +47,9 @@ namespace BookStoreAPI.Services.BookItems
                     FormName = element.Form.Name,
                     AvailabilityName = element.Availability.Name,
                     BookName = element.Book.Title,
-                    BruttoPrice = element.NettoPrice * (1 + (decimal)(element.VAT / 100.0f)),
+                    BruttoPrice = element.NettoPrice * (1 + (decimal)(element.Tax / 100.0f)),
                     NettoPrice = element.NettoPrice,
-                    VAT = element.VAT,
+                    VAT = element.Tax,
                     ISBN = element.ISBN,
                     Pages = element.Pages,
                     PublishingDate = element.PublishingDate,
@@ -96,7 +103,7 @@ namespace BookStoreAPI.Services.BookItems
                         .Where(x => x.IsActive == true)
                         .ApplyBookFilters(bookItemFilters);
 
-            return await items.Select(x => new BookItemViewModel
+            var bookItems = await items.Select(x => new BookItemViewModel
             {
                 Id = x.Id,
                 ImageURL = x.Book.BookImages
@@ -109,9 +116,11 @@ namespace BookStoreAPI.Services.BookItems
                 FileFormatName = x.FileFormat.Name,
                 EditionId = x.EditionID,
                 EditionName = x.Edition.Name,
-                Price = x.NettoPrice * (1 + ((decimal)x.VAT / 100)),
+                Price = x.NettoPrice * (1 + ((decimal)x.Tax / 100)),
                 Score = x.Score,
-                authors = x.Book.BookAuthors.Select(y => new AuthorViewModel
+                AvailabilityID = x.AvailabilityID,
+                AvailabilityName = x.Availability.Name,
+                Authors = x.Book.BookAuthors.Where(x => x.IsActive).Select(y => new AuthorViewModel
                 {
                     Id = (int)y.AuthorID,
                     Name = y.Author.Name,
@@ -119,13 +128,33 @@ namespace BookStoreAPI.Services.BookItems
                 }).ToList(),
 
             }).ToListAsync();
+
+            var activeDiscounts = await context.BookDiscount
+                .Include(x => x.Discount)
+                .Where(x => bookItems.Any(y => y.Id == x.BookItemID))
+                .ToListAsync();
+
+            foreach (var bookItem in bookItems)
+            {
+                var applicableDiscounts = activeDiscounts
+                    .Where(x => x.BookItemID == bookItem.Id)
+                    .Select(x => x.Discount);
+
+                if (applicableDiscounts.Any())
+                {
+                    var maxDiscount = applicableDiscounts.Max(x => x.PercentOfDiscount);
+                    bookItem.DiscountedBruttoPrice = (bookItem.Price * (1 + maxDiscount / 100));
+                }
+            }
+
+            return bookItems;
         }
         public async Task<BookItemDetailsViewModel> GetBookItemDetailsAsync(int bookItemId)
         {
             bool isWishlisted = await wishlistService.IsBookItemWishlistedByCustomer(bookItemId);
             var scoreValues = await bookReviewService.GetBookItemReviewScoresAsync(bookItemId);
 
-            return await context.BookItem
+            var bookItem = await context.BookItem
                 .Where(x => x.Id == bookItemId && x.IsActive)
                 .Select(x => new BookItemDetailsViewModel()
                 {
@@ -136,7 +165,7 @@ namespace BookStoreAPI.Services.BookItems
                     Score = x.Score,
                     Pages = x.Pages,
                     FormId = x.FormID,
-                    Price = x.NettoPrice * (1 + ((decimal)x.VAT / 100)),
+                    Price = x.NettoPrice * (1 + ((decimal)x.Tax / 100)),
                     FileFormatName = x.FileFormat.Name,
                     EditionName = x.Edition.Name,
                     PublisherName = x.Book.Publisher.Name,
@@ -166,6 +195,15 @@ namespace BookStoreAPI.Services.BookItems
                     }).ToList(),
                     ScoreValues = scoreValues
                 }).FirstAsync();
+
+            var discount = await bookDiscountService.GetDiscountForBookItemAsync(bookItemId);
+
+            if (discount != null)
+            {
+                bookItem.DiscountedBruttoPrice = bookItem.Price * (1 + (decimal)(discount.PercentOfDiscount / 100));
+            }
+
+            return bookItem;
         }
         public async Task CreateBookItemAsync(BookItemPostCMSViewModel bookItemModel)
         {
@@ -173,6 +211,9 @@ namespace BookStoreAPI.Services.BookItems
             bookItem.CopyProperties(bookItemModel);
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+
+            await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
+            await UpdateBookItemAvailabilityAsync(bookItem, await stockAmountService.GetStockAmountForBookItemByIdAsync(bookItem.Id));
         }
         public async Task UpdateBookItemAsync(int bookItemId, BookItemPostCMSViewModel bookItemModel)
         {
@@ -184,6 +225,7 @@ namespace BookStoreAPI.Services.BookItems
 
             bookItem.CopyProperties(bookItemModel);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+            await UpdateBookItemAvailabilityAsync(bookItem, await stockAmountService.GetStockAmountForBookItemByIdAsync(bookItem.Id));
         }
         public async Task DeactivateBookItemAsync(int bookItemId)
         {
@@ -197,6 +239,24 @@ namespace BookStoreAPI.Services.BookItems
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
             await bookDiscountService.DeactivateAllBookDiscountsByBookItemAsync(bookItemId);
+            await stockAmountService.DeactivateStockAmountAsync(bookItemId);
+        }
+        private async Task UpdateBookItemAvailabilityAsync(BookItem bookItem, int stockAmount)
+        {
+            if (stockAmount == 0)
+            {
+                bookItem.AvailabilityID = 2;
+            }
+            else if (stockAmount > 0)
+            {
+                bookItem.AvailabilityID = 1;
+            }
+            else
+            {
+                throw new BadRequestException("Wystąpił błąd podczas aktualizowania stanu magazynowego produktu.");
+            }
+
+            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
     }
 }

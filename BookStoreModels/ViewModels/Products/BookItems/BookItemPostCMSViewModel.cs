@@ -16,5 +16,6 @@ namespace BookStoreViewModels.ViewModels.Products.BookItems
         public int? FormID { get; set; }
         public int? AvailabilityID { get; set; }
         public int? BookID { get; set; }
+        public int? StockAmount { get; set; }
     }
 }

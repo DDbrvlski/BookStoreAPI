@@ -100,12 +100,12 @@ namespace BookStoreAPI.Helpers
 
         public static IQueryable<BookItem> WherePriceFrom(this IQueryable<BookItem> query, decimal? priceFrom)
         {
-            return query.Where(x => (x.NettoPrice * (1 + (decimal)x.VAT / 100)) >= priceFrom);
+            return query.Where(x => (x.NettoPrice * (1 + (decimal)x.Tax / 100)) >= priceFrom);
         }
 
         public static IQueryable<BookItem> WherePriceTo(this IQueryable<BookItem> query, decimal? priceTo)
         {
-            return query.Where(x => (x.NettoPrice * (1 + (decimal)x.VAT / 100)) <= priceTo);
+            return query.Where(x => (x.NettoPrice * (1 + (decimal)x.Tax / 100)) <= priceTo);
         }
 
         public static IQueryable<BookItem> WhereIsOnSale(this IQueryable<BookItem> query, bool? isOnSale)
@@ -120,7 +120,7 @@ namespace BookStoreAPI.Helpers
             return sortBy.ToLower() switch
             {
                 "popular" => sortOrder.ToLower() == "asc" ? query.OrderBy(x => x.SoldUnits) : query.OrderByDescending(x => x.SoldUnits),
-                "price" => sortOrder.ToLower() == "asc" ? query.OrderBy(x => x.NettoPrice * (1 + (decimal)x.VAT / 100)) : query.OrderByDescending(x => x.NettoPrice * (1 + (decimal)x.VAT / 100)),
+                "price" => sortOrder.ToLower() == "asc" ? query.OrderBy(x => x.NettoPrice * (1 + (decimal)x.Tax / 100)) : query.OrderByDescending(x => x.NettoPrice * (1 + (decimal)x.Tax / 100)),
                 "alphabetical" => sortOrder.ToLower() == "asc" ? query.OrderBy(x => x.Book.Title) : query.OrderByDescending(x => x.Book.Title),
                 "recentlyAdded" => sortOrder.ToLower() == "asc" ? query.OrderBy(x => x.Id) : query.OrderByDescending(x => x.Id),
                 _ => query

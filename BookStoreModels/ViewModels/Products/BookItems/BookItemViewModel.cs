@@ -7,7 +7,7 @@ namespace BookStoreViewModels.ViewModels.Products.BookItems
     {
         public string? ImageURL { get; set; }
         public string? Title { get; set; }
-        public decimal? Price { get; set; }
+        public decimal Price { get; set; }
         public double Score { get; set; }
         public int? FormId { get; set; }
         public string? FormName { get; set; }
@@ -15,6 +15,9 @@ namespace BookStoreViewModels.ViewModels.Products.BookItems
         public string? FileFormatName { get; set; }
         public int? EditionId { get; set; }
         public string? EditionName { get; set; }
-        public List<AuthorViewModel> authors { get; set; } = new List<AuthorViewModel>();
+        public string? AvailabilityName { get; set; }
+        public int? AvailabilityID { get; set; }
+        public decimal DiscountedBruttoPrice { get; set; } = 0;
+        public List<AuthorViewModel> Authors { get; set; } = new List<AuthorViewModel>();
     }
 }

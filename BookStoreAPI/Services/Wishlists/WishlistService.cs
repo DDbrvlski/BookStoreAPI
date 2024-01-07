@@ -55,7 +55,7 @@ namespace BookStoreAPI.Services.Wishlists
                             FormId = y.BookItem.FormID,
                             FileFormatName = y.BookItem.FileFormat.Name,
                             ImageURL = y.BookItem.Book.BookImages.Where(z => z.Image.Position == 1).FirstOrDefault().Image.ImageURL,
-                            PriceBrutto = y.BookItem.NettoPrice * (1 + ((decimal)y.BookItem.VAT / 100)),
+                            PriceBrutto = y.BookItem.NettoPrice * (1 + ((decimal)y.BookItem.Tax / 100)),
                             authors = y.BookItem.Book.BookAuthors.Select(y => new AuthorViewModel
                             {
                                 Id = (int)y.AuthorID,
@@ -65,7 +65,7 @@ namespace BookStoreAPI.Services.Wishlists
                         }).ToList(),
                     FullPrice = x.WishlistItems
                         .Where(y => y.WishlistID == x.Id && y.IsActive)
-                        .Sum(y => y.BookItem.NettoPrice * (1 + ((decimal)y.BookItem.VAT / 100)))
+                        .Sum(y => y.BookItem.NettoPrice * (1 + ((decimal)y.BookItem.Tax / 100)))
                 }).FirstOrDefaultAsync();
 
             if (wishlistToSend == null)

@@ -16,6 +16,7 @@ using BookStoreAPI.Services.Orders;
 using BookStoreAPI.Services.PageElements;
 using BookStoreAPI.Services.Payments;
 using BookStoreAPI.Services.Rentals;
+using BookStoreAPI.Services.Reservation;
 using BookStoreAPI.Services.Reviews;
 using BookStoreAPI.Services.Stock;
 using BookStoreAPI.Services.Users;
@@ -56,6 +57,7 @@ namespace BookStoreAPI
             builder.Services.AddTransient<IBookDiscountService, BookDiscountService>();
             builder.Services.AddTransient<IPaymentService, PaymentService>();
             builder.Services.AddTransient<IBookReviewLogic, BookReviewLogic>();
+            builder.Services.AddTransient<IReservationService, ReservationService>();
             builder.Services.AddTransient<ICMSService, CMSService>();
             builder.Services.AddTransient<IDiscountLogic, DiscountLogic>();
             builder.Services.AddTransient<IOrderService, OrderService>();

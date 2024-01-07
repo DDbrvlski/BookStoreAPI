@@ -12,7 +12,8 @@ namespace BookStoreViewModels.ViewModels.Products.BookItems
         public int? Pages { get; set; }
         public string? FormName { get; set; }
         public double? Score { get; set; }
-        public decimal? Price { get; set; }
+        public decimal Price { get; set; }
+        public decimal DiscountedBruttoPrice { get; set; } = 0;
         public string? FileFormatName { get; set; }
         public string? EditionName { get; set; }
         public string? PublisherName { get; set; }

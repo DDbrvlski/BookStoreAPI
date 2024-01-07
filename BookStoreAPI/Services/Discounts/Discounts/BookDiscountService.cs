@@ -13,6 +13,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
         Task DeactivateAllBookDiscountsByDiscountAsync(int discountId);
         Task DeactivateChosenBookDiscountsAsync(int discountId, List<int?> bookItemIds);
         Task UpdateBookDiscountAsync(int discountId, List<int?> bookItemIds);
+        Task<Discount?> GetDiscountForBookItemAsync(int bookItemId);
     }
 
     public class BookDiscountService(BookStoreContext context) : IBookDiscountService
@@ -83,6 +84,15 @@ namespace BookStoreAPI.Services.Discounts.Discounts
             }
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+        }
+
+        public async Task<Discount?> GetDiscountForBookItemAsync(int bookItemId)
+        {
+            return await context.BookDiscount
+                    .Where(x => x.BookItemID == bookItemId && x.IsActive)
+                    .OrderByDescending(x => x.Discount.PercentOfDiscount)
+                    .Select(x => x.Discount)
+                    .FirstOrDefaultAsync();
         }
     }
 }
