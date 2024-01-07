@@ -1039,11 +1039,11 @@ namespace BookStoreAPI.Migrations
                     b.Property<int>("SoldUnits")
                         .HasColumnType("int");
 
+                    b.Property<float>("Tax")
+                        .HasColumnType("real");
+
                     b.Property<int?>("TranslatorID")
                         .HasColumnType("int");
-
-                    b.Property<float>("VAT")
-                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
@@ -2040,7 +2040,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("Date")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
