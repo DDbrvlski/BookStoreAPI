@@ -10,6 +10,7 @@ using BookStoreAPI.Services.Customers;
 using BookStoreAPI.Services.Discounts.DiscountCodes;
 using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreAPI.Services.Email;
+using BookStoreAPI.Services.Invoices;
 using BookStoreAPI.Services.Media;
 using BookStoreAPI.Services.Notifications;
 using BookStoreAPI.Services.Orders;
@@ -34,6 +35,9 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
+using QuestPDF.Previewer;
 using System.Text;
 
 namespace BookStoreAPI
@@ -47,13 +51,25 @@ namespace BookStoreAPI
                 options.UseSqlServer(builder.Configuration.GetConnectionString("BookStoreContext") ?? throw new InvalidOperationException("Connection string 'BookStoreContext' not found.")));
 
 
+            QuestPDF.Settings.License = LicenseType.Community;
+            //var model = InvoiceDocumentDataSource.GetInvoiceDetails();
+            //var document = new InvoiceDocument(model);
 
-            builder.Configuration.AddJsonFile("appsettings.json");
+            //document.GeneratePdf("hello.pdf");
+
+            //// use the following invocation
+            //document.ShowInPreviewer();
+
+            //// optionally, you can specify an HTTP port to communicate with the previewer host (default is 12500)
+            //document.ShowInPreviewer(12345);
+
+            //builder.Configuration.AddJsonFile("appsettings.json");
 
             var audiences = builder.Configuration.GetSection("Audiences").Get<Dictionary<string, string>>();
             var emailConfiguration = builder.Configuration.GetSection("EmailConfiguration").Get<AccountEmailConfigurationViewModel>();
             builder.Services.AddSingleton(emailConfiguration);
             builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
+            builder.Services.AddTransient<IInvoiceService, InvoiceService>();
             builder.Services.AddTransient<IBookDiscountService, BookDiscountService>();
             builder.Services.AddTransient<IPaymentService, PaymentService>();
             builder.Services.AddTransient<IBookReviewLogic, BookReviewLogic>();
@@ -138,15 +154,15 @@ namespace BookStoreAPI
             {
                 options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowSpecificOrigin", builder =>
-                {
-                    builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
-                           .AllowAnyHeader()
-                           .AllowAnyMethod();
-                });
-            });
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("AllowSpecificOrigin", builder =>
+            //    {
+            //        builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
+            //               .AllowAnyHeader()
+            //               .AllowAnyMethod();
+            //    });
+            //});
 
 
             builder.Services.AddSwaggerGen(c =>

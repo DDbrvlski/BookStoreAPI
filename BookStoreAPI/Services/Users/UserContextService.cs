@@ -33,10 +33,10 @@ namespace BookStoreAPI.Services.Users
         {
             var userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (userId == null)
-            {
-                throw new BadRequestException("Wystąpił błąd z autoryzacją użytkownika.");
-            }
+            //if (userId == null)
+            //{
+            //    throw new BadRequestException("Wystąpił błąd z autoryzacją użytkownika.");
+            //}
 
             return userId;
         }

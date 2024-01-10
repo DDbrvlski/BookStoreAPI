@@ -10,6 +10,7 @@ using BookStoreViewModels.ViewModels.Media.Images;
 using BookStoreViewModels.ViewModels.Products.BookItems;
 using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace BookStoreAPI.Services.BookItems
 {
@@ -129,9 +130,11 @@ namespace BookStoreAPI.Services.BookItems
 
             }).ToListAsync();
 
+            var bookItemIds = await items.Select(x => x.Id).ToListAsync();
+
             var activeDiscounts = await context.BookDiscount
                 .Include(x => x.Discount)
-                .Where(x => bookItems.Any(y => y.Id == x.BookItemID))
+                .Where(x => bookItemIds.Contains((int)x.BookItemID))
                 .ToListAsync();
 
             foreach (var bookItem in bookItems)

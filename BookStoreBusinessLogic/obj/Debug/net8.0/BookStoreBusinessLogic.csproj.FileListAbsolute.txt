@@ -1,15 +1,3 @@
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\bin\Debug\net8.0\BookStoreBusinessLogic.deps.json
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\bin\Debug\net8.0\BookStoreBusinessLogic.dll
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\bin\Debug\net8.0\BookStoreBusinessLogic.pdb
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\obj\Debug\net8.0\BookStoreBusinessLogic.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\obj\Debug\net8.0\BookStoreBusinessLogic.AssemblyInfoInputs.cache
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\obj\Debug\net8.0\BookStoreBusinessLogic.AssemblyInfo.cs
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\obj\Debug\net8.0\BookStoreBusinessLogic.csproj.CoreCompileInputs.cache
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\obj\Debug\net8.0\BookStoreBusinessLogic.sourcelink.json
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\obj\Debug\net8.0\BookStoreBusinessLogic.dll
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\obj\Debug\net8.0\refint\BookStoreBusinessLogic.dll
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\obj\Debug\net8.0\BookStoreBusinessLogic.pdb
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACApub\API\BookStoreBusinessLogic\obj\Debug\net8.0\ref\BookStoreBusinessLogic.dll
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreBusinessLogic\bin\Debug\net8.0\BookStoreBusinessLogic.deps.json
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreBusinessLogic\bin\Debug\net8.0\BookStoreBusinessLogic.dll
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreBusinessLogic\bin\Debug\net8.0\BookStoreBusinessLogic.pdb

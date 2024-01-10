@@ -1,15 +1,15 @@
-﻿using BookStoreAPI.Services.Orders;
-using BookStoreData.Models.Accounts;
+﻿using BookStoreAPI.Services.Invoices;
+using BookStoreAPI.Services.Orders;
 using BookStoreViewModels.ViewModels.Orders;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using QuestPDF.Fluent;
 
 namespace BookStoreAPI.Controllers.Orders
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{UserRoles.Employee}, {UserRoles.Admin}")]
-    public class OrderController(IOrderService orderService) : ControllerBase
+    //[Authorize(Roles = $"{UserRoles.Employee}, {UserRoles.Admin}")]
+    public class OrderController(IOrderService orderService, IInvoiceService invoiceService) : ControllerBase
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderViewModel>>> GetAllOrdersAsync()
@@ -24,5 +24,21 @@ namespace BookStoreAPI.Controllers.Orders
             var order = await orderService.GetOrderByIdAsync(id);
             return Ok(order);
         }
+
+        [HttpGet]
+        [Route("Invoice")]
+        public IActionResult GenerateInvoice()
+        {
+            var model = InvoiceDocumentDataSource.GetInvoiceDetails();
+            var document = new InvoiceDocument(model);
+
+            // Generate PDF content as byte array
+            byte[] pdfBytes = document.GeneratePdf();
+
+            // Return PDF file as response
+            return File(pdfBytes, "application/pdf", "invoice.pdf");
+        }
+
+
     }
 }

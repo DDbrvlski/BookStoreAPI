@@ -18,7 +18,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpGet]
         [Route("Store")]
-        public async Task<ActionResult<IEnumerable<BookItemViewModel>>> GetBookItemsAsync(BookItemFiltersViewModel bookItemFilters)
+        public async Task<ActionResult<IEnumerable<BookItemViewModel>>> GetBookItemsAsync([FromQuery]BookItemFiltersViewModel bookItemFilters)
         {
             var bookItems = await bookItemService.GetBookItemsAsync(bookItemFilters);
             return Ok(bookItems);
