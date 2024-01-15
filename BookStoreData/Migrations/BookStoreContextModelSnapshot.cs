@@ -268,6 +268,9 @@ namespace BookStoreAPI.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Surname")
                         .HasColumnType("nvarchar(max)");
 
@@ -589,7 +592,6 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("ShippingID")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -2364,9 +2366,7 @@ namespace BookStoreAPI.Migrations
 
                     b.HasOne("BookStoreData.Models.Delivery.Shipping", "Shipping")
                         .WithMany()
-                        .HasForeignKey("ShippingID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ShippingID");
 
                     b.Navigation("Customer");
 

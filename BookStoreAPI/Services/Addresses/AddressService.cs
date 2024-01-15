@@ -11,6 +11,7 @@ namespace BookStoreAPI.Services.Addresses
     public interface IAddressService
     {
         Task<List<Address>> AddAddressesAsync(List<BaseAddressViewModel> addresses);
+        Task AddAddressesForOrderAsync(int orderId, List<BaseAddressViewModel> addresses);
         Task AddAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> addresses);
         Task UpdateAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> newAddresses);
         Task DeactivateAllAddressesForCustomerAsync(int customerId);

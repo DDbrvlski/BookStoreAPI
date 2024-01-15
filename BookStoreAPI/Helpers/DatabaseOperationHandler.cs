@@ -1,4 +1,5 @@
-﻿using BookStoreData.Data;
+﻿using BookStoreAPI.Infrastructure.Exceptions;
+using BookStoreData.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Helpers
@@ -28,7 +29,7 @@ namespace BookStoreAPI.Helpers
             }
             catch (DatabaseOperationException ex)
             {
-                return new BadRequestObjectResult($"Błąd operacji w bazie danych: {ex.Message}");
+                throw new BadRequestException($"Błąd operacji w bazie danych: {ex.InnerException.Message}");
             }
         }
 

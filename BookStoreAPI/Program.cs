@@ -143,7 +143,7 @@ namespace BookStoreAPI
 
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-            builder.Services.AddProblemDetails();
+            //builder.Services.AddProblemDetails();
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -203,7 +203,7 @@ namespace BookStoreAPI
 
 
             var app = builder.Build();
-            app.UseExceptionHandler();
+            //app.UseExceptionHandler();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

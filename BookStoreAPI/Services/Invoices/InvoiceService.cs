@@ -1,5 +1,7 @@
 ﻿using BookStoreAPI.Services.Orders;
 using BookStoreData.Data;
+using BookStoreData.Models.Customers;
+using BookStoreViewModels.ViewModels.Invoices;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -11,24 +13,23 @@ namespace BookStoreAPI.Services.Invoices
 {
     public interface IInvoiceService
     {
-        Task CreateInvoice();
+        Task<InvoiceDocument> CreateInvoice(int orderId);
     }
 
     public class InvoiceService(BookStoreContext context, IOrderService orderService) : IInvoiceService
     {
-        public async Task CreateInvoice()
+        public async Task<InvoiceDocument> CreateInvoice(int orderId)
         {
-            var order = await orderService.GetUserOrderByIdAsync(1);
-
-
+            var invoiceData = await orderService.GetUserOrderForInvoiceByOrderIdAsync(orderId);
+            return new InvoiceDocument(invoiceData);
         }
     }
 
     public class InvoiceDocument : IDocument
     {
-        public InvoiceModel Model { get; }
+        public InvoiceDataViewModel Model { get; }
 
-        public InvoiceDocument(InvoiceModel model)
+        public InvoiceDocument(InvoiceDataViewModel model)
         {
             Model = model;
         }
@@ -57,21 +58,23 @@ namespace BookStoreAPI.Services.Invoices
         }
         void ComposeTable(IContainer container)
         {
-            var textStyle = TextStyle.Default.FontFamily(Fonts.Arial);
+            int number = 1;
+            var textStyle = TextStyle.Default.FontFamily(Fonts.Arial).FontSize(8);
             container.Table(table =>
             {
                 // step 1
                 table.ColumnsDefinition(columns =>
                 {
                     columns.ConstantColumn(25);
-                    columns.RelativeColumn();
-                    columns.RelativeColumn(4);
-                    columns.RelativeColumn();
-                    columns.RelativeColumn();
-                    columns.RelativeColumn();
-                    columns.RelativeColumn(2);
-                    columns.RelativeColumn(2);
-                    columns.RelativeColumn(2);
+                    columns.RelativeColumn(1);
+                    columns.RelativeColumn(3);
+                    columns.RelativeColumn(1);
+                    columns.RelativeColumn(1);
+                    columns.RelativeColumn(3);
+                    columns.RelativeColumn(1);
+                    columns.RelativeColumn(3);
+                    columns.RelativeColumn(1);
+                    columns.RelativeColumn(3);
                 });
 
                 // step 2
@@ -82,10 +85,11 @@ namespace BookStoreAPI.Services.Invoices
                     header.Cell().Element(CellStyle).Text("Nazwa towaru").Style(textStyle);
                     header.Cell().Element(CellStyle).Text("Ilość").Style(textStyle);
                     header.Cell().Element(CellStyle).Text("J.m.").Style(textStyle);
-                    header.Cell().Element(CellStyle).Text("VAT").Style(textStyle);
-                    header.Cell().Element(CellStyle).Text("Cena Brutto").Style(textStyle);
-                    header.Cell().Element(CellStyle).Text("Rabat Brutto").Style(textStyle);
-                    header.Cell().Element(CellStyle).AlignRight().Text("Wartość brutto").Style(textStyle);
+                    header.Cell().Element(CellStyle).Text("Cena jednostkowa netto").Style(textStyle);
+                    header.Cell().Element(CellStyle).Text("Stawka VAT").Style(textStyle);
+                    header.Cell().Element(CellStyle).Text("Wartość sprzedaży netto").Style(textStyle);
+                    header.Cell().Element(CellStyle).Text("Kwota VAT").Style(textStyle);
+                    header.Cell().Element(CellStyle).AlignRight().Text("Suma brutto").Style(textStyle);
 
                     static IContainer CellStyle(IContainer container)
                     {
@@ -94,17 +98,18 @@ namespace BookStoreAPI.Services.Invoices
                 });
 
                 // step 3
-                foreach (var item in Model.Items)
+                foreach (var item in Model.InvoiceProducts)
                 {
-                    table.Cell().Element(CellStyle).AlignLeft().Text("1").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text("1241").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text("Asus rog super monitor ultra").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text("2").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text("szt.").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text("23%").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text("200,00").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text("11,30").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text("22150,00").Style(textStyle);
+                    table.Cell().Element(CellStyle).AlignLeft().Text($"{number++}").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{item.Code}").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{item.Name}").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{item.Quantity}").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{item.UnitOfMeasure}").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{item.SingleUnitNettoPrice}").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{item.Tax}%").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{item.NettoPrice:F2}").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{item.TaxValue:F2}").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{item.BruttoPrice}").Style(textStyle);
 
                     static IContainer CellStyle(IContainer container)
                     {
@@ -202,37 +207,37 @@ namespace BookStoreAPI.Services.Invoices
 
                 column.Item().Row(row =>
                 {
-                    row.RelativeItem().Component(new AddressComponent("Sprzedawca", Model.SellerAddress));
+                    row.RelativeItem().Component(new SellerAddressComponent("Sprzedawca", Model.SellerInvoice));
                     row.ConstantItem(50);
-                    row.RelativeItem().Component(new AddressComponent("Odbiorca", Model.CustomerAddress));
+                    row.RelativeItem().Component(new BuyerAddressComponent("Nabywca", Model.CustomerInvoice));
                 });
 
                 column.Item().Element(ComposeTable);
 
-                var totalPrice = Model.Items.Sum(x => x.Price * x.Quantity);
+                //var totalPrice = Model.InvoiceProducts.Sum(x => x. * x.Quantity);
 
                 column.Item().Row(row =>
                 {
-                    row.RelativeItem().Component(new PaymentDetailsComponent("Gotówka", new DateTime(new DateOnly(2023, 12, 2), new TimeOnly()), "Kurier"));
+                    row.RelativeItem().Component(new PaymentDetailsComponent(Model.AdditionalInfoInvoice.PaymentMethodName, Model.AdditionalInfoInvoice.PaymentDate, Model.AdditionalInfoInvoice.DeliveryName, Model.AdditionalInfoInvoice.CurrencyName));
                     row.ConstantItem(80);
-                    row.RelativeItem().Component(new PaymentComponent(Model.Items));
+                    row.RelativeItem().Component(new PaymentComponent(Model.InvoiceProducts));
                 });
 
-
-                if (!string.IsNullOrWhiteSpace(Model.Comments))
-                    column.Item().Height(70).Element(ComposeComments);
+                column.Item().Height(70).Element(ComposeComments);
             });
         }
     }
     public class PaymentComponent : IComponent
     {
-        private decimal Discount { get; }
-        private decimal Subtotal { get; }
-        private decimal Total { get; }
+        private decimal TotalNetto { get; }
+        private decimal TaxValue { get; }
+        private decimal TotalBrutto { get; }
 
-        public PaymentComponent(List<OrderItem> orderItems)
+        public PaymentComponent(List<ProductInvoiceViewModel> orderItems)
         {
-
+            TotalNetto = orderItems.Sum(x => x.NettoPrice);
+            TaxValue = orderItems.Sum(x => x.TaxValue);
+            TotalBrutto = orderItems.Sum(x => x.BruttoPrice);
         }
 
         public void Compose(IContainer container)
@@ -244,21 +249,21 @@ namespace BookStoreAPI.Services.Invoices
 
                 column.Item().Row(row =>
                 {
-                    row.RelativeItem().AlignRight().Text("Suma częściowa:").Style(textStyle);
+                    row.RelativeItem().AlignRight().Text("Suma ceny netto:").Style(textStyle);
                     row.ConstantItem(5);
-                    row.RelativeItem().Text($"{Subtotal}").Style(textStyle);
+                    row.RelativeItem().Text($"{TotalNetto:F2}").Style(textStyle);
                 });
                 column.Item().Row(row =>
                 {
-                    row.RelativeItem().AlignRight().Text("Rabat:").Style(textStyle);
+                    row.RelativeItem().AlignRight().Text("Podatek:").Style(textStyle);
                     row.ConstantItem(5);
-                    row.RelativeItem().Text($"{Discount}").Style(textStyle);
+                    row.RelativeItem().Text($"{TaxValue:F2}").Style(textStyle);
                 });
                 column.Item().Row(row =>
                 {
-                    row.RelativeItem().AlignRight().Text("Całkowita cena:").Style(textStyle);
+                    row.RelativeItem().AlignRight().Text("Suma ceny brutto:").Style(textStyle);
                     row.ConstantItem(5);
-                    row.RelativeItem().Text($"{Total}").Style(textStyle);
+                    row.RelativeItem().Text($"{TotalBrutto:F2}").Style(textStyle);
                 });
             });
         }
@@ -266,15 +271,16 @@ namespace BookStoreAPI.Services.Invoices
     public class PaymentDetailsComponent : IComponent
     {
         private string PaymentMethodTitle { get; }
-        private string PaymentCurrencyTitle { get; } = "PLN";
+        private string PaymentCurrencyTitle { get; }
         private DateTime PaymentDate { get; }
         private string DeliveryMethodTitle { get; }
 
-        public PaymentDetailsComponent(string paymentMethodTitle, DateTime paymentDate, string deliveryMethodTitle)
+        public PaymentDetailsComponent(string paymentMethodTitle, DateTime paymentDate, string deliveryMethodTitle, string currencyName)
         {
             PaymentMethodTitle = paymentMethodTitle;
             DeliveryMethodTitle = deliveryMethodTitle;
             PaymentDate = paymentDate;
+            PaymentCurrencyTitle = currencyName;
         }
 
         public void Compose(IContainer container)
@@ -311,15 +317,15 @@ namespace BookStoreAPI.Services.Invoices
             });
         }
     }
-    public class AddressComponent : IComponent
+    public class SellerAddressComponent : IComponent
     {
         private string Title { get; }
-        private Address Address { get; }
+        private SellerInvoiceViewModel SellerData { get; }
 
-        public AddressComponent(string title, Address address)
+        public SellerAddressComponent(string title, SellerInvoiceViewModel sellerData)
         {
             Title = title;
-            Address = address;
+            SellerData = sellerData;
         }
 
         public void Compose(IContainer container)
@@ -330,90 +336,120 @@ namespace BookStoreAPI.Services.Invoices
 
                 column.Item().BorderBottom(1).PaddingBottom(5).Text(Title).SemiBold();
 
-                column.Item().Text(Address.CompanyName);
-                column.Item().Text(Address.Street);
-                column.Item().Text($"{Address.City}, {Address.State}");
-                column.Item().Text(Address.Email);
-                column.Item().Text(Address.Phone);
+                column.Item().Text($"{SellerData.Name}");
+                column.Item().Text($"{SellerData.Street} {SellerData.StreetNumber}{SellerData.HouseNumber}");
+                column.Item().Text($"{SellerData.Postcode} {SellerData.CityName}");
+                column.Item().Text($"{SellerData.CountryName}");
+                column.Item().Text($"NIP {SellerData.TaxIdentificationNumber}");
+                column.Item().Text($"Telefon {SellerData.Phone}");
+                column.Item().Text($"Adres e-mail {SellerData.Email}");
             });
         }
     }
-    public static class InvoiceDocumentDataSource
+    public class BuyerAddressComponent : IComponent
     {
-        private static Random Random = new Random();
+        private string Title { get; }
+        private CustomerInvoiceViewModel BuyerData { get; }
 
-        public static InvoiceModel GetInvoiceDetails()
+        public BuyerAddressComponent(string title, CustomerInvoiceViewModel buyerData)
         {
-            var items = Enumerable
-                .Range(1, 10)
-                .Select(i => GenerateRandomOrderItem())
-                .ToList();
-
-            return new InvoiceModel
-            {
-                InvoiceNumber = Random.Next(1_000, 10_000),
-                IssueDate = DateTime.Now,
-                DueDate = DateTime.Now + TimeSpan.FromDays(14),
-
-                SellerAddress = GenerateRandomAddress(),
-                CustomerAddress = GenerateRandomAddress(),
-
-                Items = items,
-                Comments = Placeholders.Paragraph()
-            };
+            Title = title;
+            BuyerData = buyerData;
         }
 
-        private static OrderItem GenerateRandomOrderItem()
+        public void Compose(IContainer container)
         {
-            return new OrderItem
+            container.Column(column =>
             {
-                Name = Placeholders.Label(),
-                Price = (decimal)Math.Round(Random.NextDouble() * 100, 2),
-                Quantity = Random.Next(1, 10)
-            };
-        }
+                column.Spacing(2);
 
-        private static Address GenerateRandomAddress()
-        {
-            return new Address
-            {
-                CompanyName = Placeholders.Name(),
-                Street = Placeholders.Label(),
-                City = Placeholders.Label(),
-                State = Placeholders.Label(),
-                Email = Placeholders.Email(),
-                Phone = Placeholders.PhoneNumber()
-            };
+                column.Item().BorderBottom(1).PaddingBottom(5).Text(Title).SemiBold();
+
+                column.Item().Text($"{BuyerData.Name} {BuyerData.Surname}");
+                column.Item().Text($"{BuyerData.Address.Street} {BuyerData.Address.StreetNumber}{BuyerData.Address.HouseNumber}");
+                column.Item().Text($"{BuyerData.Address.Postcode} {BuyerData.Address.CityName}");
+                column.Item().Text($"{BuyerData.Address.CountryName}");
+                column.Item().Text($"{BuyerData.Email}");
+                column.Item().Text($"{BuyerData.Phone}");
+            });
         }
     }
+    //public static class InvoiceDocumentDataSource
+    //{
+    //    private static Random Random = new Random();
 
-    public class InvoiceModel
-    {
-        public int InvoiceNumber { get; set; }
-        public DateTime IssueDate { get; set; }
-        public DateTime DueDate { get; set; }
+    //    public static InvoiceModel GetInvoiceDetails()
+    //    {
+    //        var items = Enumerable
+    //            .Range(1, 10)
+    //            .Select(i => GenerateRandomOrderItem())
+    //            .ToList();
 
-        public Address SellerAddress { get; set; }
-        public Address CustomerAddress { get; set; }
+    //        return new InvoiceModel
+    //        {
+    //            InvoiceNumber = Random.Next(1_000, 10_000),
+    //            IssueDate = DateTime.Now,
+    //            DueDate = DateTime.Now + TimeSpan.FromDays(14),
 
-        public List<OrderItem> Items { get; set; }
-        public string Comments { get; set; }
-    }
+    //            SellerAddress = GenerateRandomAddress(),
+    //            CustomerAddress = GenerateRandomAddress(),
 
-    public class OrderItem
-    {
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-        public int Quantity { get; set; }
-    }
+    //            Items = items,
+    //            Comments = Placeholders.Paragraph()
+    //        };
+    //    }
 
-    public class Address
-    {
-        public string CompanyName { get; set; }
-        public string Street { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
-        public object Email { get; set; }
-        public string Phone { get; set; }
-    }
+    //    private static OrderItem GenerateRandomOrderItem()
+    //    {
+    //        return new OrderItem
+    //        {
+    //            Name = Placeholders.Label(),
+    //            Price = (decimal)Math.Round(Random.NextDouble() * 100, 2),
+    //            Quantity = Random.Next(1, 10)
+    //        };
+    //    }
+
+    //    private static Address GenerateRandomAddress()
+    //    {
+    //        return new Address
+    //        {
+    //            CompanyName = Placeholders.Name(),
+    //            Street = Placeholders.Label(),
+    //            City = Placeholders.Label(),
+    //            State = Placeholders.Label(),
+    //            Email = Placeholders.Email(),
+    //            Phone = Placeholders.PhoneNumber()
+    //        };
+    //    }
+    //}
+
+    //public class InvoiceModel
+    //{
+    //    public int InvoiceNumber { get; set; }
+    //    public DateTime IssueDate { get; set; }
+    //    public DateTime DueDate { get; set; }
+
+    //    public Address SellerAddress { get; set; }
+    //    public Address CustomerAddress { get; set; }
+
+    //    public List<OrderItem> Items { get; set; }
+    //    public string Comments { get; set; }
+    //}
+
+    //public class OrderItem
+    //{
+    //    public string Name { get; set; }
+    //    public decimal Price { get; set; }
+    //    public int Quantity { get; set; }
+    //}
+
+    //public class Address
+    //{
+    //    public string CompanyName { get; set; }
+    //    public string Street { get; set; }
+    //    public string City { get; set; }
+    //    public string State { get; set; }
+    //    public object Email { get; set; }
+    //    public string Phone { get; set; }
+    //}
 }

@@ -42,7 +42,6 @@ namespace BookStoreData.Models.Orders
         public virtual Payment Payment { get; set; }
 
         //Shipping
-        [Required(ErrorMessage = "Sposób dostawy jest wymagany.")]
         [Display(Name = "Sposób dostawy")]
         public int? ShippingID { get; set; }
 

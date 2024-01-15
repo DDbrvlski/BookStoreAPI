@@ -77,6 +77,7 @@ namespace BookStoreAPI.Services.Auth
                             Name = registerData.Name,
                             Surname = registerData.Surname,
                             Email = registerData.Email,
+                            PhoneNumber = registerData.PhoneNumber,
                             IsSubscribed = registerData.IsSubscribed
                         });
 

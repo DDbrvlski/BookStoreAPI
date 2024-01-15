@@ -7,6 +7,7 @@ using BookStoreData.Models.Customers;
 using BookStoreData.Models.Orders;
 using BookStoreViewModels.ViewModels.Customers;
 using BookStoreViewModels.ViewModels.Customers.Address;
+using BookStoreViewModels.ViewModels.Invoices;
 using BookStoreViewModels.ViewModels.Orders;
 using BookStoreViewModels.ViewModels.Orders.Dictionaries;
 using BookStoreViewModels.ViewModels.Payments;
@@ -24,6 +25,7 @@ namespace BookStoreAPI.Services.Orders
         Task<OrderDetailsViewModel> GetOrderByIdAsync(int orderId);
         Task<OrderDetailsViewModel> GetUserOrderByIdAsync(int orderId);
         Task<IEnumerable<OrderViewModel>> GetUserOrdersAsync(OrderFiltersViewModel orderFilters);
+        Task<InvoiceDataViewModel> GetUserOrderForInvoiceByOrderIdAsync(int orderId);
     }
 
     public class OrderService
@@ -242,6 +244,7 @@ namespace BookStoreAPI.Services.Orders
         }
         public async Task CreateNewOrderAsync(OrderPostViewModel orderModel)
         {
+            //dodać transakcje
             Customer customer = new Customer();
 
             if (orderModel.CustomerGuest == null)
@@ -269,7 +272,6 @@ namespace BookStoreAPI.Services.Orders
                 orderAddresses.Add(orderModel.DeliveryAddress);
             }
 
-            await addressService.AddAddressesForCustomerAsync(customer.Id, orderAddresses);
             var payment = await paymentService
                 .CreateNewPayment
                 ((int)orderModel.PaymentMethodID,
@@ -282,12 +284,13 @@ namespace BookStoreAPI.Services.Orders
                 CustomerID = customer.Id,
                 OrderStatusID = 1,
                 PaymentID = payment.Id,
-                ShippingID = null,
                 DiscountCodeID = orderModel.DiscountCodeID,
+                OrderDate = DateTime.Now
             };
 
-            await context.Order.AddAsync(order);
+            context.Order.Add(order);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+            await addressService.AddAddressesForOrderAsync(order.Id, orderAddresses);
 
             List<OrderItems> orderItems = new List<OrderItems>();
             foreach (var item in orderModel.CartItems)
@@ -301,8 +304,72 @@ namespace BookStoreAPI.Services.Orders
                 });
             }
 
-            await context.OrderItems.AddRangeAsync(orderItems);
+            context.OrderItems.AddRange(orderItems);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+        }
+        public async Task<InvoiceDataViewModel> GetUserOrderForInvoiceByOrderIdAsync(int orderId)
+        {
+            var invoices = await context.Order.Where(x => x.IsActive && x.Id == orderId).FirstOrDefaultAsync();
+            var invoice = await context.Order.Where(x => x.IsActive && x.Id == orderId)
+                .Select(x => new InvoiceDataViewModel()
+                {
+                    InvoiceNumber = x.Id,
+                    IssueDate = DateTime.Now,
+                    DueDate = x.OrderDate,
+                    SellerInvoice = new SellerInvoiceViewModel()
+                    {
+                        Name = "Spellarium",
+                        TaxIdentificationNumber = "2814871289823",
+                        CityName = "Warszawa",
+                        CountryName = "Polska",
+                        Postcode = "01-001",
+                        Street = "Książkowa",
+                        StreetNumber = "47",
+                        Email = "spellarium@gmail.com",
+                        Phone = "123123123"
+                    },
+                    CustomerInvoice = new CustomerInvoiceViewModel()
+                    {
+                        Name = x.Customer.Name,
+                        Surname = x.Customer.Surname,
+                        Email = x.Customer.Email,
+                        Phone = x.Customer.PhoneNumber,
+                        Address = x.OrderAddresses
+                        .Where(y => y.IsActive && y.Address.AddressTypeID == 3)
+                        .Select(y => new CustomerAddressInvoiceViewModel()
+                        {
+                            Street = y.Address.Street,
+                            StreetNumber = y.Address.StreetNumber,
+                            Postcode = y.Address.Postcode,
+                            CityName = y.Address.City.Name,
+                            CountryName = y.Address.Country.Name,
+                            HouseNumber = "/"+y.Address.HouseNumber,
+                        }).First(),
+                    },
+                    AdditionalInfoInvoice = new AdditionalInfoInvoiceViewModel()
+                    {
+                        PaymentDate = x.Payment.Date,
+                        CurrencyName = "PLN",
+                        DeliveryName = x.DeliveryMethod.Name,
+                        PaymentMethodName = x.Payment.PaymentMethod.Name,
+                    },
+                    InvoiceProducts = x.OrderItems
+                    .Where(y => y.IsActive)
+                    .Select(y => new ProductInvoiceViewModel()
+                    {
+                        UnitOfMeasure = "szt.",
+                        Tax = y.BookItem.Tax,
+                        Code = (int)y.BookItemID,
+                        Name = y.BookItem.Book.Title,
+                        Quantity = y.Quantity,
+                        SingleUnitNettoPrice = y.BookItem.NettoPrice,
+                        NettoPrice = y.BookItem.NettoPrice * y.Quantity,
+                        TaxValue = y.BruttoPrice - (y.BookItem.NettoPrice * y.Quantity),
+                        BruttoPrice = y.BruttoPrice
+                    }).ToList(),
+                }).FirstOrDefaultAsync();
+
+            return invoice;
         }
     }
 }

@@ -21,9 +21,9 @@ namespace BookStoreAPI.Controllers.Rentals
 
         [HttpGet]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<ActionResult<IEnumerable<RentalViewModel>>> GetUserRentalsAsync(int rentalTypeId)
+        public async Task<ActionResult<IEnumerable<RentalViewModel>>> GetUserRentalsAsync(int rentalStatusId = 0)
         {
-            var userRentals = await rentalService.GetUserRentalsByRentalTypeIdAsync(rentalTypeId);
+            var userRentals = await rentalService.GetUserRentalsByRentalStatusIdAsync(rentalStatusId);
             return Ok(userRentals);
         }
     }

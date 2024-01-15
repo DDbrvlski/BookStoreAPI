@@ -18,7 +18,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
         Task<DiscountCodeDetailsCMSViewModel> GetDiscountCodeByIdCMSAsync(int id);
         Task UpdateDiscountCodeAsync(int discountCodeId, DiscountCodePostCMSViewModel discountCodeModel);
         Task<OrderDiscountCheckViewModel> ApplyDiscountCodeToOrderAsync(OrderDiscountCheckViewModel discountCode);
-        Task<Discount> CheckIfDiscountCodeIsValidAsync(string discountName);
+        Task<DiscountCode> CheckIfDiscountCodeIsValidAsync(string discountName);
     }
 
     public class DiscountCodeService(BookStoreContext context, IDiscountLogic discountLogic) : IDiscountCodeService
@@ -49,6 +49,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
                     IsAvailable = DateTime.Today >= x.StartingDate && DateTime.Today <= x.ExpiryDate.AddDays(1),
                     Description = x.Description,
                     PercentOfDiscount = x.PercentOfDiscount,
+                    Code = x.Code
                 })
                 .ToListAsync();
         }
@@ -87,9 +88,9 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
 
-        public async Task<Discount> CheckIfDiscountCodeIsValidAsync(string discountName)
+        public async Task<DiscountCode> CheckIfDiscountCodeIsValidAsync(string discountName)
         {
-            var discount = await context.Discount.FirstOrDefaultAsync(x => x.Title == discountName);
+            var discount = await context.DiscountCode.FirstOrDefaultAsync(x => x.Code == discountName);
 
             if (discount == null)
             {
@@ -105,7 +106,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
 
             foreach (var cartItem in discountCode.CartItems)
             {
-                cartItem.BruttoPrice *= discountLogic.CalculateItemPriceWithDiscountCode(cartItem.BruttoPrice, discount.PercentOfDiscount);
+                cartItem.BruttoPrice = discountLogic.CalculateItemPriceWithDiscountCode(cartItem.BruttoPrice, discount.PercentOfDiscount);
             }
             discountCode.DiscountID = discount.Id;
 

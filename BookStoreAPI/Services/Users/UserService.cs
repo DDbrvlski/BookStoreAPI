@@ -123,6 +123,7 @@ namespace BookStoreAPI.Services.Users
             user.PhoneNumber = userData.PhoneNumber;
             user.Customer.Name = userData.Name;
             user.Customer.Surname = userData.Surname;
+            user.Customer.PhoneNumber = userData.PhoneNumber;
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
@@ -140,7 +141,7 @@ namespace BookStoreAPI.Services.Users
                 throw new AccountException("Aktualne hasło jest nieprawidłowe.");
             }
 
-            if (userData.NewPassword != userData.OldPassword)
+            if (userData.NewPassword != userData.RepeatNewPassword)
             {
                 throw new AccountException("Nowe hasło i powtórzone nowe hasło nie są identyczne.");
             }

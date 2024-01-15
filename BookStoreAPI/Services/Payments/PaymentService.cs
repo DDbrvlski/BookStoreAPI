@@ -18,7 +18,7 @@ namespace BookStoreAPI.Services.Payments
             //Niezakończone dla płatności gotówką
             int transactionStatusId;
 
-            if (paymentMethodId == 1)
+            if (paymentMethodId == 4)
             {
                 transactionStatusId = 1;
             }

@@ -27,10 +27,9 @@ namespace BookStoreAPI.Controllers.Orders
 
         [HttpGet]
         [Route("Invoice")]
-        public IActionResult GenerateInvoice()
+        public async Task<IActionResult> GenerateInvoice(int orderId)
         {
-            var model = InvoiceDocumentDataSource.GetInvoiceDetails();
-            var document = new InvoiceDocument(model);
+            var document = await invoiceService.CreateInvoice(orderId);
 
             // Generate PDF content as byte array
             byte[] pdfBytes = document.GeneratePdf();

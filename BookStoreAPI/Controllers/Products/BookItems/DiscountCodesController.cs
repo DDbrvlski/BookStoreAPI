@@ -44,7 +44,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
             return NoContent();
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("Order")]
         public async Task<ActionResult<OrderDiscountCheckViewModel>> ApplyDiscountForOrder(OrderDiscountCheckViewModel orderDiscountModel)
         {

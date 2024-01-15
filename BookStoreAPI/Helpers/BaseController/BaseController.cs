@@ -27,7 +27,7 @@ namespace BookStoreAPI.Helpers.BaseController
         protected virtual async Task<ActionResult> AddNewEntityAsync(TEntity entity)
         {
             await baseService.AddNewEntityAsync(entity);
-            return CreatedAtAction(nameof(GetEntityByIdAsync), new { id = entity.Id }, entity);
+            return Created();
         }
         protected virtual async Task<ActionResult> UpdateEntityAsync(int id, TEntity entity)
         {

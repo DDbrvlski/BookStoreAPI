@@ -10,28 +10,37 @@ namespace BookStoreAPI.Services.Rentals
     public interface IRentalService
     {
         Task CreateRentalAsync(RentalPostViewModel rentalModel);
-        Task<IEnumerable<RentalViewModel>> GetUserRentalsByRentalTypeIdAsync(int rentalTypeId);
+        Task<IEnumerable<RentalViewModel>> GetUserRentalsByRentalStatusIdAsync(int rentalTypeId);
     }
 
     public class RentalService(BookStoreContext context, ICustomerService customerService) : IRentalService
     {
-        public async Task<IEnumerable<RentalViewModel>> GetUserRentalsByRentalTypeIdAsync(int rentalTypeId)
+        public async Task<IEnumerable<RentalViewModel>> GetUserRentalsByRentalStatusIdAsync(int rentalStatusId)
         {
             var customer = await customerService.GetCustomerByTokenAsync();
 
-            return await context.Rental
-                .Where(x => x.IsActive && x.CustomerID == customer.Id && x.RentalTypeID == rentalTypeId)
-                .Select(x => new RentalViewModel()
-                {
-                    Id = x.Id,
-                    BookItemId = x.BookItemID,
-                    BookTitle = x.BookItem.Book.Title,
-                    ExpirationDate = x.EndDate,
-                    FileFormatName = x.BookItem.FileFormat.Name,
-                    ImageURL = x.BookItem.Book.BookImages
+            var rentals = context.Rental;
+                
+            if (rentalStatusId != 0)
+            {
+                rentals.Where(x => x.IsActive && x.CustomerID == customer.Id && x.RentalStatusID == rentalStatusId);
+            }
+            else
+            {
+                rentals.Where(x => x.IsActive && x.CustomerID == customer.Id);
+            }
+
+            return await rentals.Select(x => new RentalViewModel()
+            {
+                Id = x.Id,
+                BookItemId = x.BookItemID,
+                BookTitle = x.BookItem.Book.Title,
+                ExpirationDate = x.EndDate,
+                FileFormatName = x.BookItem.FileFormat.Name,
+                ImageURL = x.BookItem.Book.BookImages
                         .FirstOrDefault(y => y.IsActive && y.Image.Position == 1).Image.ImageURL
-                })
-                .ToListAsync();
+            }).ToListAsync();
+
         }
         public async Task CreateRentalAsync(RentalPostViewModel rentalModel)
         {
