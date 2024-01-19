@@ -58,6 +58,13 @@ namespace BookStoreData.Models.Orders
         [JsonIgnore]
         public virtual Customer Customer { get; set; }
 
+        //CustomerHistory
+        public int? CustomerHistoryID { get; set; }
+
+        [ForeignKey("CustomerHistoryID")]
+        [JsonIgnore]
+        public virtual CustomerHistory CustomerHistory { get; set; }
+
         [Display(Name = "Kod zniżkowy")]
         public int? DiscountCodeID { get; set; }
 

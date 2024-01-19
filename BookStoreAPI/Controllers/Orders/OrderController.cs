@@ -38,6 +38,5 @@ namespace BookStoreAPI.Controllers.Orders
             return File(pdfBytes, "application/pdf", "invoice.pdf");
         }
 
-
     }
 }

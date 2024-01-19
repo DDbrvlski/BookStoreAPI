@@ -44,6 +44,7 @@ namespace BookStoreData.Data
         public DbSet<Address> Address { get; set; }
         public DbSet<AddressType> AddressType { get; set; }
         public DbSet<Customer> Customer { get; set; }
+        public DbSet<CustomerHistory> CustomerHistory { get; set; }
         public DbSet<CustomerAddress> CustomerAddress { get; set; }
 
         //Delivery

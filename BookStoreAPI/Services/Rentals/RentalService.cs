@@ -19,15 +19,15 @@ namespace BookStoreAPI.Services.Rentals
         {
             var customer = await customerService.GetCustomerByTokenAsync();
 
-            var rentals = context.Rental;
+            var rentals = context.Rental.AsQueryable();
                 
             if (rentalStatusId != 0)
             {
-                rentals.Where(x => x.IsActive && x.CustomerID == customer.Id && x.RentalStatusID == rentalStatusId);
+                 rentals = rentals.Where(x => x.IsActive && x.CustomerID == customer.Id && x.RentalStatusID == rentalStatusId);
             }
             else
             {
-                rentals.Where(x => x.IsActive && x.CustomerID == customer.Id);
+                rentals = rentals.Where(x => x.IsActive && x.CustomerID == customer.Id);
             }
 
             return await rentals.Select(x => new RentalViewModel()

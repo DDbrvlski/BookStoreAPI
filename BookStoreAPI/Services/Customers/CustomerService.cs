@@ -5,11 +5,8 @@ using BookStoreAPI.Services.Notifications;
 using BookStoreAPI.Services.Users;
 using BookStoreAPI.Services.Wishlists;
 using BookStoreData.Data;
-using BookStoreData.Models.Accounts;
 using BookStoreData.Models.Customers;
 using BookStoreViewModels.ViewModels.Customers;
-using BookStoreViewModels.ViewModels.Customers.Address;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -21,6 +18,7 @@ namespace BookStoreAPI.Services.Customers
         Task DeactivateCustomerAsync(int customerId);
         Task<Customer?> GetCustomerByDataAsync(Expression<Func<Customer, bool>> customerFunction);
         Task<Customer> GetCustomerByTokenAsync();
+        Task<int> CreateCustomerHistoryAsync(int customerId);
     }
 
     public class CustomerService
@@ -37,6 +35,13 @@ namespace BookStoreAPI.Services.Customers
             customer.CopyProperties(customerPost);
 
             context.Customer.Add(customer);
+            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+
+            CustomerHistory customerHistory = new();
+            customerHistory.CopyProperties(customerPost);
+            customerHistory.CustomerID = customer.Id;
+
+            context.CustomerHistory.Add(customerHistory);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
             if (customer.IsSubscribed)
@@ -85,6 +90,29 @@ namespace BookStoreAPI.Services.Customers
         public async Task<Customer?> GetCustomerByDataAsync(Expression<Func<Customer, bool>> customerFunction)
         {
             return await context.Customer.Where(x => x.IsActive).FirstOrDefaultAsync(customerFunction);
+        }
+        public async Task<int> CreateCustomerHistoryAsync(int customerId)
+        {
+            var customer = await GetCustomerByDataAsync(x => x.Id == customerId);
+            if (customer == null)
+            {
+                throw new AccountException("Nie znaleziono danych użytkownika.");
+            }
+
+            var oldHistory = await context.CustomerHistory.FirstOrDefaultAsync(x => x.IsActive && x.CustomerID == customerId);
+            if (oldHistory != null)
+            {
+                oldHistory.IsActive = false;
+            }
+
+            CustomerHistory customerHistory = new();
+            customerHistory.CopyProperties(customer);
+            customerHistory.CustomerID = customer.Id;
+
+            context.CustomerHistory.Add(customerHistory);
+            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+
+            return customerHistory.Id;
         }
 
     }

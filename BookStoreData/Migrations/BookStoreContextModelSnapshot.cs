@@ -294,6 +294,9 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("CustomerHistoryId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("CustomerID")
                         .IsRequired()
                         .HasColumnType("int");
@@ -308,9 +311,51 @@ namespace BookStoreAPI.Migrations
 
                     b.HasIndex("AddressID");
 
+                    b.HasIndex("CustomerHistoryId");
+
                     b.HasIndex("CustomerID");
 
                     b.ToTable("CustomerAddress");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.Customers.CustomerHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CustomerID")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Surname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerID");
+
+                    b.ToTable("CustomerHistory");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Delivery.Dictionaries.ShippingStatus", b =>
@@ -563,6 +608,9 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("CustomerHistoryID")
+                        .HasColumnType("int");
+
                     b.Property<int?>("CustomerID")
                         .IsRequired()
                         .HasColumnType("int");
@@ -595,6 +643,8 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomerHistoryID");
 
                     b.HasIndex("CustomerID");
 
@@ -2304,6 +2354,10 @@ namespace BookStoreAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BookStoreData.Models.Customers.CustomerHistory", null)
+                        .WithMany("CustomerAddresses")
+                        .HasForeignKey("CustomerHistoryId");
+
                     b.HasOne("BookStoreData.Models.Customers.Customer", "Customer")
                         .WithMany("CustomerAddresses")
                         .HasForeignKey("CustomerID")
@@ -2311,6 +2365,17 @@ namespace BookStoreAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Address");
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.Customers.CustomerHistory", b =>
+                {
+                    b.HasOne("BookStoreData.Models.Customers.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Customer");
                 });
@@ -2336,6 +2401,10 @@ namespace BookStoreAPI.Migrations
 
             modelBuilder.Entity("BookStoreData.Models.Orders.Order", b =>
                 {
+                    b.HasOne("BookStoreData.Models.Customers.CustomerHistory", "CustomerHistory")
+                        .WithMany()
+                        .HasForeignKey("CustomerHistoryID");
+
                     b.HasOne("BookStoreData.Models.Customers.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
@@ -2369,6 +2438,8 @@ namespace BookStoreAPI.Migrations
                         .HasForeignKey("ShippingID");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("CustomerHistory");
 
                     b.Navigation("DeliveryMethod");
 
@@ -2888,6 +2959,11 @@ namespace BookStoreAPI.Migrations
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Customers.Customer", b =>
+                {
+                    b.Navigation("CustomerAddresses");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.Customers.CustomerHistory", b =>
                 {
                     b.Navigation("CustomerAddresses");
                 });

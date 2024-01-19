@@ -29,7 +29,11 @@ namespace BookStoreAPI.Helpers
             }
             catch (DatabaseOperationException ex)
             {
-                throw new BadRequestException($"Błąd operacji w bazie danych: {ex.InnerException.Message}");
+                throw new BadRequestException($"Błąd operacji w bazie danych: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException($"Błąd operacji w bazie danych: {ex.Message}");
             }
         }
 

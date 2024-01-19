@@ -43,13 +43,5 @@ namespace BookStoreAPI.Controllers.Products.BookItems
             await discountCodeService.DeactivateDiscountCodeAsync(id);
             return NoContent();
         }
-
-        [HttpPost]
-        [Route("Order")]
-        public async Task<ActionResult<OrderDiscountCheckViewModel>> ApplyDiscountForOrder(OrderDiscountCheckViewModel orderDiscountModel)
-        {
-            var orderDiscount = await discountCodeService.ApplyDiscountCodeToOrderAsync(orderDiscountModel);
-            return Ok(orderDiscount);
-        }
     }
 }

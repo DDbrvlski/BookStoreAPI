@@ -24,6 +24,31 @@ namespace BookStoreAPI.Helpers
                 }
             return targetObject;
         }
+        public static bool IsEqual<T, T2>(this T targetObject, T2 sourceObject)
+        {
+            if (targetObject != null && sourceObject != null)
+                foreach (var property in typeof(T).GetProperties().Where(p => p.CanWrite))
+                {
+                    if (!IgnoredProperties.Contains(property.Name))
+                    {
+                        Func<PropertyInfo, bool> CheckIfPropertyExistInSource =
+                            prop => string.Equals(property.Name, prop.Name, StringComparison.InvariantCultureIgnoreCase)
+                            && prop.PropertyType.Equals(property.PropertyType);
+
+                        if (sourceObject.GetType().GetProperties().Any(CheckIfPropertyExistInSource))
+                        {
+                            var sourceValue = sourceObject.GetPropertyValue(property.Name);
+                            var targetValue = property.GetValue(targetObject);
+
+                            if (!sourceValue.Equals(targetValue))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            return true;
+        }
         private static object GetPropertyValue<T>(this T source, string propertyName)
         {
             return source.GetType().GetProperty(propertyName).GetValue(source, null);

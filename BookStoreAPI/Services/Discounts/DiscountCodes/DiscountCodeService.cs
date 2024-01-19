@@ -1,12 +1,17 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
+using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
+using BookStoreData.Models.Customers;
 using BookStoreData.Models.Products.BookItems;
 using BookStoreViewModels.ViewModels.Orders;
+using BookStoreViewModels.ViewModels.Products.BookItems;
 using BookStoreViewModels.ViewModels.Products.DiscountCodes;
 using BookStoreViewModels.ViewModels.Products.Discounts;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace BookStoreAPI.Services.Discounts.DiscountCodes
 {
@@ -17,7 +22,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
         Task<IEnumerable<DiscountCodeCMSViewModel>> GetAllDiscountCodesCMSAsync();
         Task<DiscountCodeDetailsCMSViewModel> GetDiscountCodeByIdCMSAsync(int id);
         Task UpdateDiscountCodeAsync(int discountCodeId, DiscountCodePostCMSViewModel discountCodeModel);
-        Task<OrderDiscountCheckViewModel> ApplyDiscountCodeToOrderAsync(OrderDiscountCheckViewModel discountCode);
+        Task<List<OrderItemsListViewModel>> ApplyDiscountCodeToCartItemsAsync(List<OrderItemsListViewModel> cartItems, int discountCodeId);
         Task<DiscountCode> CheckIfDiscountCodeIsValidAsync(string discountName);
     }
 
@@ -58,6 +63,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
         {
             DiscountCode discountCode = new();
             discountCode.CopyProperties(discountCodeModel);
+            context.DiscountCode.Add(discountCode);
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
@@ -88,9 +94,13 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
 
-        public async Task<DiscountCode> CheckIfDiscountCodeIsValidAsync(string discountName)
+        public async Task<DiscountCode?> CheckIfDiscountCodeIsValidAsync(int discountCodeId)
         {
-            var discount = await context.DiscountCode.FirstOrDefaultAsync(x => x.Code == discountName);
+            return await GetDiscountCodeByDataAsync(x => x.Id == discountCodeId);
+        }
+        public async Task<DiscountCode> CheckIfDiscountCodeIsValidAsync(string discountCode)
+        {
+            var discount = await GetDiscountCodeByDataAsync(x => x.Code == discountCode);
 
             if (discount == null)
             {
@@ -99,18 +109,21 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
 
             return discount;
         }
-
-        public async Task<OrderDiscountCheckViewModel> ApplyDiscountCodeToOrderAsync(OrderDiscountCheckViewModel discountCode)
+        
+        public async Task<DiscountCode?> GetDiscountCodeByDataAsync(Expression<Func<DiscountCode, bool>> discountCodeFunction)
         {
-            var discount = await CheckIfDiscountCodeIsValidAsync(discountCode.DiscountCode);
+            return await context.DiscountCode.Where(x => x.IsActive).FirstOrDefaultAsync(discountCodeFunction);
+        }
 
-            foreach (var cartItem in discountCode.CartItems)
+        public async Task<List<OrderItemsListViewModel>> ApplyDiscountCodeToCartItemsAsync(List<OrderItemsListViewModel> cartItems, int discountCodeId)
+        {
+            var discount = await CheckIfDiscountCodeIsValidAsync(discountCodeId);
+            foreach (var cartItem in cartItems)
             {
-                cartItem.BruttoPrice = discountLogic.CalculateItemPriceWithDiscountCode(cartItem.BruttoPrice, discount.PercentOfDiscount);
+                cartItem.SingleItemBruttoPrice = discountLogic.CalculateItemPriceWithDiscountCode((decimal)cartItem.SingleItemBruttoPrice, discount.PercentOfDiscount);
             }
-            discountCode.DiscountID = discount.Id;
 
-            return discountCode;
+            return cartItems;
         }
     }
 }

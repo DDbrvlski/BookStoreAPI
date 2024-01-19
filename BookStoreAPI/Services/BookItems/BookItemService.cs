@@ -7,6 +7,7 @@ using BookStoreAPI.Services.Wishlists;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
 using BookStoreViewModels.ViewModels.Media.Images;
+using BookStoreViewModels.ViewModels.Orders;
 using BookStoreViewModels.ViewModels.Products.BookItems;
 using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ namespace BookStoreAPI.Services.BookItems
         Task CreateBookItemAsync(BookItemPostCMSViewModel bookItemModel);
         Task UpdateBookItemAsync(int bookItemId, BookItemPostCMSViewModel bookItemModel);
         Task DeactivateBookItemAsync(int bookItemId);
+        Task<List<BookItemDiscountViewModel>> GetBookItemsFromOrderAsync(List<OrderItemsListViewModel> cartItems);
     }
 
     public class BookItemService
@@ -130,25 +132,8 @@ namespace BookStoreAPI.Services.BookItems
 
             }).ToListAsync();
 
-            var bookItemIds = await items.Select(x => x.Id).ToListAsync();
 
-            var activeDiscounts = await context.BookDiscount
-                .Include(x => x.Discount)
-                .Where(x => bookItemIds.Contains((int)x.BookItemID))
-                .ToListAsync();
-
-            foreach (var bookItem in bookItems)
-            {
-                var applicableDiscounts = activeDiscounts
-                    .Where(x => x.BookItemID == bookItem.Id)
-                    .Select(x => x.Discount);
-
-                if (applicableDiscounts.Any())
-                {
-                    var maxDiscount = applicableDiscounts.Max(x => x.PercentOfDiscount);
-                    bookItem.DiscountedBruttoPrice = (bookItem.Price * (1 + maxDiscount / 100));
-                }
-            }
+            bookItems = await bookDiscountService.ApplyDiscount(bookItems);
 
             return bookItems;
         }
@@ -260,6 +245,21 @@ namespace BookStoreAPI.Services.BookItems
             }
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+        }
+
+        public async Task<List<BookItemDiscountViewModel>> GetBookItemsFromOrderAsync(List<OrderItemsListViewModel> cartItems)
+        {
+            List<int> cartItemIds = cartItems.Select(x => x.BookItemID).ToList();
+            return await context.BookItem
+                .Where(x => cartItemIds.Contains(x.Id))
+                .Select(x => new BookItemDiscountViewModel()
+                {
+                    BookItemId = x.Id,
+                    BookItemQuantity = 1,
+                    //BookItemDiscountedBruttoPrice = x.NettoPrice * (1 + ((decimal)x.Tax / 100)),
+                    BookItemBruttoPrice = x.NettoPrice * (1 + ((decimal)x.Tax / 100)),
+                })
+                .ToListAsync();
         }
     }
 }

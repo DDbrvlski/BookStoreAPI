@@ -57,7 +57,7 @@ namespace BookStoreAPI.Services.Users
             }
 
             return await context.CustomerAddress
-                .Where(x => x.IsActive && x.CustomerID == user.CustomerID)
+                .Where(x => x.IsActive && x.CustomerID == user.CustomerID && (x.Address.AddressTypeID == 1 || x.Address.AddressTypeID == 2))
                 .OrderBy(x => x.Address.AddressTypeID)
                 .Select(x => new AddressDetailsViewModel()
                 {
@@ -117,6 +117,7 @@ namespace BookStoreAPI.Services.Users
             var user = await userContextService.GetUserAndCustomerDataByTokenAsync();
 
             await ValidateUserFieldsAsync(userData.Username, userData.Email, user.Id);
+            await customerService.CreateCustomerHistoryAsync((int)user.CustomerID);
 
             user.Email = userData.Email;
             user.Customer.Email = userData.Email;
@@ -173,16 +174,21 @@ namespace BookStoreAPI.Services.Users
 
             if (userData.mailingAddress == null)
             {
+                userData.mailingAddress = new();
                 userData.mailingAddress.CopyProperties(userData.address);
             }
 
+            userData.mailingAddress.AddressTypeID = 2;
+            List<BaseAddressViewModel> addresses = [userData.address, userData.mailingAddress];
+            await customerService.CreateCustomerHistoryAsync((int)user.CustomerID);
+
             if (!customerAddresses.IsNullOrEmpty())
             {
-                await addressService.UpdateAddressesForCustomerAsync((int)user.CustomerID, customerAddresses.ToList());
+                await addressService.UpdateAddressesForCustomerAsync((int)user.CustomerID, addresses);
             }
             else
             {
-                await addressService.AddAddressesForCustomerAsync((int)user.CustomerID, customerAddresses.ToList());
+                await addressService.AddAddressesForCustomerAsync((int)user.CustomerID, addresses);
             }
         }
 

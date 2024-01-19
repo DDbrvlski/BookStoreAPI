@@ -1,7 +1,11 @@
 ﻿using BookStoreAPI.Helpers;
+using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
+using BookStoreViewModels.ViewModels.Orders;
+using BookStoreViewModels.ViewModels.Products.BookItems;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 
 namespace BookStoreAPI.Services.Discounts.Discounts
@@ -14,9 +18,12 @@ namespace BookStoreAPI.Services.Discounts.Discounts
         Task DeactivateChosenBookDiscountsAsync(int discountId, List<int?> bookItemIds);
         Task UpdateBookDiscountAsync(int discountId, List<int?> bookItemIds);
         Task<Discount?> GetDiscountForBookItemAsync(int bookItemId);
+        Task<IEnumerable<BookDiscount>> GetAllAvailableDiscountsForBookItemIdsAsync(List<int> bookItemIds);
+        Task<List<OrderItemsListViewModel>> ApplyDiscount(List<OrderItemsListViewModel> cartItems);
+        Task<List<BookItemViewModel>> ApplyDiscount(List<BookItemViewModel> bookItems);
     }
 
-    public class BookDiscountService(BookStoreContext context) : IBookDiscountService
+    public class BookDiscountService(BookStoreContext context, IDiscountLogic discountLogic) : IBookDiscountService
     {
         public async Task AddNewBookDiscountAsync(int discountId, List<int?> bookItemIds)
         {
@@ -93,6 +100,54 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                     .OrderByDescending(x => x.Discount.PercentOfDiscount)
                     .Select(x => x.Discount)
                     .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<BookDiscount>> GetAllAvailableDiscountsForBookItemIdsAsync(List<int> bookItemIds)
+        {
+            return await context.BookDiscount
+                .Include(x => x.Discount)
+                .Where(x => bookItemIds.Contains((int)x.BookItemID))
+                .ToListAsync();
+        }
+        public async Task<List<OrderItemsListViewModel>> ApplyDiscount(List<OrderItemsListViewModel> cartItems)
+        {
+            var bookItemIds = cartItems.Select(x => x.BookItemID).ToList();
+            var activeDiscounts = await GetAllAvailableDiscountsForBookItemIdsAsync(bookItemIds);
+
+            foreach (var cartItem in cartItems)
+            {
+                var applicableDiscounts = activeDiscounts
+                    .Where(x => x.BookItemID == cartItem.BookItemID)
+                    .Select(x => x.Discount);
+
+                if (applicableDiscounts.Any())
+                {
+                    var maxDiscount = applicableDiscounts.Max(x => x.PercentOfDiscount);
+                    cartItem.SingleItemBruttoPrice = discountLogic.CalculateItemPriceWithDiscountCode((decimal)cartItem.SingleItemBruttoPrice, maxDiscount);
+                }
+            }
+
+            return cartItems;
+        }
+        public async Task<List<BookItemViewModel>> ApplyDiscount(List<BookItemViewModel> bookItems)
+        {
+            var bookItemIds = bookItems.Select(x => x.Id).ToList();
+            var activeDiscounts = await GetAllAvailableDiscountsForBookItemIdsAsync(bookItemIds);
+
+            foreach (var bookItem in bookItems)
+            {
+                var applicableDiscounts = activeDiscounts
+                    .Where(x => x.BookItemID == bookItem.Id)
+                    .Select(x => x.Discount);
+
+                if (applicableDiscounts.Any())
+                {
+                    var maxDiscount = applicableDiscounts.Max(x => x.PercentOfDiscount);
+                    bookItem.DiscountedBruttoPrice = bookItem.Price * (1 + maxDiscount / 100);
+                }
+            }
+
+            return bookItems;
         }
     }
 }

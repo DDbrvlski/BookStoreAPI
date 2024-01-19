@@ -31,7 +31,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpGet("Column")]
-        public async Task<ActionResult<IEnumerable<FooterColumnDetailsViewModel>>> GetFooterLinksInColumnsAsync(int id)
+        public async Task<ActionResult<IEnumerable<FooterColumnDetailsViewModel>>> GetFooterLinksInColumnsAsync()
         {
             var footerColumns = await footerLinkService.GetFooterLinksInColumnsAsync();
             return Ok(footerColumns);

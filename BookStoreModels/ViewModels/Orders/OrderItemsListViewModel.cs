@@ -5,7 +5,7 @@ namespace BookStoreViewModels.ViewModels.Orders
     public class OrderItemsListViewModel
     {
         public int BookItemID { get; set; }
-        public int Quantity { get; set; }
-        public decimal BruttoPrice { get; set; }
+        public int? Quantity { get; set; }
+        public decimal? SingleItemBruttoPrice { get; set; }
     }
 }

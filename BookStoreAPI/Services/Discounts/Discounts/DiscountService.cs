@@ -21,12 +21,13 @@ namespace BookStoreAPI.Services.Discounts.Discounts
     {
         public async Task<DiscountDetailsCMSViewModel> GetDiscountByIdCMSAsync(int id)
         {
+            var currentDate = DateTime.Now;
             return await context.Discount
                 .Where(x => x.Id == id && x.IsActive)
                 .Select(x => new DiscountDetailsCMSViewModel()
                 {
                     Id = x.Id,
-                    IsAvailable = DateTime.Today >= x.StartingDate && DateTime.Today <= x.ExpiryDate.AddDays(1),
+                    IsAvailable = currentDate >= x.StartingDate && currentDate <= x.ExpiryDate.AddDays(1),
                     Description = x.Description,
                     ExpiryDate = x.ExpiryDate,
                     StartingDate = x.StartingDate,
@@ -48,12 +49,13 @@ namespace BookStoreAPI.Services.Discounts.Discounts
 
         public async Task<IEnumerable<DiscountCMSViewModel>> GetAllDiscountsCMSAsync()
         {
+            var currentDate = DateTime.Now;
             return await context.Discount
                 .Where(x => x.IsActive == true)
                 .Select(x => new DiscountCMSViewModel
                 {
                     Id = x.Id,
-                    IsAvailable = DateTime.Today >= x.StartingDate && DateTime.Today <= x.ExpiryDate.AddDays(1),
+                    IsAvailable = currentDate >= x.StartingDate && currentDate <= x.ExpiryDate.AddDays(1),
                     Description = x.Description,
                     PercentOfDiscount = x.PercentOfDiscount,
                     Title = x.Title,
@@ -65,6 +67,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
         {
             Discount discount = new();
             discount.CopyProperties(discountModel);
+            context.Discount.Add(discount);
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 

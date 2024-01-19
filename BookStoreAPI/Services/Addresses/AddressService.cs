@@ -5,6 +5,7 @@ using BookStoreData.Models.Customers;
 using BookStoreData.Models.Orders;
 using BookStoreViewModels.ViewModels.Customers.Address;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BookStoreAPI.Services.Addresses
 {
@@ -23,7 +24,7 @@ namespace BookStoreAPI.Services.Addresses
         public async Task<IEnumerable<BaseAddressViewModel>> GetCustomerAddressDataAsync(int customerId)
         {
             return await context.CustomerAddress
-                .Where(x => x.CustomerID == customerId && x.IsActive)
+                .Where(x => x.CustomerID == customerId && x.IsActive && (x.Address.AddressTypeID == 1 || x.Address.AddressTypeID == 2))
                 .OrderBy(x => x.Address.AddressTypeID)
                 .Select(x => new BaseAddressViewModel()
                 {
@@ -94,8 +95,14 @@ namespace BookStoreAPI.Services.Addresses
             if (newAddresses.Any())
             {
                 var oldAddresses = await context.CustomerAddress
-                    .Where(x => x.IsActive && x.CustomerID == customerId)
+                    .Include(x => x.Address)
+                    .Where(x => x.IsActive && x.CustomerID == customerId && (x.Address.AddressTypeID == 1 || x.Address.AddressTypeID == 2))
                     .ToListAsync();
+
+                if (oldAddresses.IsNullOrEmpty())
+                {
+                    throw new BadRequestException("Wystąpił błąd z aktualizacją adresu.");
+                }
 
                 var address = oldAddresses.First(x => x.Address.AddressTypeID == 1);
                 var maillingAddress = oldAddresses.First(x => x.Address.AddressTypeID == 2);
@@ -105,13 +112,13 @@ namespace BookStoreAPI.Services.Addresses
 
                 List<BaseAddressViewModel> addressesToAdd = new();
 
-                if (!AreAddressesEqual(address.Address, newAddress))
+                if (!address.Address.IsEqual(newAddress))
                 {
                     await DeactivateChosenAddressForCustomerAsync(customerId, (int)address.AddressID);
                     addressesToAdd.Add(newAddress);
                 }
 
-                if (!AreAddressesEqual(maillingAddress.Address, newMaillingAddress))
+                if (!maillingAddress.Address.IsEqual(newMaillingAddress))
                 {
                     await DeactivateChosenAddressForCustomerAsync(customerId, (int)maillingAddress.AddressID);
                     addressesToAdd.Add(newMaillingAddress);
@@ -150,9 +157,9 @@ namespace BookStoreAPI.Services.Addresses
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-        private bool AreAddressesEqual(Address address, BaseAddressViewModel newAddress)
-        {
-            return address.Equals(newAddress);
-        }
+        //private bool AreAddressesEqual(Address address, BaseAddressViewModel newAddress)
+        //{
+        //    return address.IsEqual(newAddress);
+        //}
     }
 }

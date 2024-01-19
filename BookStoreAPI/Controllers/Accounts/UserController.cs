@@ -90,5 +90,14 @@ namespace BookStoreAPI.Controllers.Accounts
             var order = await orderService.GetUserOrderByIdAsync(id);
             return Ok(order);
         }
+
+
+        [HttpPost]
+        [Route("Order/DiscountCode")]
+        public async Task<ActionResult<OrderDiscountCheckViewModel>> ApplyDiscountForOrder(OrderDiscountCheckViewModel orderDiscountModel)
+        {
+            var orderDiscount = await orderService.ApplyDiscountCodeToOrderAsync(orderDiscountModel);
+            return Ok(orderDiscount);
+        }
     }
 }

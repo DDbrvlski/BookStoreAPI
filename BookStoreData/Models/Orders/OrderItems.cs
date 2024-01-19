@@ -10,6 +10,7 @@ namespace BookStoreData.Models.Orders
     {
         public int Quantity { get; set; }
         public decimal BruttoPrice { get; set; }
+        public decimal TotalBruttoPrice { get; set; }
 
         //BookItem
         [Required(ErrorMessage = "Książka jest wymagana.")]

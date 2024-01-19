@@ -1,10 +1,15 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Services.Addresses;
+using BookStoreAPI.Services.BookItems;
 using BookStoreAPI.Services.Customers;
+using BookStoreAPI.Services.Discounts.DiscountCodes;
+using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreAPI.Services.Payments;
+using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
 using BookStoreData.Models.Orders;
+using BookStoreData.Models.Products.BookItems;
 using BookStoreViewModels.ViewModels.Customers;
 using BookStoreViewModels.ViewModels.Customers.Address;
 using BookStoreViewModels.ViewModels.Invoices;
@@ -12,6 +17,7 @@ using BookStoreViewModels.ViewModels.Orders;
 using BookStoreViewModels.ViewModels.Orders.Dictionaries;
 using BookStoreViewModels.ViewModels.Payments;
 using BookStoreViewModels.ViewModels.Payments.Dictionaries;
+using BookStoreViewModels.ViewModels.Products.BookItems;
 using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
 using Microsoft.EntityFrameworkCore;
 using System.Xml.Linq;
@@ -26,13 +32,17 @@ namespace BookStoreAPI.Services.Orders
         Task<OrderDetailsViewModel> GetUserOrderByIdAsync(int orderId);
         Task<IEnumerable<OrderViewModel>> GetUserOrdersAsync(OrderFiltersViewModel orderFilters);
         Task<InvoiceDataViewModel> GetUserOrderForInvoiceByOrderIdAsync(int orderId);
+        Task<OrderDiscountCheckViewModel> ApplyDiscountCodeToOrderAsync(OrderDiscountCheckViewModel discountCode);
     }
 
     public class OrderService
                 (BookStoreContext context,
                 ICustomerService customerService,
                 IAddressService addressService,
-                IPaymentService paymentService) : IOrderService
+                IPaymentService paymentService,
+                IDiscountCodeService discountCodeService,
+                IBookItemService bookItemService,
+                IBookDiscountService bookDiscountService) : IOrderService
     {
         public async Task<OrderDetailsViewModel> GetOrderByIdAsync(int orderId)
         {
@@ -82,7 +92,7 @@ namespace BookStoreAPI.Services.Orders
                     {
                         Id = x.Id,
                         Quantity = x.Quantity,
-                        FullPriceBrutto = x.Quantity * x.BruttoPrice,
+                        FullPriceBrutto = x.TotalBruttoPrice,
                         PriceBrutto = x.BruttoPrice,
                         BookTitle = x.BookItem.Book.Title,
                         EditionName = x.BookItem.Edition.Name,
@@ -117,7 +127,7 @@ namespace BookStoreAPI.Services.Orders
                     {
                         Id = y.Id,
                         Quantity = y.Quantity,
-                        FullPriceBrutto = y.Quantity * y.BruttoPrice,
+                        FullPriceBrutto = y.TotalBruttoPrice,
                         PriceBrutto = y.BruttoPrice,
                         BookTitle = y.BookItem.Book.Title,
                         EditionName = y.BookItem.Edition.Name,
@@ -265,18 +275,42 @@ namespace BookStoreAPI.Services.Orders
             orderModel.InvoiceAddress.AddressTypeID = 3;
 
             List<BaseAddressViewModel> orderAddresses = [orderModel.InvoiceAddress];
-
             if (orderModel.DeliveryAddress != null)
             {
                 orderModel.DeliveryAddress.AddressTypeID = 4;
                 orderAddresses.Add(orderModel.DeliveryAddress);
             }
 
+            orderModel.CartItems = await SetOriginalPriceForItems(orderModel.CartItems);
+            orderModel.CartItems = await bookDiscountService.ApplyDiscount(orderModel.CartItems);
+            if (orderModel.DiscountCodeID != null)
+            {
+                orderModel.CartItems = await discountCodeService.ApplyDiscountCodeToCartItemsAsync(orderModel.CartItems, (int)orderModel.DiscountCodeID);
+            }
+
+            decimal totalOrderBruttoPrice = 0;
+            foreach (var item in orderModel.CartItems)
+            {
+                totalOrderBruttoPrice += (decimal)(item.SingleItemBruttoPrice * (decimal)item.Quantity);
+            }
+
             var payment = await paymentService
                 .CreateNewPayment
                 ((int)orderModel.PaymentMethodID,
-                orderModel.CartItems.Select(x => x.BruttoPrice).Sum(),
+                totalOrderBruttoPrice,
                 DateTime.Now);
+
+            var customerHistory = await context.CustomerHistory.FirstOrDefaultAsync(x => x.IsActive && x.CustomerID == customer.Id);
+            int customerHistoryId = 0;
+
+            if (customerHistory == null)
+            {
+                customerHistoryId = await customerService.CreateCustomerHistoryAsync(customer.Id);
+            }
+            else
+            {
+                customerHistoryId = customerHistory.Id;
+            }
 
             Order order = new Order()
             {
@@ -285,7 +319,8 @@ namespace BookStoreAPI.Services.Orders
                 OrderStatusID = 1,
                 PaymentID = payment.Id,
                 DiscountCodeID = orderModel.DiscountCodeID,
-                OrderDate = DateTime.Now
+                OrderDate = DateTime.Now,
+                CustomerHistoryID = customerHistoryId,
             };
 
             context.Order.Add(order);
@@ -298,8 +333,9 @@ namespace BookStoreAPI.Services.Orders
                 orderItems.Add(new OrderItems()
                 {
                     BookItemID = item.BookItemID,
-                    Quantity = item.Quantity,
-                    BruttoPrice = item.BruttoPrice,
+                    Quantity = (int)item.Quantity,
+                    BruttoPrice = (decimal)item.SingleItemBruttoPrice,
+                    TotalBruttoPrice = (decimal)(item.SingleItemBruttoPrice * (decimal)item.Quantity),
                     OrderID = order.Id
                 });
             }
@@ -309,7 +345,6 @@ namespace BookStoreAPI.Services.Orders
         }
         public async Task<InvoiceDataViewModel> GetUserOrderForInvoiceByOrderIdAsync(int orderId)
         {
-            var invoices = await context.Order.Where(x => x.IsActive && x.Id == orderId).FirstOrDefaultAsync();
             var invoice = await context.Order.Where(x => x.IsActive && x.Id == orderId)
                 .Select(x => new InvoiceDataViewModel()
                 {
@@ -330,12 +365,12 @@ namespace BookStoreAPI.Services.Orders
                     },
                     CustomerInvoice = new CustomerInvoiceViewModel()
                     {
-                        Name = x.Customer.Name,
-                        Surname = x.Customer.Surname,
-                        Email = x.Customer.Email,
-                        Phone = x.Customer.PhoneNumber,
+                        Name = x.CustomerHistory.Name,
+                        Surname = x.CustomerHistory.Surname,
+                        Email = x.CustomerHistory.Email,
+                        Phone = x.CustomerHistory.PhoneNumber,
                         Address = x.OrderAddresses
-                        .Where(y => y.IsActive && y.Address.AddressTypeID == 3)
+                        .Where(y => y.IsActive && y.Address.AddressTypeID == 3 && y.OrderID == orderId)
                         .Select(y => new CustomerAddressInvoiceViewModel()
                         {
                             Street = y.Address.Street,
@@ -370,6 +405,27 @@ namespace BookStoreAPI.Services.Orders
                 }).FirstOrDefaultAsync();
 
             return invoice;
+        }
+        public async Task<OrderDiscountCheckViewModel> ApplyDiscountCodeToOrderAsync(OrderDiscountCheckViewModel discountCode)
+        {
+            var discount = await discountCodeService.CheckIfDiscountCodeIsValidAsync(discountCode.DiscountCode);
+            discountCode.CartItems = await SetOriginalPriceForItems(discountCode.CartItems);
+
+            discountCode.CartItems = await bookDiscountService.ApplyDiscount(discountCode.CartItems);
+            discountCode.CartItems = await discountCodeService.ApplyDiscountCodeToCartItemsAsync(discountCode.CartItems, discount.Id);
+            discountCode.DiscountID = discount.Id;
+
+            return discountCode;
+        }
+        private async Task<List<OrderItemsListViewModel>> SetOriginalPriceForItems(List<OrderItemsListViewModel> cartItems)
+        {
+            var bookItems = await bookItemService.GetBookItemsFromOrderAsync(cartItems);
+            foreach (var item in cartItems)
+            {
+                var originalPrice = bookItems.Find(x => x.BookItemId == item.BookItemID).BookItemBruttoPrice;
+                item.SingleItemBruttoPrice = originalPrice;
+            }
+            return cartItems;
         }
     }
 }
