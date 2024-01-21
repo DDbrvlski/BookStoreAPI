@@ -188,7 +188,7 @@ namespace BookStoreAPI.Services.BookItems
 
             if (discount != null)
             {
-                bookItem.DiscountedBruttoPrice = bookItem.Price * (1 + (decimal)(discount.PercentOfDiscount / 100));
+                bookItem.DiscountedBruttoPrice = bookItem.Price * (1 - (decimal)(discount.PercentOfDiscount / 100));
             }
 
             return bookItem;

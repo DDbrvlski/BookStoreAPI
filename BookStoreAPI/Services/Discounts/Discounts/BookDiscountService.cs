@@ -143,7 +143,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                 if (applicableDiscounts.Any())
                 {
                     var maxDiscount = applicableDiscounts.Max(x => x.PercentOfDiscount);
-                    bookItem.DiscountedBruttoPrice = bookItem.Price * (1 + maxDiscount / 100);
+                    bookItem.DiscountedBruttoPrice = bookItem.Price * (1 - maxDiscount / 100);
                 }
             }
 
