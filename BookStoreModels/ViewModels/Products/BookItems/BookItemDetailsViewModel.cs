@@ -9,6 +9,7 @@ namespace BookStoreViewModels.ViewModels.Products.BookItems
         public string? BookTitle { get; set; }
         public int? BookId { get; set; }
         public int? FormId { get; set; }
+        public int? AvailabilityId { get; set; }
         public int? Pages { get; set; }
         public string? FormName { get; set; }
         public double? Score { get; set; }
@@ -17,6 +18,7 @@ namespace BookStoreViewModels.ViewModels.Products.BookItems
         public string? FileFormatName { get; set; }
         public string? EditionName { get; set; }
         public string? PublisherName { get; set; }
+        public string? AvailabilityName { get; set; }
         public string? Language { get; set; }
         public string? OriginalLanguage { get; set; }
         public string? TranslatorName { get; set; }

@@ -4,6 +4,7 @@ using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
 using BookStoreViewModels.ViewModels.Orders;
 using BookStoreViewModels.ViewModels.Products.BookItems;
+using BookStoreViewModels.ViewModels.Wishlists;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
         Task<IEnumerable<BookDiscount>> GetAllAvailableDiscountsForBookItemIdsAsync(List<int> bookItemIds);
         Task<List<OrderItemsListViewModel>> ApplyDiscount(List<OrderItemsListViewModel> cartItems);
         Task<List<BookItemViewModel>> ApplyDiscount(List<BookItemViewModel> bookItems);
+        Task<List<WishlistItemViewModel>> ApplyDiscount(List<WishlistItemViewModel> wishlistBookItems);
     }
 
     public class BookDiscountService(BookStoreContext context, IDiscountLogic discountLogic) : IBookDiscountService
@@ -148,6 +150,26 @@ namespace BookStoreAPI.Services.Discounts.Discounts
             }
 
             return bookItems;
+        }
+        public async Task<List<WishlistItemViewModel>> ApplyDiscount(List<WishlistItemViewModel> wishlistBookItems)
+        {
+            var bookItemIds = wishlistBookItems.Select(x => x.Id).ToList();
+            var activeDiscounts = await GetAllAvailableDiscountsForBookItemIdsAsync(bookItemIds);
+
+            foreach (var bookItem in wishlistBookItems)
+            {
+                var applicableDiscounts = activeDiscounts
+                    .Where(x => x.BookItemID == bookItem.Id)
+                    .Select(x => x.Discount);
+
+                if (applicableDiscounts.Any())
+                {
+                    var maxDiscount = applicableDiscounts.Max(x => x.PercentOfDiscount);
+                    bookItem.DiscountedPriceBrutto = bookItem.PriceBrutto * (1 - maxDiscount / 100);
+                }
+            }
+
+            return wishlistBookItems;
         }
     }
 }

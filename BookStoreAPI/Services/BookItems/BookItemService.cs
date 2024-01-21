@@ -153,6 +153,8 @@ namespace BookStoreAPI.Services.BookItems
                     Score = x.Score,
                     Pages = x.Pages,
                     FormId = x.FormID,
+                    AvailabilityId = x.AvailabilityID,
+                    AvailabilityName = x.Availability.Name,
                     Price = x.NettoPrice * (1 + ((decimal)x.Tax / 100)),
                     FileFormatName = x.FileFormat.Name,
                     EditionName = x.Edition.Name,

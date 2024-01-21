@@ -1,5 +1,6 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
+using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
@@ -20,7 +21,7 @@ namespace BookStoreAPI.Services.Wishlists
         Task<bool> IsBookItemWishlistedByCustomer(int bookItemId);
         Task<Wishlist?> GetWishlistByDataAsync(Func<Wishlist, bool> wishlistFunction);
     }
-    public class WishlistService(BookStoreContext context, IUserContextService userContextService) : IWishlistService
+    public class WishlistService(BookStoreContext context, IUserContextService userContextService, IBookDiscountService bookDiscountService) : IWishlistService
     {
         public async Task<WishlistViewModel> GetUserWishlistAsync(Guid publicIdentifier)
         {
@@ -72,6 +73,8 @@ namespace BookStoreAPI.Services.Wishlists
             {
                 throw new WishlistException("Wystąpił błąd podczas pobierania wishlisty.");
             }
+
+            wishlistToSend.Items = await bookDiscountService.ApplyDiscount(wishlistToSend.Items);
 
             return wishlistToSend;
         }
@@ -143,9 +146,10 @@ namespace BookStoreAPI.Services.Wishlists
 
             if (user != null)
             {
-                var wishlist = await context.Wishlist.FirstAsync(x => x.IsActive && x.CustomerID == user.CustomerID);
-                isWishlisted = await context.WishlistItems
-                    .AnyAsync(x => x.IsActive && x.WishlistID == wishlist.Id && x.BookItemID == bookItemId);
+                isWishlisted = await context.WishlistItems.AnyAsync(x => x.IsActive && x.Wishlist.CustomerID == user.CustomerID && x.BookItemID == bookItemId);
+                //var wishlist = await context.Wishlist.FirstAsync(x => x.IsActive && x.CustomerID == user.CustomerID);
+                //isWishlisted = await context.WishlistItems
+                //    .AnyAsync(x => x.IsActive && x.WishlistID == wishlist.Id && x.BookItemID == bookItemId);
             }
 
             return isWishlisted;

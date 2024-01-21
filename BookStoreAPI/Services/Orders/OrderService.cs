@@ -422,8 +422,7 @@ namespace BookStoreAPI.Services.Orders
             var bookItems = await bookItemService.GetBookItemsFromOrderAsync(cartItems);
             foreach (var item in cartItems)
             {
-                var originalPrice = bookItems.Find(x => x.BookItemId == item.BookItemID).BookItemBruttoPrice;
-                item.SingleItemBruttoPrice = originalPrice;
+                item.SingleItemBruttoPrice = bookItems.Find(x => x.BookItemId == item.BookItemID).BookItemBruttoPrice;
             }
             return cartItems;
         }
