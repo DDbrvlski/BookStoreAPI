@@ -31,11 +31,22 @@ namespace BookStoreAPI.Controllers.Orders
         {
             var document = await invoiceService.CreateInvoice(orderId);
 
-            // Generate PDF content as byte array
             byte[] pdfBytes = document.GeneratePdf();
 
-            // Return PDF file as response
             return File(pdfBytes, "application/pdf", "invoice.pdf");
+        }
+
+        [HttpGet]
+        [Route("InvTest")]
+        public async Task<IActionResult> GenerateInvoiceTest(int orderId)
+        {
+            var document = await invoiceService.CreateInvoice(orderId);
+
+            byte[] pdfBytes = document.GeneratePdf();
+
+            string base64String = Convert.ToBase64String(pdfBytes);
+
+            return Ok(new { base64String });
         }
 
     }

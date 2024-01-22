@@ -198,7 +198,7 @@ namespace BookStoreAPI.Services.Orders
                     .Where(x => x.IsActive && x.OrderID == element.Id)
                     .Select(x => new OrderItemDetailsViewModel
                     {
-                        Id = x.Id,
+                        Id = (int)x.BookItemID,
                         Quantity = x.Quantity,
                         FullPriceBrutto = x.Quantity * x.BruttoPrice,
                         PriceBrutto = x.BruttoPrice,
@@ -237,7 +237,7 @@ namespace BookStoreAPI.Services.Orders
                     .Where(y => y.IsActive && y.OrderID == x.Id)
                     .Select(y => new OrderItemDetailsViewModel
                     {
-                        Id = y.Id,
+                        Id = (int)y.BookItemID,
                         Quantity = y.Quantity,
                         FullPriceBrutto = y.Quantity * y.BruttoPrice,
                         PriceBrutto = y.BruttoPrice,

@@ -9,12 +9,12 @@ namespace BookStoreAPI.Services.Library
 {
     public interface ILibraryService
     {
-        Task<IEnumerable<LibraryItemsViewModel>> GetAllEbooksAvailableForUserAsync();
+        Task<IEnumerable<LibraryItemsViewModel>> GetAllEbooksAvailableForUserAsync(int libraryStatusId);
     }
 
     public class LibraryService(BookStoreContext context, IUserContextService userContextService) : ILibraryService
     {
-        public async Task<IEnumerable<LibraryItemsViewModel>> GetAllEbooksAvailableForUserAsync()
+        public async Task<IEnumerable<LibraryItemsViewModel>> GetAllEbooksAvailableForUserAsync(int libraryStatusId)
         {
             var user = await userContextService.GetUserByTokenAsync();
             if (user == null)
@@ -22,7 +22,13 @@ namespace BookStoreAPI.Services.Library
                 throw new UnauthorizedException("Należy się zalogować");
             }
 
-            var ebooks = await context.Rental
+            List<LibraryItemsViewModel>? rentedEbooks = new();
+            List<LibraryItemsViewModel>? boughtEbooks = new();
+            IEnumerable<LibraryItemsViewModel> allLibraryItems = null;
+
+            if (libraryStatusId == 0 || libraryStatusId == 1)
+            {
+                rentedEbooks = await context.Rental
                 .Where(x => x.CustomerID == user.CustomerID)
                 .Select(x => new LibraryItemsViewModel()
                 {
@@ -43,7 +49,12 @@ namespace BookStoreAPI.Services.Library
                 })
                 .ToListAsync();
 
-            var ebookss = await context.Order.Where(x => x.IsActive && x.CustomerID == user.CustomerID)
+                allLibraryItems = rentedEbooks;
+            }
+
+            if (libraryStatusId == 0 || libraryStatusId == 2)
+            {
+                boughtEbooks = await context.Order.Where(x => x.IsActive && x.CustomerID == user.CustomerID)
                 .Select(x => x.OrderItems
                     .Where(y => y.BookItem.FormID == 2)
                     .Select(y => new LibraryItemsViewModel()
@@ -62,10 +73,16 @@ namespace BookStoreAPI.Services.Library
                                 Name = z.Author.Name,
                                 Surname = z.Author.Surname,
                             }).ToList()
-                    }))
-                .ToListAsync();
+                    }).ToList()).FirstAsync();
 
-            var allLibraryItems = ebooks.Concat(ebookss.SelectMany(x => x));
+                allLibraryItems = boughtEbooks;                
+            }
+
+            if (libraryStatusId == 0)
+            {
+                allLibraryItems = rentedEbooks.Concat(boughtEbooks);
+            }
+
             return allLibraryItems;
         }
     }

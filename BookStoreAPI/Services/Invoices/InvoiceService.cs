@@ -62,7 +62,6 @@ namespace BookStoreAPI.Services.Invoices
             var textStyle = TextStyle.Default.FontFamily(Fonts.Arial).FontSize(8);
             container.Table(table =>
             {
-                // step 1
                 table.ColumnsDefinition(columns =>
                 {
                     columns.ConstantColumn(25);
@@ -77,7 +76,6 @@ namespace BookStoreAPI.Services.Invoices
                     columns.RelativeColumn(3);
                 });
 
-                // step 2
                 table.Header(header =>
                 {
                     header.Cell().Element(CellStyle).AlignLeft().Text("Lp.").Style(textStyle);
@@ -97,7 +95,6 @@ namespace BookStoreAPI.Services.Invoices
                     }
                 });
 
-                // step 3
                 foreach (var item in Model.InvoiceProducts)
                 {
                     table.Cell().Element(CellStyle).AlignLeft().Text($"{number++}").Style(textStyle);

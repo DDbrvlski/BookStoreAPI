@@ -27,6 +27,7 @@ using BookStoreBusinessLogic.BusinessLogic.BookReviews;
 using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
+using BookStoreData.Models.Orders;
 using BookStoreViewModels.ViewModels.Accounts.Account;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -53,18 +54,18 @@ namespace BookStoreAPI
 
 
             QuestPDF.Settings.License = LicenseType.Community;
-            //var model = InvoiceDocumentDataSource.GetInvoiceDetails();
-            //var document = new InvoiceDocument(model);
+            //var model = InvoiceService.CreateInvoice(43);
+            //var document = new InvoiceDocument();
 
             //document.GeneratePdf("hello.pdf");
 
-            //// use the following invocation
+            //use the following invocation
             //document.ShowInPreviewer();
 
-            //// optionally, you can specify an HTTP port to communicate with the previewer host (default is 12500)
+            //optionally, you can specify an HTTP port to communicate with the previewer host(default is 12500)
             //document.ShowInPreviewer(12345);
 
-            //builder.Configuration.AddJsonFile("appsettings.json");
+            builder.Configuration.AddJsonFile("appsettings.json");
 
             var audiences = builder.Configuration.GetSection("Audiences").Get<Dictionary<string, string>>();
             var emailConfiguration = builder.Configuration.GetSection("EmailConfiguration").Get<AccountEmailConfigurationViewModel>();
@@ -145,7 +146,7 @@ namespace BookStoreAPI
 
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-            builder.Services.AddProblemDetails();
+            //builder.Services.AddProblemDetails();
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -205,7 +206,7 @@ namespace BookStoreAPI
 
 
             var app = builder.Build();
-            app.UseExceptionHandler();
+            //app.UseExceptionHandler();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
