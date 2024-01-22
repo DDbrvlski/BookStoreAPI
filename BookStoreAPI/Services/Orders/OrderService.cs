@@ -46,7 +46,7 @@ namespace BookStoreAPI.Services.Orders
     {
         public async Task<OrderDetailsViewModel> GetOrderByIdAsync(int orderId)
         {
-            return await context.Order
+            var order = await context.Order
                 .Where(x => x.Id == orderId && x.IsActive)
                 .Select(element => new OrderDetailsViewModel()
                 {
@@ -90,12 +90,13 @@ namespace BookStoreAPI.Services.Orders
                     .Where(x => x.IsActive && x.OrderID == element.Id)
                     .Select(x => new OrderItemDetailsViewModel
                     {
-                        Id = x.Id,
+                        Id = (int)x.BookItemID,
                         Quantity = x.Quantity,
                         FullPriceBrutto = x.TotalBruttoPrice,
                         PriceBrutto = x.BruttoPrice,
                         BookTitle = x.BookItem.Book.Title,
                         EditionName = x.BookItem.Edition.Name,
+                        FileFormatName = x.BookItem.FileFormat.Name,
                         FormName = x.BookItem.Form.Name,
                         ImageURL = x.BookItem.Book.BookImages
                             .First(x => x.Image.Position == 1).Image.ImageURL,
@@ -110,6 +111,9 @@ namespace BookStoreAPI.Services.Orders
                     }).ToList()
                 })
                 .FirstAsync();
+
+            order.FullBruttoPrice = (decimal)order.OrderItems.Sum(x => x.FullPriceBrutto);
+            return order;
         }
         public async Task<IEnumerable<OrderViewModel>> GetAllOrdersAsync()
         {
@@ -118,6 +122,7 @@ namespace BookStoreAPI.Services.Orders
                 .Select(x => new OrderViewModel()
                 {
                     Id = x.Id,
+                    OrderDate = x.OrderDate,
                     FullBruttoPrice = x.OrderItems
                     .Where(y => y.IsActive && y.OrderID == x.Id)
                     .Sum(y => y.Quantity * y.BruttoPrice),
@@ -254,7 +259,6 @@ namespace BookStoreAPI.Services.Orders
         }
         public async Task CreateNewOrderAsync(OrderPostViewModel orderModel)
         {
-            //dodać transakcje
             Customer customer = new Customer();
 
             if (orderModel.CustomerGuest == null)

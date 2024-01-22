@@ -5,6 +5,7 @@ namespace BookStoreViewModels.ViewModels.Orders
     public class OrderViewModel : BaseViewModel
     {
         public decimal FullBruttoPrice { get; set; }
+        public DateTime OrderDate { get; set; } 
         public List<OrderItemDetailsViewModel> OrderItems { get; set; }
     }
 }

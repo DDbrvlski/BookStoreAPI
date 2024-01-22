@@ -10,9 +10,9 @@ namespace BookStoreViewModels.ViewModels.Products.Books
 
         [Required(ErrorMessage = "Tytuł jest wymagany.")]
         [MaxLength(255)]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Required(ErrorMessage = "Oryginalny język jest wymagany.")]
         [Display(Name = "Oryginalny język")]

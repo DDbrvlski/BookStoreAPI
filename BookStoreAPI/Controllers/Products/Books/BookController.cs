@@ -37,7 +37,7 @@ namespace BookStoreAPI.Controllers.Products.Books
             }
             await bookService.CreateBookAsync(bookPost);
 
-            return CreatedAtAction(nameof(GetBookByIdAsync), new { id = bookPost.Id }, bookPost);
+            return Created();
         }
 
         [HttpPut("{id}")]

@@ -8,6 +8,7 @@ namespace BookStoreViewModels.ViewModels.Orders
         public string? FormName { get; set; }
         public string? BookTitle { get; set; }
         public string? EditionName { get; set; }
+        public string? FileFormatName { get; set; }
         public decimal? PriceBrutto { get; set; }
         public decimal? FullPriceBrutto { get; set; }
         public int? Quantity { get; set; }

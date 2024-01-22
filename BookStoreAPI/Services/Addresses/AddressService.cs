@@ -104,21 +104,29 @@ namespace BookStoreAPI.Services.Addresses
                     throw new BadRequestException("Wystąpił błąd z aktualizacją adresu.");
                 }
 
-                var address = oldAddresses.First(x => x.Address.AddressTypeID == 1);
-                var maillingAddress = oldAddresses.First(x => x.Address.AddressTypeID == 2);
+                var address = oldAddresses.FirstOrDefault(x => x.Address.AddressTypeID == 1);
+                var maillingAddress = oldAddresses.FirstOrDefault(x => x.Address.AddressTypeID == 2);
 
-                var newAddress = newAddresses.First(x => x.AddressTypeID == 1);
-                var newMaillingAddress = newAddresses.First(x => x.AddressTypeID == 2);
+                var newAddress = newAddresses.FirstOrDefault(x => x.AddressTypeID == 1);
+                var newMaillingAddress = newAddresses.FirstOrDefault(x => x.AddressTypeID == 2);
 
                 List<BaseAddressViewModel> addressesToAdd = new();
 
-                if (!address.Address.IsEqual(newAddress))
+                if (address == null)
+                {
+                    addressesToAdd.Add(newAddress);
+                }
+                else if (!address.Address.IsEqual(newAddress))
                 {
                     await DeactivateChosenAddressForCustomerAsync(customerId, (int)address.AddressID);
                     addressesToAdd.Add(newAddress);
                 }
 
-                if (!maillingAddress.Address.IsEqual(newMaillingAddress))
+                if (maillingAddress == null)
+                {
+                    addressesToAdd.Add(newMaillingAddress);
+                }
+                else if (!maillingAddress.Address.IsEqual(newMaillingAddress))
                 {
                     await DeactivateChosenAddressForCustomerAsync(customerId, (int)maillingAddress.AddressID);
                     addressesToAdd.Add(newMaillingAddress);

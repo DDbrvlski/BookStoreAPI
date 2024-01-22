@@ -11,6 +11,7 @@ using BookStoreAPI.Services.Discounts.DiscountCodes;
 using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreAPI.Services.Email;
 using BookStoreAPI.Services.Invoices;
+using BookStoreAPI.Services.Library;
 using BookStoreAPI.Services.Media;
 using BookStoreAPI.Services.Notifications;
 using BookStoreAPI.Services.Orders;
@@ -95,6 +96,7 @@ namespace BookStoreAPI
             builder.Services.AddTransient<IAddressService, AddressService>();
             builder.Services.AddTransient<IBookReviewService, BookReviewService>();
             builder.Services.AddTransient<INewsletterService, NewsletterService>();
+            builder.Services.AddTransient<ILibraryService, LibraryService>();
             builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddTransient<IEmailSenderService, EmailSenderService>();
             builder.Services.AddTransient<ICustomerService, CustomerService>();
@@ -143,7 +145,7 @@ namespace BookStoreAPI
 
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-            //builder.Services.AddProblemDetails();
+            builder.Services.AddProblemDetails();
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -203,7 +205,7 @@ namespace BookStoreAPI
 
 
             var app = builder.Build();
-            //app.UseExceptionHandler();
+            app.UseExceptionHandler();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

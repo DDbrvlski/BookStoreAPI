@@ -10,6 +10,7 @@ using BookStoreViewModels.ViewModels.Media.Images;
 using BookStoreViewModels.ViewModels.Products.Books;
 using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BookStoreAPI.Services.Books
 {
@@ -148,9 +149,19 @@ namespace BookStoreAPI.Services.Books
                     if(bookToUpdate != null)
                     {
                         bookToUpdate.IsActive = false;
-                        await authorService.UpdateAuthorsForBookAsync(bookPost);
-                        await categoryService.UpdateCategoriesForBookAsync(bookPost);
-                        await imageService.UpdateImagesForBookAsync(bookPost);
+                        bookPost.Id = bookId;
+                        if (!bookPost.ListOfBookAuthors.IsNullOrEmpty())
+                        {
+                            await authorService.UpdateAuthorsForBookAsync(bookPost);
+                        }
+                        if (!bookPost.ListOfBookCategories.IsNullOrEmpty())
+                        {
+                            await categoryService.UpdateCategoriesForBookAsync(bookPost);
+                        }
+                        if (!bookPost.ListOfBookImages.IsNullOrEmpty())
+                        {
+                            await imageService.UpdateImagesForBookAsync(bookPost);
+                        }
 
                         await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 

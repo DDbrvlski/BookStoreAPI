@@ -25,10 +25,13 @@ namespace BookStoreAPI.Services.CMS
         private async Task<int> GetNumberOfItemsThisWeek<T>(DbSet<T> items) where T : BaseEntity
         {
             DateTime currentDate = DateTime.UtcNow;
+            int currentDayOfWeek = ((int)currentDate.DayOfWeek == 0) ? 7 : (int)currentDate.DayOfWeek;
+            var firstDayOfWeek = currentDate.AddDays(-(currentDayOfWeek - (int)DayOfWeek.Monday));
+            var lastDayOfWeek = currentDate.AddDays(7 - currentDayOfWeek);
 
             return await items
-                .Where(x => x.IsActive && x.CreationDate >= currentDate.AddDays(-((int)currentDate.DayOfWeek - (int)DayOfWeek.Monday))
-                            && x.CreationDate < currentDate.AddDays(7 - (int)currentDate.DayOfWeek))
+                .Where(x => x.IsActive && x.CreationDate >= firstDayOfWeek
+                            && x.CreationDate < lastDayOfWeek)
                 .CountAsync();
         }
     }
