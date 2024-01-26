@@ -1966,7 +1966,7 @@ namespace BookStoreAPI.Migrations
                     b.ToTable("Supplier");
                 });
 
-            modelBuilder.Entity("BookStoreData.Models.Supplies.SupplyGoods", b =>
+            modelBuilder.Entity("BookStoreData.Models.Supplies.Supply", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1977,29 +1977,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SupplyGoods");
-                });
-
-            modelBuilder.Entity("BookStoreData.Models.Supply.Supply", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DeliveryDate")
+                    b.Property<DateTime?>("DeliveryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("DeliveryStatusID")
@@ -2012,7 +1990,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PaymentMethodID")
+                    b.Property<int?>("PaymentID")
                         .IsRequired()
                         .HasColumnType("int");
 
@@ -2024,11 +2002,49 @@ namespace BookStoreAPI.Migrations
 
                     b.HasIndex("DeliveryStatusID");
 
-                    b.HasIndex("PaymentMethodID");
+                    b.HasIndex("PaymentID");
 
                     b.HasIndex("SupplierID");
 
                     b.ToTable("Supply");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.Supplies.SupplyGoods", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BookItemID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("BruttoPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplyID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookItemID");
+
+                    b.HasIndex("SupplyID");
+
+                    b.ToTable("SupplyGoods");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Transactions.Dictionaries.PaymentMethod", b =>
@@ -2095,13 +2111,13 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("PaymentMethodID")
@@ -2840,7 +2856,7 @@ namespace BookStoreAPI.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("BookStoreData.Models.Supply.Supply", b =>
+            modelBuilder.Entity("BookStoreData.Models.Supplies.Supply", b =>
                 {
                     b.HasOne("BookStoreData.Models.Supplies.Dictionaries.DeliveryStatus", "DeliveryStatus")
                         .WithMany()
@@ -2848,9 +2864,9 @@ namespace BookStoreAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookStoreData.Models.Transactions.Dictionaries.PaymentMethod", "PaymentMethod")
+                    b.HasOne("BookStoreData.Models.Transactions.Payment", "Payment")
                         .WithMany()
-                        .HasForeignKey("PaymentMethodID")
+                        .HasForeignKey("PaymentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2862,9 +2878,28 @@ namespace BookStoreAPI.Migrations
 
                     b.Navigation("DeliveryStatus");
 
-                    b.Navigation("PaymentMethod");
+                    b.Navigation("Payment");
 
                     b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.Supplies.SupplyGoods", b =>
+                {
+                    b.HasOne("BookStoreData.Models.Products.BookItems.BookItem", "BookItem")
+                        .WithMany()
+                        .HasForeignKey("BookItemID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookStoreData.Models.Supplies.Supply", "Supply")
+                        .WithMany("SupplyGoods")
+                        .HasForeignKey("SupplyID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BookItem");
+
+                    b.Navigation("Supply");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Transactions.Payment", b =>
@@ -3003,6 +3038,11 @@ namespace BookStoreAPI.Migrations
                     b.Navigation("BookImages");
 
                     b.Navigation("BookItems");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.Supplies.Supply", b =>
+                {
+                    b.Navigation("SupplyGoods");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Wishlist.Wishlist", b =>

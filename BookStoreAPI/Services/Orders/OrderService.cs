@@ -5,6 +5,7 @@ using BookStoreAPI.Services.Customers;
 using BookStoreAPI.Services.Discounts.DiscountCodes;
 using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreAPI.Services.Payments;
+using BookStoreAPI.Services.Stock;
 using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
@@ -19,6 +20,7 @@ using BookStoreViewModels.ViewModels.Payments;
 using BookStoreViewModels.ViewModels.Payments.Dictionaries;
 using BookStoreViewModels.ViewModels.Products.BookItems;
 using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
+using BookStoreViewModels.ViewModels.Stock;
 using Microsoft.EntityFrameworkCore;
 using System.Xml.Linq;
 
@@ -42,7 +44,8 @@ namespace BookStoreAPI.Services.Orders
                 IPaymentService paymentService,
                 IDiscountCodeService discountCodeService,
                 IBookItemService bookItemService,
-                IBookDiscountService bookDiscountService) : IOrderService
+                IBookDiscountService bookDiscountService,
+                IStockAmountService stockAmountService) : IOrderService
     {
         public async Task<OrderDetailsViewModel> GetOrderByIdAsync(int orderId)
         {
@@ -67,7 +70,7 @@ namespace BookStoreAPI.Services.Orders
                     {
                         Id = (int)element.PaymentID,
                         Amount = element.Payment.Amount,
-                        PaymentDate = element.Payment.Date,
+                        PaymentDate = element.Payment.PaymentDate,
                         PaymentMethod = new PaymentMethodViewModel
                         {
                             Id = (int)element.Payment.PaymentMethodID,
@@ -92,8 +95,8 @@ namespace BookStoreAPI.Services.Orders
                     {
                         Id = (int)x.BookItemID,
                         Quantity = x.Quantity,
-                        FullPriceBrutto = x.TotalBruttoPrice,
-                        PriceBrutto = x.BruttoPrice,
+                        TotalBruttoPrice = x.TotalBruttoPrice,
+                        BruttoPrice = x.BruttoPrice,
                         BookTitle = x.BookItem.Book.Title,
                         EditionName = x.BookItem.Edition.Name,
                         FileFormatName = x.BookItem.FileFormat.Name,
@@ -112,7 +115,7 @@ namespace BookStoreAPI.Services.Orders
                 })
                 .FirstAsync();
 
-            order.FullBruttoPrice = (decimal)order.OrderItems.Sum(x => x.FullPriceBrutto);
+            order.TotalBruttoPrice = (decimal)order.OrderItems.Sum(x => x.TotalBruttoPrice);
             return order;
         }
         public async Task<IEnumerable<OrderViewModel>> GetAllOrdersAsync()
@@ -123,7 +126,7 @@ namespace BookStoreAPI.Services.Orders
                 {
                     Id = x.Id,
                     OrderDate = x.OrderDate,
-                    FullBruttoPrice = x.OrderItems
+                    TotalBruttoPrice = x.OrderItems
                     .Where(y => y.IsActive && y.OrderID == x.Id)
                     .Sum(y => y.Quantity * y.BruttoPrice),
                     OrderItems = x.OrderItems
@@ -132,8 +135,8 @@ namespace BookStoreAPI.Services.Orders
                     {
                         Id = y.Id,
                         Quantity = y.Quantity,
-                        FullPriceBrutto = y.TotalBruttoPrice,
-                        PriceBrutto = y.BruttoPrice,
+                        TotalBruttoPrice = y.TotalBruttoPrice,
+                        BruttoPrice = y.BruttoPrice,
                         BookTitle = y.BookItem.Book.Title,
                         EditionName = y.BookItem.Edition.Name,
                         FormName = y.BookItem.Form.Name,
@@ -175,7 +178,7 @@ namespace BookStoreAPI.Services.Orders
                     {
                         Id = (int)element.PaymentID,
                         Amount = element.Payment.Amount,
-                        PaymentDate = element.Payment.Date,
+                        PaymentDate = element.Payment.PaymentDate,
                         PaymentMethod = new PaymentMethodViewModel
                         {
                             Id = (int)element.Payment.PaymentMethodID,
@@ -200,8 +203,8 @@ namespace BookStoreAPI.Services.Orders
                     {
                         Id = (int)x.BookItemID,
                         Quantity = x.Quantity,
-                        FullPriceBrutto = x.Quantity * x.BruttoPrice,
-                        PriceBrutto = x.BruttoPrice,
+                        TotalBruttoPrice = x.Quantity * x.BruttoPrice,
+                        BruttoPrice = x.BruttoPrice,
                         BookTitle = x.BookItem.Book.Title,
                         EditionName = x.BookItem.Edition.Name,
                         FormName = x.BookItem.Form.Name,
@@ -230,7 +233,8 @@ namespace BookStoreAPI.Services.Orders
             return await orders.Select(x => new OrderViewModel()
             {
                 Id = x.Id,
-                FullBruttoPrice = x.OrderItems
+                OrderDate = x.OrderDate,
+                TotalBruttoPrice = x.OrderItems
                     .Where(y => y.IsActive && y.OrderID == x.Id)
                     .Sum(y => y.Quantity * y.BruttoPrice),
                 OrderItems = x.OrderItems
@@ -239,8 +243,9 @@ namespace BookStoreAPI.Services.Orders
                     {
                         Id = (int)y.BookItemID,
                         Quantity = y.Quantity,
-                        FullPriceBrutto = y.Quantity * y.BruttoPrice,
-                        PriceBrutto = y.BruttoPrice,
+                        TotalBruttoPrice = y.Quantity * y.BruttoPrice,
+                        FileFormatName = y.BookItem.FileFormat.Name,
+                        BruttoPrice = y.BruttoPrice,
                         BookTitle = y.BookItem.Book.Title,
                         EditionName = y.BookItem.Edition.Name,
                         FormName = y.BookItem.Form.Name,
@@ -301,8 +306,7 @@ namespace BookStoreAPI.Services.Orders
             var payment = await paymentService
                 .CreateNewPayment
                 ((int)orderModel.PaymentMethodID,
-                totalOrderBruttoPrice,
-                DateTime.Now);
+                totalOrderBruttoPrice);
 
             var customerHistory = await context.CustomerHistory.FirstOrDefaultAsync(x => x.IsActive && x.CustomerID == customer.Id);
             int customerHistoryId = 0;
@@ -327,11 +331,12 @@ namespace BookStoreAPI.Services.Orders
                 CustomerHistoryID = customerHistoryId,
             };
 
-            context.Order.Add(order);
+            await context.Order.AddAsync(order);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             await addressService.AddAddressesForOrderAsync(order.Id, orderAddresses);
 
             List<OrderItems> orderItems = new List<OrderItems>();
+            List<BookItemStockAmountUpdateViewModel> bookItemsForStockUpdate = new List<BookItemStockAmountUpdateViewModel>();
             foreach (var item in orderModel.CartItems)
             {
                 orderItems.Add(new OrderItems()
@@ -342,10 +347,14 @@ namespace BookStoreAPI.Services.Orders
                     TotalBruttoPrice = (decimal)(item.SingleItemBruttoPrice * (decimal)item.Quantity),
                     OrderID = order.Id
                 });
+                bookItemsForStockUpdate.Add(new BookItemStockAmountUpdateViewModel() { BookItemId = item.BookItemID, Quantity = -(int)item.Quantity });
             }
 
-            context.OrderItems.AddRange(orderItems);
+            await context.OrderItems.AddRangeAsync(orderItems);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+
+            await bookItemService.ManageSoldUnitsAsync(orderItems);
+            await stockAmountService.UpdateStockAmountAsync(bookItemsForStockUpdate);
         }
         public async Task<InvoiceDataViewModel> GetUserOrderForInvoiceByOrderIdAsync(int orderId)
         {
@@ -387,7 +396,7 @@ namespace BookStoreAPI.Services.Orders
                     },
                     AdditionalInfoInvoice = new AdditionalInfoInvoiceViewModel()
                     {
-                        PaymentDate = x.Payment.Date,
+                        PaymentDate = x.Payment.PaymentDate,
                         CurrencyName = "PLN",
                         DeliveryName = x.DeliveryMethod.Name,
                         PaymentMethodName = x.Payment.PaymentMethod.Name,
@@ -401,12 +410,17 @@ namespace BookStoreAPI.Services.Orders
                         Code = (int)y.BookItemID,
                         Name = y.BookItem.Book.Title,
                         Quantity = y.Quantity,
-                        SingleUnitNettoPrice = y.BookItem.NettoPrice,
-                        NettoPrice = y.BookItem.NettoPrice * y.Quantity,
-                        TaxValue = y.BruttoPrice - (y.BookItem.NettoPrice * y.Quantity),
+                        NettoPrice = 0,
+                        TaxValue = 0,
                         BruttoPrice = y.BruttoPrice
                     }).ToList(),
                 }).FirstOrDefaultAsync();
+
+            foreach(var item in invoice.InvoiceProducts)
+            {
+                item.NettoPrice = item.BruttoPrice / (decimal)((float)1 + (item.Tax/100));
+                item.TaxValue = item.BruttoPrice - item.NettoPrice;
+            }
 
             return invoice;
         }

@@ -4,6 +4,7 @@ using BookStoreData.Data;
 using BookStoreData.Models.Customers;
 using BookStoreData.Models.Orders;
 using BookStoreViewModels.ViewModels.Customers.Address;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -18,6 +19,8 @@ namespace BookStoreAPI.Services.Addresses
         Task DeactivateAllAddressesForCustomerAsync(int customerId);
         Task DeactivateChosenAddressForCustomerAsync(int customerId, int addressId);
         Task<IEnumerable<BaseAddressViewModel>> GetCustomerAddressDataAsync(int customerId);
+        Task UpdateAddressAsync(int addressId, BaseAddressViewModel newAddress);
+        Task DeactivateAddressAsync(int addressId);
     }
     public class AddressService(BookStoreContext context) : IAddressService
     {
@@ -66,7 +69,7 @@ namespace BookStoreAPI.Services.Addresses
                     })
                     .ToList();
 
-                context.OrderAddress.AddRange(orderAddresses);
+                await context.OrderAddress.AddRangeAsync(orderAddresses);
 
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }
@@ -85,10 +88,22 @@ namespace BookStoreAPI.Services.Addresses
                     })
                     .ToList();
 
-                context.CustomerAddress.AddRange(customerAddresses);
+                await context.CustomerAddress.AddRangeAsync(customerAddresses);
 
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }
+        }
+        public async Task UpdateAddressAsync(int addressId, BaseAddressViewModel newAddress)
+        {
+            var oldAddress = await context.Address.Where(x => x.IsActive && x.Id == addressId).FirstOrDefaultAsync();
+
+            if (oldAddress == null)
+            {
+                throw new BadRequestException("Wystąpił błąd podczas aktualizacji adresu.");
+            }
+
+            oldAddress.CopyProperties(newAddress);
+            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
         public async Task UpdateAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> newAddresses)
         {
@@ -163,6 +178,17 @@ namespace BookStoreAPI.Services.Addresses
             address.IsActive = false;
             address.Address.IsActive = false;
 
+            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+        }
+        public async Task DeactivateAddressAsync(int addressId)
+        {
+            var address = await context.Address.Where(x => x.IsActive && x.Id == addressId).FirstOrDefaultAsync();
+            if (address == null)
+            {
+                throw new NotFoundException("Wystąpił błąd podczas pobierania adresu do usunięcia.");
+            }
+
+            address.IsActive = false;
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
         //private bool AreAddressesEqual(Address address, BaseAddressViewModel newAddress)

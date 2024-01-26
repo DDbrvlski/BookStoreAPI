@@ -41,7 +41,7 @@ namespace BookStoreAPI.Services.Customers
             customerHistory.CopyProperties(customerPost);
             customerHistory.CustomerID = customer.Id;
 
-            context.CustomerHistory.Add(customerHistory);
+            await context.CustomerHistory.AddAsync(customerHistory);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
             if (customer.IsSubscribed)

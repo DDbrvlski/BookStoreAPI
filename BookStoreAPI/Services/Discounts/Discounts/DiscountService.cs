@@ -67,7 +67,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
         {
             Discount discount = new();
             discount.CopyProperties(discountModel);
-            context.Discount.Add(discount);
+            await context.Discount.AddAsync(discount);
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 

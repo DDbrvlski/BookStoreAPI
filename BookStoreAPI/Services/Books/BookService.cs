@@ -130,10 +130,10 @@ namespace BookStoreAPI.Services.Books
 
             if (book != null)
             {
-                book.IsActive = false;
                 await authorService.DeactivateAllAuthorsForBookAsync(id);
                 await categoryService.DeactivateAllCategoriesForBookAsync(id);
                 await imageService.DeactivateAllImagesForBookAsync(id);
+                book.IsActive = false;
 
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }

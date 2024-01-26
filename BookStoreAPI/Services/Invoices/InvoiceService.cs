@@ -1,4 +1,5 @@
-﻿using BookStoreAPI.Services.Orders;
+﻿using BookStoreAPI.Infrastructure.Exceptions;
+using BookStoreAPI.Services.Orders;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
 using BookStoreViewModels.ViewModels.Invoices;
@@ -102,11 +103,11 @@ namespace BookStoreAPI.Services.Invoices
                     table.Cell().Element(CellStyle).Text($"{item.Name}").Style(textStyle);
                     table.Cell().Element(CellStyle).Text($"{item.Quantity}").Style(textStyle);
                     table.Cell().Element(CellStyle).Text($"{item.UnitOfMeasure}").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text($"{item.SingleUnitNettoPrice}").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text($"{item.Tax}%").Style(textStyle);
                     table.Cell().Element(CellStyle).Text($"{item.NettoPrice:F2}").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text($"{item.TaxValue:F2}").Style(textStyle);
-                    table.Cell().Element(CellStyle).Text($"{item.BruttoPrice}").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{item.Tax}%").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{(item.NettoPrice * item.Quantity):F2}").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{(item.TaxValue * item.Quantity):F2}").Style(textStyle);
+                    table.Cell().Element(CellStyle).Text($"{(item.BruttoPrice * item.Quantity):F2}").Style(textStyle);
 
                     static IContainer CellStyle(IContainer container)
                     {
@@ -232,9 +233,9 @@ namespace BookStoreAPI.Services.Invoices
 
         public PaymentComponent(List<ProductInvoiceViewModel> orderItems)
         {
-            TotalNetto = orderItems.Sum(x => x.NettoPrice);
-            TaxValue = orderItems.Sum(x => x.TaxValue);
-            TotalBrutto = orderItems.Sum(x => x.BruttoPrice);
+            TotalNetto = orderItems.Sum(x => x.NettoPrice * x.Quantity);
+            TaxValue = orderItems.Sum(x => x.TaxValue * x.Quantity);
+            TotalBrutto = orderItems.Sum(x => x.BruttoPrice * x.Quantity);
         }
 
         public void Compose(IContainer container)
@@ -272,11 +273,15 @@ namespace BookStoreAPI.Services.Invoices
         private DateTime PaymentDate { get; }
         private string DeliveryMethodTitle { get; }
 
-        public PaymentDetailsComponent(string paymentMethodTitle, DateTime paymentDate, string deliveryMethodTitle, string currencyName)
+        public PaymentDetailsComponent(string paymentMethodTitle, DateTime? paymentDate, string deliveryMethodTitle, string currencyName)
         {
+            if (paymentDate == null)
+            {
+                throw new BadRequestException("Wystąpił błąd podczas generowania faktury");
+            }
             PaymentMethodTitle = paymentMethodTitle;
             DeliveryMethodTitle = deliveryMethodTitle;
-            PaymentDate = paymentDate;
+            PaymentDate = (DateTime)paymentDate;
             PaymentCurrencyTitle = currencyName;
         }
 
@@ -371,82 +376,4 @@ namespace BookStoreAPI.Services.Invoices
             });
         }
     }
-    //public static class InvoiceDocumentDataSource
-    //{
-    //    private static Random Random = new Random();
-
-    //    public static InvoiceModel GetInvoiceDetails()
-    //    {
-    //        var items = Enumerable
-    //            .Range(1, 10)
-    //            .Select(i => GenerateRandomOrderItem())
-    //            .ToList();
-
-    //        return new InvoiceModel
-    //        {
-    //            InvoiceNumber = Random.Next(1_000, 10_000),
-    //            IssueDate = DateTime.Now,
-    //            DueDate = DateTime.Now + TimeSpan.FromDays(14),
-
-    //            SellerAddress = GenerateRandomAddress(),
-    //            CustomerAddress = GenerateRandomAddress(),
-
-    //            Items = items,
-    //            Comments = Placeholders.Paragraph()
-    //        };
-    //    }
-
-    //    private static OrderItem GenerateRandomOrderItem()
-    //    {
-    //        return new OrderItem
-    //        {
-    //            Name = Placeholders.Label(),
-    //            Price = (decimal)Math.Round(Random.NextDouble() * 100, 2),
-    //            Quantity = Random.Next(1, 10)
-    //        };
-    //    }
-
-    //    private static Address GenerateRandomAddress()
-    //    {
-    //        return new Address
-    //        {
-    //            CompanyName = Placeholders.Name(),
-    //            Street = Placeholders.Label(),
-    //            City = Placeholders.Label(),
-    //            State = Placeholders.Label(),
-    //            Email = Placeholders.Email(),
-    //            Phone = Placeholders.PhoneNumber()
-    //        };
-    //    }
-    //}
-
-    //public class InvoiceModel
-    //{
-    //    public int InvoiceNumber { get; set; }
-    //    public DateTime IssueDate { get; set; }
-    //    public DateTime DueDate { get; set; }
-
-    //    public Address SellerAddress { get; set; }
-    //    public Address CustomerAddress { get; set; }
-
-    //    public List<OrderItem> Items { get; set; }
-    //    public string Comments { get; set; }
-    //}
-
-    //public class OrderItem
-    //{
-    //    public string Name { get; set; }
-    //    public decimal Price { get; set; }
-    //    public int Quantity { get; set; }
-    //}
-
-    //public class Address
-    //{
-    //    public string CompanyName { get; set; }
-    //    public string Street { get; set; }
-    //    public string City { get; set; }
-    //    public string State { get; set; }
-    //    public object Email { get; set; }
-    //    public string Phone { get; set; }
-    //}
 }

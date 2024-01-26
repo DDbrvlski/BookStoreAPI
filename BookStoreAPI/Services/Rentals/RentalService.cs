@@ -1,5 +1,6 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Services.Customers;
+using BookStoreAPI.Services.Stock;
 using BookStoreData.Data;
 using BookStoreData.Models.Rental;
 using BookStoreViewModels.ViewModels.Rentals;
@@ -63,7 +64,7 @@ namespace BookStoreAPI.Services.Rentals
                 rental.EndDate = rental.StartDate.AddDays(days);
             }
 
-            context.Rental.Add(rental);
+            await context.Rental.AddAsync(rental);
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }

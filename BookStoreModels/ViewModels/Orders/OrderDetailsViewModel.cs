@@ -7,7 +7,7 @@ namespace BookStoreViewModels.ViewModels.Orders
 {
     public class OrderDetailsViewModel : BaseViewModel
     {
-        public decimal FullBruttoPrice { get; set; }
+        public decimal TotalBruttoPrice { get; set; }
         public DateTime OrderDate { get; set; }
         public DeliveryMethodViewModel? DeliveryMethod { get; set; }
         public OrderStatusViewModel? OrderStatus { get; set; }

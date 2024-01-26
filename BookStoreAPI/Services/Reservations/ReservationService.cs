@@ -1,5 +1,6 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
+using BookStoreAPI.Services.Stock;
 using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
@@ -62,6 +63,7 @@ namespace BookStoreAPI.Services.Reservation
             }
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+            //await stockAmountService.AddNewReservationInStockAsync(bookItemId);
         }
 
         public async Task DeactivateReservationAsync(int bookItemId)
@@ -83,6 +85,7 @@ namespace BookStoreAPI.Services.Reservation
             await UpdateReservationPositionInQueue(reservation.Position, bookItemId);
             reservation.IsActive = false;
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+            //await stockAmountService.CancelReservationInStockAsync(bookItemId);
         }
 
         private async Task UpdateReservationPositionInQueue(int position, int bookItemId)

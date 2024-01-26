@@ -5,9 +5,10 @@ namespace BookStoreViewModels.ViewModels.Library
 {
     public class LibraryItemsViewModel : BaseViewModel
     {
-        public string? FormName { get; set; }
-        public string? BookTitle { get; set; }
-        public string? FileFormatName { get; set; }
+        public string FormName { get; set; }
+        public string BookTitle { get; set; }
+        public string FileFormatName { get; set; }
+        public DateTime ExpiryDate { get; set; }
         public string? ImageURL { get; set; }
         public List<AuthorViewModel> Authors { get; set; }
     }

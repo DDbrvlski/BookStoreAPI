@@ -34,6 +34,7 @@ namespace BookStoreAPI.Services.Library
                 {
                     Id = (int)x.BookItemID,
                     BookTitle = x.BookItem.Book.Title,
+                    ExpiryDate = x.EndDate,
                     FileFormatName = x.BookItem.FileFormat.Name,
                     FormName = x.BookItem.Form.Name,
                     ImageURL = x.BookItem.Book.BookImages
@@ -47,6 +48,8 @@ namespace BookStoreAPI.Services.Library
                                 Surname = y.Author.Surname,
                             }).ToList()
                 })
+                .GroupBy(x => x.Id)
+                .Select(group => group.First())
                 .ToListAsync();
 
                 allLibraryItems = rentedEbooks;
@@ -54,26 +57,28 @@ namespace BookStoreAPI.Services.Library
 
             if (libraryStatusId == 0 || libraryStatusId == 2)
             {
-                boughtEbooks = await context.Order.Where(x => x.IsActive && x.CustomerID == user.CustomerID)
-                .Select(x => x.OrderItems
-                    .Where(y => y.BookItem.FormID == 2)
-                    .Select(y => new LibraryItemsViewModel()
+                boughtEbooks = await context.OrderItems
+                    .Where(x => x.IsActive && x.Order.CustomerID == user.CustomerID && x.BookItem.FormID == 2)
+                    .Select(x => new LibraryItemsViewModel()
                     {
-                        Id = (int)y.BookItemID,
-                        BookTitle = y.BookItem.Book.Title,
-                        FileFormatName = y.BookItem.FileFormat.Name,
-                        FormName = y.BookItem.Form.Name,
-                        ImageURL = y.BookItem.Book.BookImages
-                            .First(z => z.Image.Position == 1).Image.ImageURL,
-                        Authors = y.BookItem.Book.BookAuthors
-                            .Where(z => z.IsActive)
-                            .Select(z => new AuthorViewModel()
+                        Id = (int)x.BookItemID,
+                        BookTitle = x.BookItem.Book.Title,
+                        FileFormatName = x.BookItem.FileFormat.Name,
+                        FormName = x.BookItem.Form.Name,
+                        ImageURL = x.BookItem.Book.BookImages
+                            .First(y => y.Image.Position == 1).Image.ImageURL,
+                        Authors = x.BookItem.Book.BookAuthors
+                            .Where(y => y.IsActive)
+                            .Select(y => new AuthorViewModel()
                             {
-                                Id = (int)z.AuthorID,
-                                Name = z.Author.Name,
-                                Surname = z.Author.Surname,
+                                Id = (int)y.AuthorID,
+                                Name = y.Author.Name,
+                                Surname = y.Author.Surname,
                             }).ToList()
-                    }).ToList()).FirstAsync();
+                    })
+                    .GroupBy(x => x.Id)
+                    .Select(group => group.First())
+                    .ToListAsync();
 
                 allLibraryItems = boughtEbooks;                
             }

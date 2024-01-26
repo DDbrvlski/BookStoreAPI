@@ -16,5 +16,12 @@ namespace BookStoreAPI.Controllers.CMS
             var summary = await cmsService.GetWeeklySummaryOfOrdersRentalsReservationsAsync();
             return Ok(summary);
         }
+
+        [HttpPost]
+        [Route("Supply")]
+        public async Task<IActionResult> AddNewSupplyAsync()
+        {
+            return NoContent();
+        }
     }
 }

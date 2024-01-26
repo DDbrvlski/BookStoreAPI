@@ -56,7 +56,7 @@ namespace BookStoreAPI.Services.Wishlists
                             FormId = y.BookItem.FormID,
                             FileFormatName = y.BookItem.FileFormat.Name,
                             ImageURL = y.BookItem.Book.BookImages.Where(z => z.Image.Position == 1).FirstOrDefault().Image.ImageURL,
-                            PriceBrutto = y.BookItem.NettoPrice * (1 + ((decimal)y.BookItem.Tax / 100)),
+                            BruttoPrice = y.BookItem.NettoPrice * (1 + ((decimal)y.BookItem.Tax / 100)),
                             authors = y.BookItem.Book.BookAuthors.Select(y => new AuthorViewModel
                             {
                                 Id = (int)y.AuthorID,
@@ -103,7 +103,7 @@ namespace BookStoreAPI.Services.Wishlists
                 PublicIdentifier = Guid.NewGuid()
             };
 
-            context.Wishlist.Add(wishlist);
+            await context.Wishlist.AddAsync(wishlist);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
             return wishlist;

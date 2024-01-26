@@ -1,10 +1,12 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
+using BookStoreAPI.Services.Availability;
 using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreAPI.Services.Reviews;
 using BookStoreAPI.Services.Stock;
 using BookStoreAPI.Services.Wishlists;
 using BookStoreData.Data;
+using BookStoreData.Models.Orders;
 using BookStoreData.Models.Products.BookItems;
 using BookStoreViewModels.ViewModels.Media.Images;
 using BookStoreViewModels.ViewModels.Orders;
@@ -25,6 +27,7 @@ namespace BookStoreAPI.Services.BookItems
         Task CreateBookItemAsync(BookItemPostCMSViewModel bookItemModel);
         Task UpdateBookItemAsync(int bookItemId, BookItemPostCMSViewModel bookItemModel);
         Task DeactivateBookItemAsync(int bookItemId);
+        Task ManageSoldUnitsAsync(List<OrderItems> orderItems);
         Task<List<BookItemDiscountViewModel>> GetBookItemsFromOrderAsync(List<OrderItemsListViewModel> cartItems);
     }
 
@@ -199,11 +202,15 @@ namespace BookStoreAPI.Services.BookItems
         {
             BookItem bookItem = new();
             bookItem.CopyProperties(bookItemModel);
+            bookItem.AvailabilityID = 2;
+            await context.BookItem.AddAsync(bookItem);
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
-            await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
-            await UpdateBookItemAvailabilityAsync(bookItem, await stockAmountService.GetStockAmountForBookItemByIdAsync(bookItem.Id));
+            if (bookItem.FormID == 1)
+            {
+                await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
+            }
         }
         public async Task UpdateBookItemAsync(int bookItemId, BookItemPostCMSViewModel bookItemModel)
         {
@@ -215,7 +222,6 @@ namespace BookStoreAPI.Services.BookItems
 
             bookItem.CopyProperties(bookItemModel);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
-            await UpdateBookItemAvailabilityAsync(bookItem, await stockAmountService.GetStockAmountForBookItemByIdAsync(bookItem.Id));
         }
         public async Task DeactivateBookItemAsync(int bookItemId)
         {
@@ -225,25 +231,22 @@ namespace BookStoreAPI.Services.BookItems
                 throw new NotFoundException("Nie znaleziono elementu bookItem.");
             }
 
-            bookItem.IsActive = false;
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
-
             await bookDiscountService.DeactivateAllBookDiscountsByBookItemAsync(bookItemId);
             await stockAmountService.DeactivateStockAmountAsync(bookItemId);
+
+            bookItem.IsActive = false;
+            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-        private async Task UpdateBookItemAvailabilityAsync(BookItem bookItem, int stockAmount)
+        public async Task ManageSoldUnitsAsync(List<OrderItems> orderItems)
         {
-            if (stockAmount == 0)
+            var bookItemIds = orderItems.Select(x => x.BookItemID).ToList();
+            var bookItems = await context.BookItem.Where(x => x.IsActive && bookItemIds.Contains(x.Id)).ToListAsync();
+
+            foreach (var bookItem in bookItems)
             {
-                bookItem.AvailabilityID = 2;
-            }
-            else if (stockAmount > 0)
-            {
-                bookItem.AvailabilityID = 1;
-            }
-            else
-            {
-                throw new BadRequestException("Wystąpił błąd podczas aktualizowania stanu magazynowego produktu.");
+                var orderItem = orderItems.Where(x => x.BookItemID == bookItem.Id).First();
+
+                bookItem.SoldUnits += orderItem.Quantity;
             }
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);

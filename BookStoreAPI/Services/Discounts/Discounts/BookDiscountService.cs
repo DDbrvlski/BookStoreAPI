@@ -35,7 +35,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                 DiscountID = discountId,
             }).ToList();
 
-            context.BookDiscount.AddRange(bookItemsToAdd);
+            await context.BookDiscount.AddRangeAsync(bookItemsToAdd);
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
@@ -165,7 +165,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                 if (applicableDiscounts.Any())
                 {
                     var maxDiscount = applicableDiscounts.Max(x => x.PercentOfDiscount);
-                    bookItem.DiscountedPriceBrutto = bookItem.PriceBrutto * (1 - maxDiscount / 100);
+                    bookItem.DiscountedBruttoPrice = bookItem.BruttoPrice * (1 - maxDiscount / 100);
                 }
             }
 

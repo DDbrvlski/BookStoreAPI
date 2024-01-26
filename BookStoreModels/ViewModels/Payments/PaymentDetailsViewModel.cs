@@ -6,7 +6,7 @@ namespace BookStoreViewModels.ViewModels.Payments
     public class PaymentDetailsViewModel : BaseViewModel
     {
         public decimal Amount { get; set; }
-        public DateTime PaymentDate { get; set; }
+        public DateTime? PaymentDate { get; set; }
         public PaymentMethodViewModel? PaymentMethod { get; set; }
         public TransactionStatusViewModel? TransactionStatus { get; set; }
     }

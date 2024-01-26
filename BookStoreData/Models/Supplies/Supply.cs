@@ -4,13 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using BookStoreData.Models.Supplies.Dictionaries;
 using BookStoreData.Models.Transactions.Dictionaries;
 using System.Text.Json.Serialization;
+using BookStoreData.Models.Transactions;
 
-namespace BookStoreData.Models.Supply
+namespace BookStoreData.Models.Supplies
 {
     public class Supply : BaseEntity
     {
         #region Properties
-        public DateTime DeliveryDate { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         #endregion
         #region Foreign Keys
         //Supplier
@@ -31,14 +32,17 @@ namespace BookStoreData.Models.Supply
         [JsonIgnore]
         public virtual DeliveryStatus DeliveryStatus { get; set; }
 
-        //PaymentMethod
+        //Payment
         [Required(ErrorMessage = "Metoda płatności jest wymagana.")]
         [Display(Name = "Metoda płatności")]
-        public int? PaymentMethodID { get; set; }
+        public int? PaymentID { get; set; }
 
-        [ForeignKey("PaymentMethodID")]
+        [ForeignKey("PaymentID")]
         [JsonIgnore]
-        public virtual PaymentMethod PaymentMethod { get; set; }
+        public virtual Payment Payment { get; set; }
         #endregion
+
+        [JsonIgnore]
+        public List<SupplyGoods>? SupplyGoods { get; set; }
     }
 }

@@ -8,7 +8,6 @@
         public string UnitOfMeasure { get; set; }
         public float Tax { get; set; }
         public decimal TaxValue { get; set; }
-        public decimal SingleUnitNettoPrice { get; set; }
         public decimal NettoPrice { get; set; }
         public decimal BruttoPrice { get; set; }
     }

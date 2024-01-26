@@ -10,7 +10,7 @@ namespace BookStoreData.Models.Transactions
     {
         #region Properties
         public decimal Amount { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? PaymentDate { get; set; }
         #endregion
         #region Foreign Keys
 

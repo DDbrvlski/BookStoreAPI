@@ -52,7 +52,7 @@ namespace BookStoreAPI.Services.Media
                         Position = image.Position
                     }).ToList();
 
-                context.Images.AddRange(newImages);
+                await context.Images.AddRangeAsync(newImages);
 
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 

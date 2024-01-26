@@ -17,7 +17,6 @@ using BookStoreData.Models.Rental;
 using BookStoreData.Models.Rentals.Dictionaries;
 using BookStoreData.Models.Supplies;
 using BookStoreData.Models.Supplies.Dictionaries;
-using BookStoreData.Models.Supply;
 using BookStoreData.Models.Transactions;
 using BookStoreData.Models.Transactions.Dictionaries;
 using BookStoreData.Models.Wishlist;
