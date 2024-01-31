@@ -125,7 +125,7 @@ namespace BookStoreAPI.Services.Supplies
                     decimal paymentAmount = 0;
                     if (!supplyData.BookItems.IsNullOrEmpty())
                     {
-                        paymentAmount = supplyData.BookItems.Select(x => x.BookItemId * (int)(x.Quantity ?? 1)).Sum();
+                        paymentAmount = supplyData.BookItems.Select(x => x.BruttoPrice * (int)(x.Quantity ?? 1)).Sum();
                     }
 
                     var payment = await paymentService.CreateNewPayment(supplyData.PaymentMethodId, paymentAmount);

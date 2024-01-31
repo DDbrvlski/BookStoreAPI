@@ -17,5 +17,11 @@ namespace BookStoreAPI.Controllers.Library
             var ebooks = await libraryService.GetAllEbooksAvailableForUserAsync(libraryStatusId);
             return Ok(ebooks);
         }
+        [HttpGet("download/{bookItemId}")]
+        public async Task<IActionResult> DownloadEbookPdfFileAsync(int bookItemId)
+        {
+            var file = await libraryService.GetEbookPdfFileAsync(bookItemId);
+            return File(file, "application/pdf", "ebook.pdf");
+        }
     }
 }

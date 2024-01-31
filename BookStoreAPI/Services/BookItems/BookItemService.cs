@@ -211,6 +211,10 @@ namespace BookStoreAPI.Services.BookItems
             {
                 await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
             }
+            else if (bookItem.FormID == 2)
+            {
+                await stockAmountService.CreateStockAmountAsync(bookItem.Id, 0);
+            }
         }
         public async Task UpdateBookItemAsync(int bookItemId, BookItemPostCMSViewModel bookItemModel)
         {

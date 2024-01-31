@@ -1,8 +1,10 @@
 ﻿using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
+using BookStoreData.Models.Products.BookItems;
 using BookStoreViewModels.ViewModels.Library;
 using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.Library
@@ -10,9 +12,10 @@ namespace BookStoreAPI.Services.Library
     public interface ILibraryService
     {
         Task<IEnumerable<LibraryItemsViewModel>> GetAllEbooksAvailableForUserAsync(int libraryStatusId);
+        Task<byte[]> GetEbookPdfFileAsync(int bookItemId);
     }
 
-    public class LibraryService(BookStoreContext context, IUserContextService userContextService) : ILibraryService
+    public class LibraryService(BookStoreContext context, IUserContextService userContextService, IWebHostEnvironment hostEnvironment) : ILibraryService
     {
         public async Task<IEnumerable<LibraryItemsViewModel>> GetAllEbooksAvailableForUserAsync(int libraryStatusId)
         {
@@ -89,6 +92,33 @@ namespace BookStoreAPI.Services.Library
             }
 
             return allLibraryItems;
+        }
+        public async Task<byte[]> GetEbookPdfFileAsync(int bookItemId)
+        {
+            var ebook = await context.BookItem.Where(x => x.IsActive && x.Id == bookItemId).FirstOrDefaultAsync();
+
+            if (ebook == null)
+            {
+                throw new BadRequestException("Nie znaleziono podanej książki.");
+            }
+            else if(ebook.FormID == 1)
+            {
+                throw new BadRequestException("Podane id przedmiotu nie jest ebookiem.");
+            }
+
+            var filePath = GetFilePathForEbook(ebook);
+
+            if (filePath == null || !System.IO.File.Exists(filePath))
+            {
+                throw new NotFoundException("Nie znaleziono podanego pliku");
+            }
+
+            return System.IO.File.ReadAllBytes(filePath);
+        }
+        private string GetFilePathForEbook(BookItem book)
+        {
+            string rootPath = hostEnvironment.ContentRootPath;
+            return Path.Combine(rootPath, "Files", "Ebooks", "PDFs", "Ebook.pdf");
         }
     }
 }

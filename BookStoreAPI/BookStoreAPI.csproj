@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\Basket\" />
+    <Folder Include="Files\Ebooks\PDFs\" />
   </ItemGroup>
 
   <ItemGroup>

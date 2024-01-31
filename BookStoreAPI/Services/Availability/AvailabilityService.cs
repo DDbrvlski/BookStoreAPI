@@ -19,7 +19,7 @@ namespace BookStoreAPI.Services.Availability
         public async Task UpdateBookItemAvailabilityAsync(int bookItemId, int stockAmount = 0)
         {
             var bookItem = await context.BookItem.Where(x => x.IsActive && x.Id == bookItemId).FirstOrDefaultAsync();
-            if (bookItem != null)
+            if (bookItem == null)
             {
                 throw new NotFoundException("Wystąpił błąd podczas pobierania książki do aktualizacji dostępności");
             }
