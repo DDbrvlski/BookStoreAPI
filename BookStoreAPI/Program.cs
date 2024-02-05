@@ -21,11 +21,13 @@ using BookStoreAPI.Services.Payments;
 using BookStoreAPI.Services.Rentals;
 using BookStoreAPI.Services.Reservation;
 using BookStoreAPI.Services.Reviews;
+using BookStoreAPI.Services.Statistic;
 using BookStoreAPI.Services.Stock;
 using BookStoreAPI.Services.Supplies;
 using BookStoreAPI.Services.Users;
 using BookStoreAPI.Services.Wishlists;
 using BookStoreBusinessLogic.BusinessLogic.BookReviews;
+using BookStoreBusinessLogic.BusinessLogic.CMS;
 using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
@@ -76,8 +78,10 @@ namespace BookStoreAPI
             builder.Services.AddTransient<IInvoiceService, InvoiceService>();
             builder.Services.AddTransient<IAvailabilityService, AvailabilityService>();
             builder.Services.AddTransient<IBookDiscountService, BookDiscountService>();
+            builder.Services.AddTransient<IStatisticsLogic, StatisticsLogic>();
             builder.Services.AddTransient<ISupplyService, SupplyService>();
             builder.Services.AddTransient<ISupplierService, SupplierService>();
+            builder.Services.AddTransient<IStatisticsService, StatisticsService>();
             builder.Services.AddTransient<ISupplyGoodsService, SupplyGoodsService>();
             builder.Services.AddTransient<IPaymentService, PaymentService>();
             builder.Services.AddTransient<IBookReviewLogic, BookReviewLogic>();
@@ -218,7 +222,7 @@ namespace BookStoreAPI
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseCors("AllowSpecificOrigin");
+                app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
                 app.UseSwaggerUI();
             }
             app.UseHttpsRedirection();

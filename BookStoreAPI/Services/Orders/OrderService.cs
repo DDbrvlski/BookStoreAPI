@@ -20,6 +20,7 @@ using BookStoreViewModels.ViewModels.Payments;
 using BookStoreViewModels.ViewModels.Payments.Dictionaries;
 using BookStoreViewModels.ViewModels.Products.BookItems;
 using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
+using BookStoreViewModels.ViewModels.Statistics;
 using BookStoreViewModels.ViewModels.Stock;
 using Microsoft.EntityFrameworkCore;
 using System.Xml.Linq;
@@ -35,6 +36,7 @@ namespace BookStoreAPI.Services.Orders
         Task<IEnumerable<OrderViewModel>> GetUserOrdersAsync(OrderFiltersViewModel orderFilters);
         Task<InvoiceDataViewModel> GetUserOrderForInvoiceByOrderIdAsync(int orderId);
         Task<OrderDiscountCheckViewModel> ApplyDiscountCodeToOrderAsync(OrderDiscountCheckViewModel discountCode);
+        Task<OrderStatisticDetailsViewModel> GetMonthlyOrderStatisticsAsync(int month, int year);
     }
 
     public class OrderService
@@ -45,7 +47,8 @@ namespace BookStoreAPI.Services.Orders
                 IDiscountCodeService discountCodeService,
                 IBookItemService bookItemService,
                 IBookDiscountService bookDiscountService,
-                IStockAmountService stockAmountService) : IOrderService
+                IStockAmountService stockAmountService)
+                : IOrderService
     {
         public async Task<OrderDetailsViewModel> GetOrderByIdAsync(int orderId)
         {
@@ -345,7 +348,9 @@ namespace BookStoreAPI.Services.Orders
                     Quantity = (int)item.Quantity,
                     BruttoPrice = (decimal)item.SingleItemBruttoPrice,
                     TotalBruttoPrice = (decimal)(item.SingleItemBruttoPrice * (decimal)item.Quantity),
-                    OrderID = order.Id
+                    OrderID = order.Id,
+                    OriginalBruttoPrice = (decimal)item.OriginalItemBruttoPrice,
+                    IsDiscounted = item.IsDiscounted
                 });
                 bookItemsForStockUpdate.Add(new BookItemStockAmountUpdateViewModel() { BookItemId = item.BookItemID, Quantity = -(int)item.Quantity });
             }
@@ -435,12 +440,61 @@ namespace BookStoreAPI.Services.Orders
 
             return discountCode;
         }
+        public async Task<OrderStatisticDetailsViewModel> GetMonthlyOrderStatisticsAsync(int month, int year)
+        {
+            var order = await context.OrderItems
+                .Where(x => x.IsActive && x.CreationDate.Month == month && x.CreationDate.Year == year)
+                .Select(x => new OrderStatisticsViewModel()
+                {
+                    SoldQuantity = x.Quantity,
+                    GrossRevenue = x.TotalBruttoPrice,
+                    TotalDiscounts = x.IsDiscounted ? (x.OriginalBruttoPrice - x.BruttoPrice) : x.OriginalBruttoPrice,
+                    BookItemID = (int)x.BookItemID,
+                    CategoryIDs = x.BookItem.Book.BookCategories
+                                    .Where(y => y.IsActive)
+                                    .Select(x => x.CategoryID)
+                                    .ToList()
+                })
+                .ToListAsync();
+
+            var topBookItemIds = order
+                .GroupBy(x => x.BookItemID)
+                .OrderByDescending(g => g.Count())
+                .Select(g => new StatisticsBookItemsViewModel()
+                {
+                    BookItemId = g.Key,
+                    SoldQuantity = g.Sum(x => x.SoldQuantity),
+                    SoldPrice = g.Sum(x => x.GrossRevenue)
+                })
+                .ToList();
+
+            var topCategoryIds = order
+                .SelectMany(x => x.CategoryIDs)
+                .GroupBy(categoryId => categoryId)
+                .OrderByDescending(g => g.Count())
+                .Select(g => new StatisticsCategoriesViewModel()
+                {
+                    CategoryId = (int)g.Key,
+                    NumberOfAppearances = g.Count()
+                })
+                .ToList();
+
+            return new OrderStatisticDetailsViewModel()
+            {
+                SoldQuantity = order.Sum(x => x.SoldQuantity),
+                GrossRevenue = order.Sum(x => x.GrossRevenue),
+                TotalDiscounts = order.Sum(x => x.TotalDiscounts),
+                TopBookItemIds = topBookItemIds,
+                TopCategoryIds = topCategoryIds
+            };
+        }
         private async Task<List<OrderItemsListViewModel>> SetOriginalPriceForItems(List<OrderItemsListViewModel> cartItems)
         {
             var bookItems = await bookItemService.GetBookItemsFromOrderAsync(cartItems);
             foreach (var item in cartItems)
             {
                 item.SingleItemBruttoPrice = bookItems.Find(x => x.BookItemId == item.BookItemID).BookItemBruttoPrice;
+                item.OriginalItemBruttoPrice = item.SingleItemBruttoPrice;
             }
             return cartItems;
         }

@@ -13,6 +13,7 @@ namespace BookStoreAPI.Services.Addresses
     public interface IAddressService
     {
         Task<List<Address>> AddAddressesAsync(List<BaseAddressViewModel> addresses);
+        Task<Address> AddAddressesAsync(BaseAddressViewModel address);
         Task AddAddressesForOrderAsync(int orderId, List<BaseAddressViewModel> addresses);
         Task AddAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> addresses);
         Task UpdateAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> newAddresses);
@@ -55,6 +56,16 @@ namespace BookStoreAPI.Services.Addresses
 
             return newAddresses;
         }
+        public async Task<Address> AddAddressesAsync(BaseAddressViewModel address)
+        {
+            Address newAddress = new();
+            newAddress.CopyProperties(address);
+
+            await context.Address.AddAsync(newAddress);
+            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+
+            return newAddress;
+        }
         public async Task AddAddressesForOrderAsync(int orderId, List<BaseAddressViewModel> addresses)
         {
             if (addresses.Any())
@@ -95,14 +106,17 @@ namespace BookStoreAPI.Services.Addresses
         }
         public async Task UpdateAddressAsync(int addressId, BaseAddressViewModel newAddress)
         {
-            var oldAddress = await context.Address.Where(x => x.IsActive && x.Id == addressId).FirstOrDefaultAsync();
+            //var oldAddress = await context.Address.Where(x => x.IsActive && x.Id == addressId).FirstOrDefaultAsync();
 
-            if (oldAddress == null)
-            {
-                throw new BadRequestException("Wystąpił błąd podczas aktualizacji adresu.");
-            }
+            //if (oldAddress == null)
+            //{
+            //    throw new BadRequestException("Wystąpił błąd podczas aktualizacji adresu.");
+            //}
 
-            oldAddress.CopyProperties(newAddress);
+            //oldAddress.CopyProperties(newAddress);
+            await AddAddressesAsync(newAddress);
+            await DeactivateAddressAsync(addressId);
+
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
         public async Task UpdateAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> newAddresses)

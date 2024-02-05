@@ -34,7 +34,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPost]
-        [Authorize(Roles = UserRoles.Employee)]
+        //[Authorize(Roles = UserRoles.Employee)]
         public async Task<IActionResult> CreateNewsAsync(NewsPostCMSViewModel newsModel)
         {
             await newsService.CreateNewsAsync(newsModel);
@@ -42,7 +42,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = UserRoles.Employee)]
+        //[Authorize(Roles = UserRoles.Employee)]
         public async Task<IActionResult> EditNewsAsync(int id, NewsPostCMSViewModel newsModel)
         {
             await newsService.EditNewsAsync(id, newsModel);
@@ -50,7 +50,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpDelete]
-        [Authorize(Roles = UserRoles.Employee)]
+        //[Authorize(Roles = UserRoles.Employee)]
         public async Task<IActionResult> DeactivateNewsAsync(int id)
         {
             await newsService.DeactivateNewsAsync(id);

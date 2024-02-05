@@ -41,7 +41,7 @@ namespace BookStoreAPI.Services.Supplies
 
         public async Task UpdateSupplierAsync(int supplierId, SupplierPostViewModel supplierData)
         {
-            var address = await context.Address.Where(x => x.IsActive && x.Id == supplierData.Address.Id).FirstOrDefaultAsync();
+            var address = await context.Supplier.Where(x => x.IsActive && x.Id == supplierId).Select(x => x.Address).FirstOrDefaultAsync();
 
             if (address != null && !supplierData.Address.IsEqual(address))
             {

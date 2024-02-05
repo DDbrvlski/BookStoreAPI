@@ -126,6 +126,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                 {
                     var maxDiscount = applicableDiscounts.Max(x => x.PercentOfDiscount);
                     cartItem.SingleItemBruttoPrice = discountLogic.CalculateItemPriceWithDiscountCode((decimal)cartItem.SingleItemBruttoPrice, maxDiscount);
+                    cartItem.IsDiscounted = true;
                 }
             }
 

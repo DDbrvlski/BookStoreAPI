@@ -72,6 +72,7 @@ namespace BookStoreAPI.Services.Media
         public async Task DeactivateAllImagesForBookAsync(int? bookId)
         {
             var bookImages = await context.BookImages
+                .Include(x => x.Image)
                 .Where(x => x.BookID == bookId && x.IsActive == true)
                 .ToListAsync();
 
@@ -88,6 +89,7 @@ namespace BookStoreAPI.Services.Media
         public async Task DeactivateChosenImagesForBookAsync(int? bookId, List<int?> imageIds)
         {
             var bookImages = await context.BookImages
+                .Include(x => x.Image)
                 .Where(x => x.BookID == bookId && imageIds.Contains(x.ImageID) && x.IsActive == true)
                 .ToListAsync();
 

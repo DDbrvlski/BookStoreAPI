@@ -60,7 +60,7 @@ namespace BookStoreAPI.Services.PageElements
         }
         public async Task EditBannerAsync(int bannerId, BanerViewModel banerModel)
         {
-            var banner = await context.Banner.FirstAsync(x => x.IsActive && x.Id == bannerId);
+            var banner = await context.Banner.Include(x => x.Image).FirstAsync(x => x.IsActive && x.Id == bannerId);
             banner.CopyProperties(banerModel);
 
             if (banerModel.ImageURL != banner.Image.ImageURL)

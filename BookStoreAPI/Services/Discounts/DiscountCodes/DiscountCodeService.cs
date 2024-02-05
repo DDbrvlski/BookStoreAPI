@@ -121,6 +121,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
             foreach (var cartItem in cartItems)
             {
                 cartItem.SingleItemBruttoPrice = discountLogic.CalculateItemPriceWithDiscountCode((decimal)cartItem.SingleItemBruttoPrice, discount.PercentOfDiscount);
+                cartItem.IsDiscounted = true;
             }
 
             return cartItems;

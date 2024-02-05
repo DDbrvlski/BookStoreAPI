@@ -1,5 +1,5 @@
 ﻿using BookStoreData.Models.Accounts;
-using BookStoreData.Models.Basket;
+using BookStoreData.Models.CMS;
 using BookStoreData.Models.Customers;
 using BookStoreData.Models.Customers.AddressDictionaries;
 using BookStoreData.Models.Delivery;
@@ -34,8 +34,10 @@ namespace BookStoreData.Data
         //Accounts
         public DbSet<User> User { get; set; }
 
-        //Basket
-        public DbSet<BasketItem> BasketItem { get; set; }
+        //CMS
+        public DbSet<Statistics> Statistics { get; set; }
+        public DbSet<BookItemsStatistics> BookItemsStatistics { get; set; }
+        public DbSet<CategoriesStatistics> CategoriesStatistics { get; set; }
 
         //Customers
         public DbSet<City> City { get; set; }

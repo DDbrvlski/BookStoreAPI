@@ -1,6 +1,13 @@
-﻿using BookStoreData.Data;
+﻿using BookStoreAPI.Helpers;
+using BookStoreAPI.Infrastructure.Exceptions;
+using BookStoreAPI.Services.Orders;
+using BookStoreAPI.Services.Supplies;
+using BookStoreBusinessLogic.BusinessLogic.CMS;
+using BookStoreData.Data;
+using BookStoreData.Models.CMS;
 using BookStoreData.Models.Helpers;
 using BookStoreViewModels.ViewModels.CMS;
+using BookStoreViewModels.ViewModels.Statistics;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.CMS
@@ -10,15 +17,16 @@ namespace BookStoreAPI.Services.CMS
         Task<CMSWeeklySummaryViewModel> GetWeeklySummaryOfOrdersRentalsReservationsAsync();
     }
 
-    public class CMSService(BookStoreContext context) : ICMSService
+    public class CMSService
+        (BookStoreContext context) 
+        : ICMSService
     {
         public async Task<CMSWeeklySummaryViewModel> GetWeeklySummaryOfOrdersRentalsReservationsAsync()
         {
             return new CMSWeeklySummaryViewModel()
             {
                 NumberOfOrdersThisWeek = await GetNumberOfItemsThisWeek(context.Order),
-                NumberOfRentalsThisWeek = await GetNumberOfItemsThisWeek(context.Rental),
-                NumberOfReservationsThisWeek = 0
+                NumberOfRentalsThisWeek = await GetNumberOfItemsThisWeek(context.Rental)
             };
         }
 

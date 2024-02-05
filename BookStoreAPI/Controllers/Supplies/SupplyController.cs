@@ -31,7 +31,7 @@ namespace BookStoreAPI.Controllers.Supplies
         }
 
         [HttpPut("{supplyId}")]
-        public async Task<IActionResult> UpdateSupplyAsync(int supplyId, SupplyPostViewModel supplyData)
+        public async Task<IActionResult> UpdateSupplyAsync(int supplyId, SupplyPutViewModel supplyData)
         {
             await supplyService.UpdateSupplyAsync(supplyId, supplyData);
             return NoContent();

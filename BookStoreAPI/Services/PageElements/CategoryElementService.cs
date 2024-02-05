@@ -42,7 +42,7 @@ namespace BookStoreAPI.Services.PageElements
 
         public async Task EditCategoryElementAsync(int categoryElementId, CategoryElementViewModel categoryElementModel)
         {
-            var categoryElement = await context.CategoryElement.FirstAsync(x => x.IsActive && x.Id == categoryElementId);
+            var categoryElement = await context.CategoryElement.Include(x => x.Image).FirstAsync(x => x.IsActive && x.Id == categoryElementId);
             categoryElement.CopyProperties(categoryElementModel);
 
             if (categoryElementModel.ImageURL != categoryElement.Image.ImageURL)

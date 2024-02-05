@@ -9,6 +9,8 @@ namespace BookStoreData.Models.Orders
     public class OrderItems : BaseEntity
     {
         public int Quantity { get; set; }
+        public bool IsDiscounted { get; set; }
+        public decimal OriginalBruttoPrice { get; set; }
         public decimal BruttoPrice { get; set; }
         public decimal TotalBruttoPrice { get; set; }
 

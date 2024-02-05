@@ -30,16 +30,16 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditBannerAsync(int bannerId, BanerViewModel bannerModel)
+        public async Task<IActionResult> EditBannerAsync(int id, BanerViewModel bannerModel)
         {
-            await bannerService.EditBannerAsync(bannerId, bannerModel);
+            await bannerService.EditBannerAsync(id, bannerModel);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeactivateBannerAsync(int bannerId)
+        public async Task<IActionResult> DeactivateBannerAsync(int id)
         {
-            await bannerService.DeactivateBannerAsync(bannerId);
+            await bannerService.DeactivateBannerAsync(id);
             return NoContent();
         }
     }

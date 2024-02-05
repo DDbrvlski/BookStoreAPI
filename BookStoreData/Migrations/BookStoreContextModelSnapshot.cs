@@ -95,13 +95,16 @@ namespace BookStoreAPI.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("BookStoreData.Models.Basket.BasketItem", b =>
+            modelBuilder.Entity("BookStoreData.Models.CMS.BookItemsStatistics", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BookItemID")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
@@ -112,9 +115,97 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("SoldPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SoldQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StatisticsID")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("BasketItem");
+                    b.HasIndex("BookItemID");
+
+                    b.HasIndex("StatisticsID");
+
+                    b.ToTable("BookItemsStatistics");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.CMS.CategoriesStatistics", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("NumberOfAppearances")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StatisticsID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryID");
+
+                    b.HasIndex("StatisticsID");
+
+                    b.ToTable("CategoriesStatistics");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.CMS.Statistics", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("GrossExpenses")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("GrossRevenue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SoldQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalDiscounts")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Statistics");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Customers.Address", b =>
@@ -716,12 +807,18 @@ namespace BookStoreAPI.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDiscounted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("OrderID")
                         .IsRequired()
                         .HasColumnType("int");
+
+                    b.Property<decimal>("OriginalBruttoPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -2344,6 +2441,44 @@ namespace BookStoreAPI.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("BookStoreData.Models.CMS.BookItemsStatistics", b =>
+                {
+                    b.HasOne("BookStoreData.Models.Products.BookItems.BookItem", "BookItem")
+                        .WithMany()
+                        .HasForeignKey("BookItemID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookStoreData.Models.CMS.Statistics", "Statistics")
+                        .WithMany("BookItemsStatistics")
+                        .HasForeignKey("StatisticsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BookItem");
+
+                    b.Navigation("Statistics");
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.CMS.CategoriesStatistics", b =>
+                {
+                    b.HasOne("BookStoreData.Models.Products.Books.BookDictionaries.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookStoreData.Models.CMS.Statistics", "Statistics")
+                        .WithMany("CategoriesStatistics")
+                        .HasForeignKey("StatisticsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Statistics");
+                });
+
             modelBuilder.Entity("BookStoreData.Models.Customers.Address", b =>
                 {
                     b.HasOne("BookStoreData.Models.Customers.AddressDictionaries.AddressType", "AddressType")
@@ -2994,6 +3129,13 @@ namespace BookStoreAPI.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BookStoreData.Models.CMS.Statistics", b =>
+                {
+                    b.Navigation("BookItemsStatistics");
+
+                    b.Navigation("CategoriesStatistics");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Customers.Customer", b =>

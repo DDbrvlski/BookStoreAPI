@@ -19,7 +19,8 @@ namespace BookStoreAPI.Services.Supplies
         Task<SupplyDetailsViewModel> GetSupplyAsync(int supplyId);
         Task AddNewSupplyAsync(SupplyPostViewModel supplyData);
         Task DeactivateSupplyAsync(int supplyId);
-        Task UpdateSupplyAsync(int supplyId, SupplyPostViewModel supplyData);
+        Task UpdateSupplyAsync(int supplyId, SupplyPutViewModel supplyData);
+        Task<SupplyStatisticsViewModel> GetMonthlySupplyGrossExpensesAsync(int month, int year);
     }
 
     public class SupplyService
@@ -50,6 +51,9 @@ namespace BookStoreAPI.Services.Supplies
                 .Select(x => new SupplyDetailsViewModel()
                 {
                     Id = x.Id,
+                    DeliveryDate = x.DeliveryDate,
+                    DeliveryStatusId = (int)x.DeliveryStatusID,
+                    DeliveryStatusName = x.DeliveryStatus.Name,
                     SupplierData = new SupplierViewModel()
                     {
                         Id = x.Supplier.Id,
@@ -153,7 +157,7 @@ namespace BookStoreAPI.Services.Supplies
                 }
             }
         }
-        public async Task UpdateSupplyAsync(int supplyId, SupplyPostViewModel supplyData)
+        public async Task UpdateSupplyAsync(int supplyId, SupplyPutViewModel supplyData)
         {
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -205,6 +209,19 @@ namespace BookStoreAPI.Services.Supplies
                     throw new BadRequestException("Wystąpił błąd podczas usuwania dostawy.");
                 }
             }
+        }
+        public async Task<SupplyStatisticsViewModel> GetMonthlySupplyGrossExpensesAsync(int month, int year)
+        {
+            var supplyStats = await context.SupplyGoods
+                .Where(x => x.IsActive && x.CreationDate.Month == month && x.CreationDate.Year == year)
+                .GroupBy(x => 1)
+                .Select(group => new SupplyStatisticsViewModel()
+                {
+                    GrossExpenses = group.Sum(y => y.BruttoPrice * y.Quantity)
+                })
+                .FirstOrDefaultAsync();
+
+            return supplyStats ?? new SupplyStatisticsViewModel();
         }
     }
 }
