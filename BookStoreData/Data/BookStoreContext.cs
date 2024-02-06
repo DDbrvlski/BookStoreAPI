@@ -2,8 +2,6 @@
 using BookStoreData.Models.CMS;
 using BookStoreData.Models.Customers;
 using BookStoreData.Models.Customers.AddressDictionaries;
-using BookStoreData.Models.Delivery;
-using BookStoreData.Models.Delivery.Dictionaries;
 using BookStoreData.Models.Media;
 using BookStoreData.Models.Notifications;
 using BookStoreData.Models.Orders;
@@ -48,10 +46,6 @@ namespace BookStoreData.Data
         public DbSet<CustomerHistory> CustomerHistory { get; set; }
         public DbSet<CustomerAddress> CustomerAddress { get; set; }
 
-        //Delivery
-        public DbSet<ShippingStatus> ShippingStatus { get; set; }
-        public DbSet<Shipping> Shipping { get; set; }
-
         //Media
         public DbSet<Images> Images { get; set; }
 
@@ -87,7 +81,6 @@ namespace BookStoreData.Data
         public DbSet<Discount> Discount { get; set; }
         public DbSet<DiscountCode> DiscountCode { get; set; }
         public DbSet<RecommendedBooks> RecommendedBooks { get; set; }
-        public DbSet<Reservations> Reservations { get; set; }
         public DbSet<StockAmount> StockAmount { get; set; }
         public DbSet<UserRecommendedBooks> UserRecommendedBooks { get; set; }
         public DbSet<BookItemReview> BookItemReview { get; set; }
@@ -126,7 +119,7 @@ namespace BookStoreData.Data
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    optionsBuilder
-        //    .UseLoggerFactory(MyLoggerFactory); // Dodaj to
+        //    .UseLoggerFactory(MyLoggerFactory);
         //}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -144,6 +137,12 @@ namespace BookStoreData.Data
                 .HasForeignKey(b => b.LanguageID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.CustomerHistory)
+                .WithMany()
+                .HasForeignKey(o => o.CustomerHistoryID)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Book>()
                 .HasOne(b => b.OriginalLanguage)
                 .WithMany()
@@ -152,7 +151,7 @@ namespace BookStoreData.Data
 
             modelBuilder.Entity<User>()
                 .Property(u => u.CustomerID)
-                .IsRequired(false);
+                .IsRequired(true);
 
             modelBuilder.Entity<BookItem>()
                 .Property(u => u.TranslatorID)

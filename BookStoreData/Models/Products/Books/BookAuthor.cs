@@ -11,7 +11,7 @@ namespace BookStoreData.Models.Products.Books
         //Author
         [Required(ErrorMessage = "Autor jest wymagany.")]
         [Display(Name = "Autor")]
-        public int? AuthorID { get; set; }
+        public int AuthorID { get; set; }
 
         [ForeignKey("AuthorID")]
         [JsonIgnore]
@@ -20,7 +20,7 @@ namespace BookStoreData.Models.Products.Books
         //Book
         [Required(ErrorMessage = "Książka jest wymagana.")]
         [Display(Name = "Książka")]
-        public int? BookID { get; set; }
+        public int BookID { get; set; }
 
         [ForeignKey("BookID")]
         [JsonIgnore]

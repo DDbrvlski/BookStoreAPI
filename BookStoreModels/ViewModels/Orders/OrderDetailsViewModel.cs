@@ -12,7 +12,6 @@ namespace BookStoreViewModels.ViewModels.Orders
         public DeliveryMethodViewModel? DeliveryMethod { get; set; }
         public OrderStatusViewModel? OrderStatus { get; set; }
         public PaymentDetailsViewModel? Payment { get; set; }
-        //public ShippingDetailsViewModel? Shipping { get; set; }
         public CustomerShortDetailsViewModel? Customer { get; set; }
 
         public List<OrderItemDetailsViewModel> OrderItems { get; set; }

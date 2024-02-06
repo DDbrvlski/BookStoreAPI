@@ -9,9 +9,9 @@ namespace BookStoreData.Models.PageContent
     public class News : BaseEntity
     {
         #region Properties
-        public string? AuthorName { get; set; }
-        public string? Topic { get; set; }
-        public string? Content { get; set; }
+        public string AuthorName { get; set; }
+        public string Topic { get; set; }
+        public string Content { get; set; }
         #endregion
         #region Foreign Keys
         //Image

@@ -19,7 +19,6 @@ using BookStoreAPI.Services.Orders;
 using BookStoreAPI.Services.PageElements;
 using BookStoreAPI.Services.Payments;
 using BookStoreAPI.Services.Rentals;
-using BookStoreAPI.Services.Reservation;
 using BookStoreAPI.Services.Reviews;
 using BookStoreAPI.Services.Statistic;
 using BookStoreAPI.Services.Stock;
@@ -31,7 +30,6 @@ using BookStoreBusinessLogic.BusinessLogic.CMS;
 using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
-using BookStoreData.Models.Orders;
 using BookStoreViewModels.ViewModels.Accounts.Account;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -41,9 +39,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
-using QuestPDF.Previewer;
 using System.Text;
 
 namespace BookStoreAPI
@@ -85,7 +81,6 @@ namespace BookStoreAPI
             builder.Services.AddTransient<ISupplyGoodsService, SupplyGoodsService>();
             builder.Services.AddTransient<IPaymentService, PaymentService>();
             builder.Services.AddTransient<IBookReviewLogic, BookReviewLogic>();
-            builder.Services.AddTransient<IReservationService, ReservationService>();
             builder.Services.AddTransient<ICMSService, CMSService>();
             builder.Services.AddTransient<IDiscountLogic, DiscountLogic>();
             builder.Services.AddTransient<IOrderService, OrderService>();

@@ -11,7 +11,7 @@ namespace BookStoreData.Models.Products.Books
         //Category
         [Required(ErrorMessage = "Kategoria jest wymagana.")]
         [Display(Name = "Kategoria")]
-        public int? CategoryID { get; set; }
+        public int CategoryID { get; set; }
 
         [ForeignKey("CategoryID")]
         [JsonIgnore]
@@ -20,7 +20,7 @@ namespace BookStoreData.Models.Products.Books
         //Book
         [Required(ErrorMessage = "Książka jest wymagana.")]
         [Display(Name = "Książka")]
-        public int? BookID { get; set; }
+        public int BookID { get; set; }
 
         [ForeignKey("BookID")]
         [JsonIgnore]

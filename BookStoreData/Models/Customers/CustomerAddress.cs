@@ -9,7 +9,7 @@ namespace BookStoreData.Models.Customers
         //Customer
         [Required(ErrorMessage = "Klient jest wymagany.")]
         [Display(Name = "Klient")]
-        public int? CustomerID { get; set; }
+        public int CustomerID { get; set; }
 
         [ForeignKey("CustomerID")]
         public virtual Customer Customer { get; set; }
@@ -17,7 +17,7 @@ namespace BookStoreData.Models.Customers
         //Address
         [Required(ErrorMessage = "Adres jest wymagany.")]
         [Display(Name = "Adres")]
-        public int? AddressID { get; set; }
+        public int AddressID { get; set; }
 
         [ForeignKey("AddressID")]
         public virtual Address Address { get; set; }

@@ -2,7 +2,6 @@
 using BookStoreViewModels.ViewModels.Helpers;
 using BookStoreViewModels.ViewModels.Orders.Dictionaries;
 using BookStoreViewModels.ViewModels.Payments;
-using BookStoreViewModels.ViewModels.Shippings;
 
 namespace BookStoreViewModels.ViewModels.Orders
 {
@@ -12,7 +11,6 @@ namespace BookStoreViewModels.ViewModels.Orders
         public DeliveryMethodViewModel? DeliveryMethod { get; set; }
         public OrderStatusViewModel? OrderStatus { get; set; }
         public PaymentDetailsViewModel? Payment { get; set; }
-        public ShippingDetailsViewModel? Shipping { get; set; }
         public CustomerShortDetailsViewModel? Customer { get; set; }
 
         public List<OrderItemDetailsViewModel>? ListOfOrderItems { get; set; }

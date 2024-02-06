@@ -17,7 +17,7 @@ namespace BookStoreData.Models.Transactions
         //PaymentMethod
         [Required(ErrorMessage = "Metoda płatności jest wymagana.")]
         [Display(Name = "Metoda płatności")]
-        public int? PaymentMethodID { get; set; }
+        public int PaymentMethodID { get; set; }
 
         [ForeignKey("PaymentMethodID")]
         [JsonIgnore]
@@ -26,7 +26,7 @@ namespace BookStoreData.Models.Transactions
         //TransactionStatus
         [Required(ErrorMessage = "Status transakcji jest wymagany.")]
         [Display(Name = "Status transakcji")]
-        public int? TransactionStatusID { get; set; }
+        public int TransactionStatusID { get; set; }
 
         [ForeignKey("TransactionStatusID")]
         [JsonIgnore]

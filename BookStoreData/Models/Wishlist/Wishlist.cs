@@ -12,11 +12,11 @@ namespace BookStoreData.Models.Wishlist
         public Guid PublicIdentifier { get; set; }
         public bool IsPublic { get; set; } = true;
         [Display(Name = "Klient")]
-        public int? CustomerID { get; set; }
+        public int CustomerID { get; set; }
 
         [ForeignKey("CustomerID")]
         [JsonIgnore]
-        public virtual Customer? Customer { get; set; }
+        public virtual Customer Customer { get; set; }
 
 
         [JsonIgnore]

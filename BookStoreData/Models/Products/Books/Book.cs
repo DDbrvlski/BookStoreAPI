@@ -21,16 +21,16 @@ namespace BookStoreData.Models.Products.Books
         //OriginalLanguage
         [Required(ErrorMessage = "Oryginalny język jest wymagany.")]
         [Display(Name = "Oryginalny język")]
-        public int? OriginalLanguageID { get; set; }
+        public int OriginalLanguageID { get; set; }
 
         [ForeignKey("OriginalLanguageID")]
         [JsonIgnore]
-        public virtual Language? OriginalLanguage { get; set; }
+        public virtual Language OriginalLanguage { get; set; }
 
         //Publisher
         [Required(ErrorMessage = "Wydawca jest wymagany.")]
         [Display(Name = "Wydawca")]
-        public int? PublisherID { get; set; }
+        public int PublisherID { get; set; }
 
         [ForeignKey("PublisherID")]
         [JsonIgnore]

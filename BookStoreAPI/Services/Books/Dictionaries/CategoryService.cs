@@ -8,14 +8,14 @@ namespace BookStoreAPI.Services.Books.Dictionaries
 {
     public interface ICategoryService
     {
-        Task AddCategoriesForBookAsync(BookPostViewModel book, List<int?>? categoryIds = null);
+        Task AddCategoriesForBookAsync(BookPostViewModel book, List<int>? categoryIds = null);
         Task UpdateCategoriesForBookAsync(BookPostViewModel book);
         Task DeactivateAllCategoriesForBookAsync(int? bookId);
-        Task DeactivateChosenCategoriesForBookAsync(int? bookId, List<int?> categoryIds);
+        Task DeactivateChosenCategoriesForBookAsync(int? bookId, List<int> categoryIds);
     }
     public class CategoryService(BookStoreContext context) : ICategoryService
     {
-        public async Task AddCategoriesForBookAsync(BookPostViewModel book, List<int?>? categoryIds = null)
+        public async Task AddCategoriesForBookAsync(BookPostViewModel book, List<int>? categoryIds = null)
         {
             //Reużywalność funkcji dla dodawania nowych kategorii i aktualizowania
             if (categoryIds == null)
@@ -39,7 +39,7 @@ namespace BookStoreAPI.Services.Books.Dictionaries
 
         public async Task UpdateCategoriesForBookAsync(BookPostViewModel book)
         {
-            List<int?> categoryIds = book.ListOfBookCategories.Select(x => x.Id).ToList();
+            List<int> categoryIds = book.ListOfBookCategories.Select(x => x.Id).ToList();
 
             if (categoryIds.Any())
             {
@@ -80,7 +80,7 @@ namespace BookStoreAPI.Services.Books.Dictionaries
             }
         }
 
-        public async Task DeactivateChosenCategoriesForBookAsync(int? bookId, List<int?> categoryIds)
+        public async Task DeactivateChosenCategoriesForBookAsync(int? bookId, List<int> categoryIds)
         {
             var categoriesToDeactivate = await context.BookCategory
                 .Where(x => x.BookID == bookId && categoryIds.Contains(x.CategoryID) && x.IsActive == true)

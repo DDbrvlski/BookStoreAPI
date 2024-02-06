@@ -153,7 +153,14 @@ namespace BookStoreAPI.Services.Orders
                                 Name = z.Author.Name,
                                 Surname = z.Author.Surname,
                             }).ToList()
-                    }).ToList()
+                    }).ToList(),
+                    CustomerDetails = new CustomerShortDetailsViewModel()
+                    {
+                        Id = x.CustomerID,
+                        Name = x.CustomerHistory.Name,
+                        Surname = x.CustomerHistory.Surname,
+                        Email = x.CustomerHistory.Email,
+                    }
                 }).ToListAsync();
         }
         public async Task<OrderDetailsViewModel> GetUserOrderByIdAsync(int orderId)
@@ -308,7 +315,7 @@ namespace BookStoreAPI.Services.Orders
 
             var payment = await paymentService
                 .CreateNewPayment
-                ((int)orderModel.PaymentMethodID,
+                (orderModel.PaymentMethodID,
                 totalOrderBruttoPrice);
 
             var customerHistory = await context.CustomerHistory.FirstOrDefaultAsync(x => x.IsActive && x.CustomerID == customer.Id);
@@ -449,7 +456,7 @@ namespace BookStoreAPI.Services.Orders
                     SoldQuantity = x.Quantity,
                     GrossRevenue = x.TotalBruttoPrice,
                     TotalDiscounts = x.IsDiscounted ? (x.OriginalBruttoPrice - x.BruttoPrice) : x.OriginalBruttoPrice,
-                    BookItemID = (int)x.BookItemID,
+                    BookItemID = x.BookItemID,
                     CategoryIDs = x.BookItem.Book.BookCategories
                                     .Where(y => y.IsActive)
                                     .Select(x => x.CategoryID)

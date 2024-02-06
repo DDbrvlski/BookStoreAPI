@@ -8,8 +8,8 @@ namespace BookStoreData.Models.PageContent
 {
     public class Banner : BaseEntity
     {
-        public string? Title { get; set; }
-        public string? Path { get; set; }
+        public string Title { get; set; }
+        public string Path { get; set; }
         #region Foreign Keys
         //Image
         [Display(Name = "Zdjęcie")]

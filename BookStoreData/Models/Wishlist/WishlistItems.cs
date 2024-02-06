@@ -10,17 +10,17 @@ namespace BookStoreData.Models.Wishlist
     public class WishlistItems : BaseEntity
     {
         [Display(Name = "Książka")]
-        public int? BookItemID { get; set; }
+        public int BookItemID { get; set; }
 
         [ForeignKey("BookItemID")]
         [JsonIgnore]
-        public virtual BookItem? BookItem { get; set; }
+        public virtual BookItem BookItem { get; set; }
 
         [Display(Name = "Wishlista")]
-        public int? WishlistID { get; set; }
+        public int WishlistID { get; set; }
 
         [ForeignKey("WishlistID")]
         [JsonIgnore]
-        public virtual Wishlist? Wishlist { get; set; }
+        public virtual Wishlist Wishlist { get; set; }
     }
 }

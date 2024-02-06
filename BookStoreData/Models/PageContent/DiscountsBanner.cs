@@ -8,8 +8,8 @@ namespace BookStoreData.Models.PageContent
 {
     public class DiscountsBanner : BaseEntity
     {
-        public string? Header { get; set; }
-        public string? ButtonTitle { get; set; }
+        public string Header { get; set; }
+        public string ButtonTitle { get; set; }
 
         #region Foreign Keys
         //Image

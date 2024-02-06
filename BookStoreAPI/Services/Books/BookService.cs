@@ -1,11 +1,9 @@
 ﻿using BookStoreAPI.Helpers;
-using BookStoreAPI.Helpers.BaseService;
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Books.Dictionaries;
 using BookStoreAPI.Services.Media;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.Books;
-using BookStoreViewModels.ViewModels.Helpers;
 using BookStoreViewModels.ViewModels.Media.Images;
 using BookStoreViewModels.ViewModels.Products.Books;
 using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
@@ -145,11 +143,10 @@ namespace BookStoreAPI.Services.Books
                 try
                 {
                     var bookToUpdate = await context.Book.FirstOrDefaultAsync(x => x.Id == bookId);
+                    bookToUpdate.CopyProperties(bookPost);
 
                     if(bookToUpdate != null)
                     {
-                        bookToUpdate.IsActive = false;
-                        bookPost.Id = bookId;
                         if (!bookPost.ListOfBookAuthors.IsNullOrEmpty())
                         {
                             await authorService.UpdateAuthorsForBookAsync(bookPost);

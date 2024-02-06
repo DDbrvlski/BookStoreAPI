@@ -36,7 +36,6 @@ namespace BookStoreData.Models.Products.BookItems
         public virtual Translator Translator { get; set; }
 
         //Language
-        [Required(ErrorMessage = "Język jest wymagany.")]
         [Display(Name = "Język")]
         public int? LanguageID { get; set; }
 
@@ -47,7 +46,7 @@ namespace BookStoreData.Models.Products.BookItems
         //Book
         [Required(ErrorMessage = "Książka jest wymagana.")]
         [Display(Name = "Książka")]
-        public int? BookID { get; set; }
+        public int BookID { get; set; }
 
         [ForeignKey("BookID")]
         [JsonIgnore]
@@ -72,7 +71,7 @@ namespace BookStoreData.Models.Products.BookItems
         //Form
         [Required(ErrorMessage = "Forma jest wymagana.")]
         [Display(Name = "Forma")]
-        public int? FormID { get; set; }
+        public int FormID { get; set; }
 
         [ForeignKey("FormID")]
         [JsonIgnore]
@@ -81,7 +80,7 @@ namespace BookStoreData.Models.Products.BookItems
         //Availability
         [Required(ErrorMessage = "Dostępność jest wymagana.")]
         [Display(Name = "Dostępność")]
-        public int? AvailabilityID { get; set; }
+        public int AvailabilityID { get; set; }
 
         [ForeignKey("AvailabilityID")]
         [JsonIgnore]

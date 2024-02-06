@@ -55,7 +55,7 @@ namespace BookStoreAPI.Services.BookItems
                     BookName = element.Book.Title,
                     BruttoPrice = element.NettoPrice * (1 + (decimal)(element.Tax / 100.0f)),
                     NettoPrice = element.NettoPrice,
-                    VAT = element.Tax,
+                    Tax = element.Tax,
                     ISBN = element.ISBN,
                     Pages = element.Pages,
                     PublishingDate = element.PublishingDate,

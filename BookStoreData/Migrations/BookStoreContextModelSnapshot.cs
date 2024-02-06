@@ -34,7 +34,7 @@ namespace BookStoreAPI.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CustomerID")
+                    b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -216,13 +216,13 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AddressTypeID")
+                    b.Property<int>("AddressTypeID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CityID")
+                    b.Property<int>("CityID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CountryID")
+                    b.Property<int>("CountryID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -238,12 +238,15 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Postcode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Street")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StreetNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -301,6 +304,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -326,6 +330,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -345,6 +350,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -357,12 +363,14 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -378,8 +386,7 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AddressID")
-                        .IsRequired()
+                    b.Property<int>("AddressID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -388,8 +395,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<int?>("CustomerHistoryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CustomerID")
-                        .IsRequired()
+                    b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -420,11 +426,11 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CustomerID")
-                        .IsRequired()
+                    b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -434,12 +440,14 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -447,71 +455,6 @@ namespace BookStoreAPI.Migrations
                     b.HasIndex("CustomerID");
 
                     b.ToTable("CustomerHistory");
-                });
-
-            modelBuilder.Entity("BookStoreData.Models.Delivery.Dictionaries.ShippingStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ShippingStatus");
-                });
-
-            modelBuilder.Entity("BookStoreData.Models.Delivery.Shipping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AddressID")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeliveryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ShippingDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ShippingStatusID")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AddressID");
-
-                    b.HasIndex("ShippingStatusID");
-
-                    b.ToTable("Shipping");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Media.Images", b =>
@@ -526,6 +469,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImageURL")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -534,10 +478,11 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Position")
+                    b.Property<int>("Position")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -554,15 +499,18 @@ namespace BookStoreAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClientName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -585,6 +533,7 @@ namespace BookStoreAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationDate")
@@ -593,7 +542,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("IsSent")
+                    b.Property<bool>("IsSent")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -603,6 +552,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -622,6 +572,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -653,6 +604,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
@@ -681,6 +633,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -702,12 +655,10 @@ namespace BookStoreAPI.Migrations
                     b.Property<int?>("CustomerHistoryID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CustomerID")
-                        .IsRequired()
+                    b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DeliveryMethodID")
-                        .IsRequired()
+                    b.Property<int>("DeliveryMethodID")
                         .HasColumnType("int");
 
                     b.Property<int?>("DiscountCodeID")
@@ -722,15 +673,10 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("OrderStatusID")
-                        .IsRequired()
+                    b.Property<int>("OrderStatusID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PaymentID")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ShippingID")
+                    b.Property<int>("PaymentID")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -747,8 +693,6 @@ namespace BookStoreAPI.Migrations
 
                     b.HasIndex("PaymentID");
 
-                    b.HasIndex("ShippingID");
-
                     b.ToTable("Order");
                 });
 
@@ -760,8 +704,7 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AddressID")
-                        .IsRequired()
+                    b.Property<int>("AddressID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -773,8 +716,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("OrderID")
-                        .IsRequired()
+                    b.Property<int>("OrderID")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -794,8 +736,7 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookItemID")
-                        .IsRequired()
+                    b.Property<int>("BookItemID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("BruttoPrice")
@@ -813,8 +754,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("OrderID")
-                        .IsRequired()
+                    b.Property<int>("OrderID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("OriginalBruttoPrice")
@@ -856,9 +796,11 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Path")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -876,10 +818,11 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategoryID")
+                    b.Property<int>("CategoryID")
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationDate")
@@ -892,18 +835,21 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Logo")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Path")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Position")
+                    b.Property<int>("Position")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -924,12 +870,14 @@ namespace BookStoreAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ButtonTitle")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Header")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ImageID")
@@ -974,6 +922,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Position")
@@ -995,7 +944,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("FooterColumnID")
+                    b.Property<int>("FooterColumnID")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -1005,15 +954,18 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Path")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Position")
+                    b.Property<int>("Position")
                         .HasColumnType("int");
 
                     b.Property<string>("URL")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1041,6 +993,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Path")
@@ -1064,9 +1017,11 @@ namespace BookStoreAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AuthorName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationDate")
@@ -1082,6 +1037,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Topic")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1102,15 +1058,13 @@ namespace BookStoreAPI.Migrations
                     b.Property<int?>("BookId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BookItemID")
-                        .IsRequired()
+                    b.Property<int>("BookItemID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DiscountID")
-                        .IsRequired()
+                    b.Property<int>("DiscountID")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -1138,12 +1092,10 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AvailabilityID")
-                        .IsRequired()
+                    b.Property<int>("AvailabilityID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BookID")
-                        .IsRequired()
+                    b.Property<int>("BookID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -1158,8 +1110,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<int?>("FileFormatID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FormID")
-                        .IsRequired()
+                    b.Property<int>("FormID")
                         .HasColumnType("int");
 
                     b.Property<string>("ISBN")
@@ -1236,6 +1187,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1261,6 +1213,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1286,6 +1239,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1311,6 +1265,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1326,8 +1281,7 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookItemID")
-                        .IsRequired()
+                    b.Property<int>("BookItemID")
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
@@ -1336,8 +1290,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CustomerID")
-                        .IsRequired()
+                    b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -1346,8 +1299,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ScoreID")
-                        .IsRequired()
+                    b.Property<int>("ScoreID")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1447,8 +1399,7 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookItemID")
-                        .IsRequired()
+                    b.Property<int>("BookItemID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -1470,43 +1421,6 @@ namespace BookStoreAPI.Migrations
                     b.ToTable("RecommendedBooks");
                 });
 
-            modelBuilder.Entity("BookStoreData.Models.Products.BookItems.Reservations", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("BookItemID")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookItemID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("Reservations");
-                });
-
             modelBuilder.Entity("BookStoreData.Models.Products.BookItems.StockAmount", b =>
                 {
                     b.Property<int>("Id")
@@ -1518,8 +1432,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BookItemID")
-                        .IsRequired()
+                    b.Property<int>("BookItemID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -1546,8 +1459,7 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookItemID")
-                        .IsRequired()
+                    b.Property<int>("BookItemID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -1596,12 +1508,10 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("OriginalLanguageID")
-                        .IsRequired()
+                    b.Property<int>("OriginalLanguageID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PublisherID")
-                        .IsRequired()
+                    b.Property<int>("PublisherID")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -1626,12 +1536,10 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AuthorID")
-                        .IsRequired()
+                    b.Property<int>("AuthorID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BookID")
-                        .IsRequired()
+                    b.Property<int>("BookID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -1660,12 +1568,10 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookID")
-                        .IsRequired()
+                    b.Property<int>("BookID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CategoryID")
-                        .IsRequired()
+                    b.Property<int>("CategoryID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -1708,6 +1614,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
@@ -1737,6 +1644,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1762,6 +1670,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1790,6 +1699,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1840,6 +1750,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
@@ -1859,15 +1770,13 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookID")
-                        .IsRequired()
+                    b.Property<int>("BookID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ImageID")
-                        .IsRequired()
+                    b.Property<int>("ImageID")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -1893,15 +1802,13 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookItemID")
-                        .IsRequired()
+                    b.Property<int>("BookItemID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CustomerID")
-                        .IsRequired()
+                    b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
@@ -1913,16 +1820,13 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PaymentMethodID")
-                        .IsRequired()
+                    b.Property<int>("PaymentMethodID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RentalStatusID")
-                        .IsRequired()
+                    b.Property<int>("RentalStatusID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RentalTypeID")
-                        .IsRequired()
+                    b.Property<int>("RentalTypeID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -1961,6 +1865,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1989,6 +1894,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
@@ -2017,6 +1923,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -2032,8 +1939,7 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AddressID")
-                        .IsRequired()
+                    b.Property<int>("AddressID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -2050,6 +1956,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -2077,8 +1984,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("DeliveryDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DeliveryStatusID")
-                        .IsRequired()
+                    b.Property<int>("DeliveryStatusID")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -2087,12 +1993,10 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PaymentID")
-                        .IsRequired()
+                    b.Property<int>("PaymentID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SupplierID")
-                        .IsRequired()
+                    b.Property<int>("SupplierID")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -2162,6 +2066,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -2187,6 +2092,7 @@ namespace BookStoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -2217,12 +2123,10 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PaymentMethodID")
-                        .IsRequired()
+                    b.Property<int>("PaymentMethodID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TransactionStatusID")
-                        .IsRequired()
+                    b.Property<int>("TransactionStatusID")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -2245,7 +2149,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CustomerID")
+                    b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -2275,7 +2179,7 @@ namespace BookStoreAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookItemID")
+                    b.Property<int>("BookItemID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -2287,7 +2191,7 @@ namespace BookStoreAPI.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("WishlistID")
+                    b.Property<int>("WishlistID")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -2436,7 +2340,9 @@ namespace BookStoreAPI.Migrations
                 {
                     b.HasOne("BookStoreData.Models.Customers.Customer", "Customer")
                         .WithMany()
-                        .HasForeignKey("CustomerID");
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Customer");
                 });
@@ -2483,15 +2389,21 @@ namespace BookStoreAPI.Migrations
                 {
                     b.HasOne("BookStoreData.Models.Customers.AddressDictionaries.AddressType", "AddressType")
                         .WithMany()
-                        .HasForeignKey("AddressTypeID");
+                        .HasForeignKey("AddressTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BookStoreData.Models.Customers.AddressDictionaries.City", "City")
                         .WithMany()
-                        .HasForeignKey("CityID");
+                        .HasForeignKey("CityID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BookStoreData.Models.Customers.AddressDictionaries.Country", "Country")
                         .WithMany()
-                        .HasForeignKey("CountryID");
+                        .HasForeignKey("CountryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AddressType");
 
@@ -2534,30 +2446,12 @@ namespace BookStoreAPI.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("BookStoreData.Models.Delivery.Shipping", b =>
-                {
-                    b.HasOne("BookStoreData.Models.Customers.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookStoreData.Models.Delivery.Dictionaries.ShippingStatus", "ShippingStatus")
-                        .WithMany()
-                        .HasForeignKey("ShippingStatusID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Address");
-
-                    b.Navigation("ShippingStatus");
-                });
-
             modelBuilder.Entity("BookStoreData.Models.Orders.Order", b =>
                 {
                     b.HasOne("BookStoreData.Models.Customers.CustomerHistory", "CustomerHistory")
                         .WithMany()
-                        .HasForeignKey("CustomerHistoryID");
+                        .HasForeignKey("CustomerHistoryID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BookStoreData.Models.Customers.Customer", "Customer")
                         .WithMany()
@@ -2587,10 +2481,6 @@ namespace BookStoreAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookStoreData.Models.Delivery.Shipping", "Shipping")
-                        .WithMany()
-                        .HasForeignKey("ShippingID");
-
                     b.Navigation("Customer");
 
                     b.Navigation("CustomerHistory");
@@ -2602,8 +2492,6 @@ namespace BookStoreAPI.Migrations
                     b.Navigation("OrderStatus");
 
                     b.Navigation("Payment");
-
-                    b.Navigation("Shipping");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Orders.OrderAddress", b =>
@@ -2657,7 +2545,9 @@ namespace BookStoreAPI.Migrations
                 {
                     b.HasOne("BookStoreData.Models.Products.Books.BookDictionaries.Category", "Category")
                         .WithMany()
-                        .HasForeignKey("CategoryID");
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BookStoreData.Models.Media.Images", "Image")
                         .WithMany()
@@ -2681,7 +2571,9 @@ namespace BookStoreAPI.Migrations
                 {
                     b.HasOne("BookStoreData.Models.PageContent.FooterColumns", "FooterColumn")
                         .WithMany()
-                        .HasForeignKey("FooterColumnID");
+                        .HasForeignKey("FooterColumnID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("FooterColumn");
                 });
@@ -2810,25 +2702,6 @@ namespace BookStoreAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("BookItem");
-                });
-
-            modelBuilder.Entity("BookStoreData.Models.Products.BookItems.Reservations", b =>
-                {
-                    b.HasOne("BookStoreData.Models.Products.BookItems.BookItem", "BookItem")
-                        .WithMany()
-                        .HasForeignKey("BookItemID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookStoreData.Models.Accounts.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BookItem");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BookStoreData.Models.Products.BookItems.StockAmount", b =>
@@ -3060,7 +2933,9 @@ namespace BookStoreAPI.Migrations
                 {
                     b.HasOne("BookStoreData.Models.Customers.Customer", "Customer")
                         .WithMany()
-                        .HasForeignKey("CustomerID");
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Customer");
                 });
@@ -3069,11 +2944,15 @@ namespace BookStoreAPI.Migrations
                 {
                     b.HasOne("BookStoreData.Models.Products.BookItems.BookItem", "BookItem")
                         .WithMany()
-                        .HasForeignKey("BookItemID");
+                        .HasForeignKey("BookItemID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BookStoreData.Models.Wishlist.Wishlist", "Wishlist")
                         .WithMany("WishlistItems")
-                        .HasForeignKey("WishlistID");
+                        .HasForeignKey("WishlistID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("BookItem");
 

@@ -98,6 +98,7 @@ namespace BookStoreAPI.Services.Supplies
                     Name = x.Name,
                     Email = x.Email,
                     PhoneNumber = x.PhoneNumber,
+                    AddressTypeName = x.Address.AddressType.Name,
                     SupplierAddress = new AddressDetailsViewModel()
                     {
                         Id = x.Address.Id,

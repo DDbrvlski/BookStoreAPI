@@ -1,3 +1,11 @@
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.csproj.AssemblyReference.cache
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\MvcTestingAppManifest.json
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.AssemblyInfoInputs.cache
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.AssemblyInfo.cs
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.csproj.CoreCompileInputs.cache
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.sourcelink.json
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\appsettings.json
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\MvcTestingAppManifest.json
@@ -553,15 +561,6 @@ C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\D
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreBusinessLogic.pdb
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreData.pdb
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreViewModels.pdb
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.csproj.AssemblyReference.cache
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\MvcTestingAppManifest.json
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.AssemblyInfoInputs.cache
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.AssemblyInfo.cs
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.csproj.CoreCompileInputs.cache
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.sourcelink.json
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\staticwebassets\msbuild.BookStoreAPI.Microsoft.AspNetCore.StaticWebAssets.props

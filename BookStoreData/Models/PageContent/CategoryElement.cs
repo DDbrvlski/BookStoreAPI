@@ -9,10 +9,10 @@ namespace BookStoreData.Models.PageContent
 {
     public class CategoryElement : DictionaryTable
     {
-        public string? Path { get; set; }
-        public string? Logo { get; set; }
-        public string? Content { get; set; }
-        public int? Position { get; set; }
+        public string Path { get; set; }
+        public string Logo { get; set; }
+        public string Content { get; set; }
+        public int Position { get; set; }
         #region Foreign Keys
         //Image
         [Display(Name = "Zdjęcie")]
@@ -23,7 +23,7 @@ namespace BookStoreData.Models.PageContent
         public virtual Images Image { get; set; }
 
         [Display(Name = "Kategoria")]
-        public int? CategoryID { get; set; }
+        public int CategoryID { get; set; }
 
         [ForeignKey("CategoryID")]
         [JsonIgnore]

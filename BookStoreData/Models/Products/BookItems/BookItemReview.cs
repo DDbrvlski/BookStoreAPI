@@ -15,7 +15,7 @@ namespace BookStoreData.Models.Products.BookItems
         //User
         [Required(ErrorMessage = "Użytkownik jest wymagany.")]
         [Display(Name = "Użytkownik")]
-        public int? CustomerID { get; set; }
+        public int CustomerID { get; set; }
 
         [ForeignKey("CustomerID")]
         [JsonIgnore]
@@ -24,7 +24,7 @@ namespace BookStoreData.Models.Products.BookItems
         //Book
         [Required(ErrorMessage = "Książka jest wymagana.")]
         [Display(Name = "Książka")]
-        public int? BookItemID { get; set; }
+        public int BookItemID { get; set; }
 
         [ForeignKey("BookItemID")]
         [JsonIgnore]
@@ -33,7 +33,7 @@ namespace BookStoreData.Models.Products.BookItems
         //Score
         [Required(ErrorMessage = "Ocena jest wymagana.")]
         [Display(Name = "Ocena")]
-        public int? ScoreID { get; set; }
+        public int ScoreID { get; set; }
 
         [ForeignKey("ScoreID")]
         [JsonIgnore]

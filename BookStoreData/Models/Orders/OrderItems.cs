@@ -17,7 +17,7 @@ namespace BookStoreData.Models.Orders
         //BookItem
         [Required(ErrorMessage = "Książka jest wymagana.")]
         [Display(Name = "Książka")]
-        public int? BookItemID { get; set; }
+        public int BookItemID { get; set; }
 
         [ForeignKey("BookItemID")]
         [JsonIgnore]
@@ -26,7 +26,7 @@ namespace BookStoreData.Models.Orders
         //Order
         [Required(ErrorMessage = "Zamówienie jest wymagane.")]
         [Display(Name = "Zamówienie")]
-        public int? OrderID { get; set; }
+        public int OrderID { get; set; }
 
         [ForeignKey("OrderID")]
         [JsonIgnore]

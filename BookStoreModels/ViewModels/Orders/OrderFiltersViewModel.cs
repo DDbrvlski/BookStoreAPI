@@ -2,6 +2,6 @@
 {
     public class OrderFiltersViewModel
     {
-        public int? OrderStatusId { get; set; }
+        public int OrderStatusId { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace BookStoreViewModels.ViewModels.Products.Discounts
         public DateTime ExpiryDate { get; set; }
         public DateTime StartingDate { get; set; }
         public string? Description { get; set; }
-        public string? Title { get; set; }
+        public string Title { get; set; }
         public bool IsAvailable { get; set; }
         public List<BookItemCMSViewModel>? ListOfBookItems { get; set; }
     }

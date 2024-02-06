@@ -9,6 +9,6 @@ namespace BookStoreData.Models.Notifications
 {
     public class NewsletterSubscribers : BaseEntity
     {
-        public string? Email { get; set; }        
+        public string Email { get; set; }        
     }
 }

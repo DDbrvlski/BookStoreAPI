@@ -1,5 +1,4 @@
 ﻿using BookStoreData.Models.Customers;
-using BookStoreData.Models.Delivery;
 using BookStoreData.Models.Helpers;
 using BookStoreData.Models.Orders.Dictionaries;
 using BookStoreData.Models.Products.BookItems;
@@ -17,7 +16,7 @@ namespace BookStoreData.Models.Orders
         //OrderStatus
         [Required(ErrorMessage = "Status zamówienia jest wymagany.")]
         [Display(Name = "Status zamówienia")]
-        public int? OrderStatusID { get; set; }
+        public int OrderStatusID { get; set; }
 
         [ForeignKey("OrderStatusID")]
         [JsonIgnore]
@@ -26,7 +25,7 @@ namespace BookStoreData.Models.Orders
         //DeliveryMethod
         [Required(ErrorMessage = "Sposób dostawy jest wymagany.")]
         [Display(Name = "Sposób dostawy")]
-        public int? DeliveryMethodID { get; set; }
+        public int DeliveryMethodID { get; set; }
 
         [ForeignKey("DeliveryMethodID")]
         [JsonIgnore]
@@ -35,24 +34,16 @@ namespace BookStoreData.Models.Orders
         //Payment
         [Required(ErrorMessage = "Sposób dostawy jest wymagany.")]
         [Display(Name = "Sposób dostawy")]
-        public int? PaymentID { get; set; }
+        public int PaymentID { get; set; }
 
         [ForeignKey("PaymentID")]
         [JsonIgnore]
         public virtual Payment Payment { get; set; }
 
-        //Shipping
-        [Display(Name = "Sposób dostawy")]
-        public int? ShippingID { get; set; }
-
-        [ForeignKey("ShippingID")]
-        [JsonIgnore]
-        public virtual Shipping Shipping { get; set; }
-
         //Customer
         [Required(ErrorMessage = "Klient jest wymagany.")]
         [Display(Name = "Klient")]
-        public int? CustomerID { get; set; }
+        public int CustomerID { get; set; }
 
         [ForeignKey("CustomerID")]
         [JsonIgnore]

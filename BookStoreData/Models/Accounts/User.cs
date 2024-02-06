@@ -11,8 +11,9 @@ namespace BookStoreData.Models.Accounts
         #region Foreign Keys
 
         //Customer
+        [Required]
         [Display(Name = "Dane klienta")]
-        public int? CustomerID { get; set; }
+        public int CustomerID { get; set; }
 
         [ForeignKey("CustomerID")]
         public virtual Customer Customer { get; set; }

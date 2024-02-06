@@ -6,8 +6,8 @@ namespace BookStoreViewModels.ViewModels.Orders
 {
     public class OrderPostViewModel
     {
-        public int? DeliveryMethodID { get; set; }
-        public int? PaymentMethodID { get; set; }
+        public int DeliveryMethodID { get; set; }
+        public int PaymentMethodID { get; set; }
         public int? DiscountCodeID { get; set; }
         public CustomerGuestViewModel? CustomerGuest { get; set; }
         public BaseAddressViewModel InvoiceAddress { get; set; }

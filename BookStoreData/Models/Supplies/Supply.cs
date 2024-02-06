@@ -17,7 +17,7 @@ namespace BookStoreData.Models.Supplies
         //Supplier
         [Required(ErrorMessage = "Dostawca jest wymagana.")]
         [Display(Name = "Dostawca")]
-        public int? SupplierID { get; set; }
+        public int SupplierID { get; set; }
 
         [ForeignKey("SupplierID")]
         [JsonIgnore]
@@ -26,7 +26,7 @@ namespace BookStoreData.Models.Supplies
         //DeliveryStatus
         [Required(ErrorMessage = "Status dostawy jest wymagany.")]
         [Display(Name = "Status dostawy")]
-        public int? DeliveryStatusID { get; set; }
+        public int DeliveryStatusID { get; set; }
 
         [ForeignKey("DeliveryStatusID")]
         [JsonIgnore]
@@ -35,7 +35,7 @@ namespace BookStoreData.Models.Supplies
         //Payment
         [Required(ErrorMessage = "Metoda płatności jest wymagana.")]
         [Display(Name = "Metoda płatności")]
-        public int? PaymentID { get; set; }
+        public int PaymentID { get; set; }
 
         [ForeignKey("PaymentID")]
         [JsonIgnore]

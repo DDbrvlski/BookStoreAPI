@@ -13,11 +13,11 @@ namespace BookStoreAPI.Services.Discounts.Discounts
 {
     public interface IBookDiscountService
     {
-        Task AddNewBookDiscountAsync(int discountId, List<int?> bookItemIds);
+        Task AddNewBookDiscountAsync(int discountId, List<int> bookItemIds);
         Task DeactivateAllBookDiscountsByBookItemAsync(int bookItemId);
         Task DeactivateAllBookDiscountsByDiscountAsync(int discountId);
-        Task DeactivateChosenBookDiscountsAsync(int discountId, List<int?> bookItemIds);
-        Task UpdateBookDiscountAsync(int discountId, List<int?> bookItemIds);
+        Task DeactivateChosenBookDiscountsAsync(int discountId, List<int> bookItemIds);
+        Task UpdateBookDiscountAsync(int discountId, List<int> bookItemIds);
         Task<Discount?> GetDiscountForBookItemAsync(int bookItemId);
         Task<IEnumerable<BookDiscount>> GetAllAvailableDiscountsForBookItemIdsAsync(List<int> bookItemIds);
         Task<List<OrderItemsListViewModel>> ApplyDiscount(List<OrderItemsListViewModel> cartItems);
@@ -27,7 +27,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
 
     public class BookDiscountService(BookStoreContext context, IDiscountLogic discountLogic) : IBookDiscountService
     {
-        public async Task AddNewBookDiscountAsync(int discountId, List<int?> bookItemIds)
+        public async Task AddNewBookDiscountAsync(int discountId, List<int> bookItemIds)
         {
             var bookItemsToAdd = bookItemIds.Select(bookItemId => new BookDiscount
             {
@@ -39,7 +39,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-        public async Task UpdateBookDiscountAsync(int discountId, List<int?> bookItemIds)
+        public async Task UpdateBookDiscountAsync(int discountId, List<int> bookItemIds)
         {
             var existingBookDiscounts = await context.BookDiscount
                 .Where(x => x.DiscountID == discountId && x.IsActive == true)
@@ -59,7 +59,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                 await AddNewBookDiscountAsync(discountId, bookDiscountsToAdd);
             }
         }
-        public async Task DeactivateChosenBookDiscountsAsync(int discountId, List<int?> bookItemIds)
+        public async Task DeactivateChosenBookDiscountsAsync(int discountId, List<int> bookItemIds)
         {
             var discountsToDeactivate = await context.BookDiscount
                 .Where(x => x.DiscountID == discountId && bookItemIds.Contains((int)x.BookItemID) && x.IsActive == true)

@@ -2,6 +2,6 @@
 {
     public class DictionaryTable : BaseEntity
     {
-        public string? Name { get; set; }
+        public string Name { get; set; }
     }
 }

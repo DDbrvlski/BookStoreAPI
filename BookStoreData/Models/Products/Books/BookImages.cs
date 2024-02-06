@@ -11,7 +11,7 @@ namespace BookStoreData.Models.Products.Books
         //Image
         [Required(ErrorMessage = "Zdjęcie jest wymagane.")]
         [Display(Name = "Zdjęcie")]
-        public int? ImageID { get; set; }
+        public int ImageID { get; set; }
 
         [ForeignKey("ImageID")]
         [JsonIgnore]
@@ -20,7 +20,7 @@ namespace BookStoreData.Models.Products.Books
         //Book
         [Required(ErrorMessage = "Książka jest wymagana.")]
         [Display(Name = "Książka")]
-        public int? BookID { get; set; }
+        public int BookID { get; set; }
 
         [ForeignKey("BookID")]
         [JsonIgnore]

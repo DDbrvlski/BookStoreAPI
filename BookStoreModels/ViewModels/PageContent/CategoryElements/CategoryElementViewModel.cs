@@ -2,6 +2,6 @@
 {
     public class CategoryElementViewModel : CategoryElementPostViewModel
     {
-        public string? CategoryName { get; set; }
+        public string CategoryName { get; set; }
     }
 }

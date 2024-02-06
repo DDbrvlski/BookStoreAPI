@@ -7,13 +7,13 @@ namespace BookStoreData.Models.PageContent
 {
     public class FooterLinks : DictionaryTable
     {
-        public string? Path { get; set; }
-        public string? URL { get; set; }
-        public int? Position { get; set; }
+        public string Path { get; set; }
+        public string URL { get; set; }
+        public int Position { get; set; }
 
         //FooterColumn
         [Display(Name = "Kolumna")]
-        public int? FooterColumnID { get; set; }
+        public int FooterColumnID { get; set; }
 
         [ForeignKey("FooterColumnID")]
         [JsonIgnore]

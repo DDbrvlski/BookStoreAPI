@@ -15,7 +15,7 @@ namespace BookStoreAPI.Services.Media
         Task AddNewImagesForBookAsync(BookPostViewModel book, List<ImageViewModel?>? imagesToAdd = null);
         Task UpdateImagesForBookAsync(BookPostViewModel book);
         Task DeactivateAllImagesForBookAsync(int? bookId);
-        Task DeactivateChosenImagesForBookAsync(int? bookId, List<int?> imageIds);
+        Task DeactivateChosenImagesForBookAsync(int? bookId, List<int> imageIds);
     }
     public class ImageService(BookStoreContext context) : IImageService
     {
@@ -86,7 +86,7 @@ namespace BookStoreAPI.Services.Media
         }
 
 
-        public async Task DeactivateChosenImagesForBookAsync(int? bookId, List<int?> imageIds)
+        public async Task DeactivateChosenImagesForBookAsync(int? bookId, List<int> imageIds)
         {
             var bookImages = await context.BookImages
                 .Include(x => x.Image)
@@ -123,7 +123,7 @@ namespace BookStoreAPI.Services.Media
                 .Select(x => x.ImageID)
                 .ToListAsync();
 
-            var imageIds = images.Select(x => (int?)x.Id).ToList();
+            var imageIds = images.Select(x => x.Id).ToList();
 
             var imagesToDeactivate = existingImageIds.Except(imageIds).ToList();
             var imagesToAdd = images.Where(x => x != null && !existingImageIds.Contains(x.Id)).ToList();

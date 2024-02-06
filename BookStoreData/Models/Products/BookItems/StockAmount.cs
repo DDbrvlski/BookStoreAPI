@@ -12,7 +12,7 @@ namespace BookStoreData.Models.Products.BookItems
         //BookItem
         [Required(ErrorMessage = "Książka jest wymagana.")]
         [Display(Name = "Książka")]
-        public int? BookItemID { get; set; }
+        public int BookItemID { get; set; }
 
         [ForeignKey("BookItemID")]
         [JsonIgnore]
