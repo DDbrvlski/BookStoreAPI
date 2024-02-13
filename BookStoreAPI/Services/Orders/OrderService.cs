@@ -6,11 +6,9 @@ using BookStoreAPI.Services.Discounts.DiscountCodes;
 using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreAPI.Services.Payments;
 using BookStoreAPI.Services.Stock;
-using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
 using BookStoreData.Models.Orders;
-using BookStoreData.Models.Products.BookItems;
 using BookStoreViewModels.ViewModels.Customers;
 using BookStoreViewModels.ViewModels.Customers.Address;
 using BookStoreViewModels.ViewModels.Invoices;
@@ -18,12 +16,10 @@ using BookStoreViewModels.ViewModels.Orders;
 using BookStoreViewModels.ViewModels.Orders.Dictionaries;
 using BookStoreViewModels.ViewModels.Payments;
 using BookStoreViewModels.ViewModels.Payments.Dictionaries;
-using BookStoreViewModels.ViewModels.Products.BookItems;
 using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
 using BookStoreViewModels.ViewModels.Statistics;
 using BookStoreViewModels.ViewModels.Stock;
 using Microsoft.EntityFrameworkCore;
-using System.Xml.Linq;
 
 namespace BookStoreAPI.Services.Orders
 {
@@ -167,7 +163,7 @@ namespace BookStoreAPI.Services.Orders
         {
             Customer customer = await customerService.GetCustomerByTokenAsync();
 
-            return await context.Order
+            var order = await context.Order
                 .Where(x => x.CustomerID == customer.Id && x.Id == orderId && x.IsActive)
                 .Select(element => new OrderDetailsViewModel()
                 {
@@ -175,23 +171,23 @@ namespace BookStoreAPI.Services.Orders
                     OrderDate = element.OrderDate,
                     DeliveryMethod = new DeliveryMethodViewModel
                     {
-                        Id = (int)element.DeliveryMethodID,
+                        Id = element.DeliveryMethodID,
                         Name = element.DeliveryMethod.Name,
                         Price = element.DeliveryMethod.Price
                     },
                     OrderStatus = new OrderStatusViewModel
                     {
-                        Id = (int)element.OrderStatusID,
+                        Id = element.OrderStatusID,
                         Name = element.OrderStatus.Name
                     },
                     Payment = new PaymentDetailsViewModel
                     {
-                        Id = (int)element.PaymentID,
+                        Id = element.PaymentID,
                         Amount = element.Payment.Amount,
                         PaymentDate = element.Payment.PaymentDate,
                         PaymentMethod = new PaymentMethodViewModel
                         {
-                            Id = (int)element.Payment.PaymentMethodID,
+                            Id = element.Payment.PaymentMethodID,
                             Name = element.Payment.PaymentMethod.Name
                         },
                         TransactionStatus = new TransactionStatusViewModel
@@ -231,6 +227,10 @@ namespace BookStoreAPI.Services.Orders
                     }).ToList()
                 })
                 .FirstAsync();
+
+            order.TotalBruttoPrice = order.OrderItems.Select(x => x.TotalBruttoPrice).Sum();
+
+            return order;
         }
         public async Task<IEnumerable<OrderViewModel>> GetUserOrdersAsync(OrderFiltersViewModel orderFilters)
         {
@@ -244,6 +244,13 @@ namespace BookStoreAPI.Services.Orders
             {
                 Id = x.Id,
                 OrderDate = x.OrderDate,
+                CustomerDetails = new CustomerShortDetailsViewModel()
+                {
+                    Id = x.CustomerID,
+                    Name = x.CustomerHistory.Name,
+                    Surname = x.CustomerHistory.Surname,
+                    Email = x.CustomerHistory.Email
+                },
                 TotalBruttoPrice = x.OrderItems
                     .Where(y => y.IsActive && y.OrderID == x.Id)
                     .Sum(y => y.Quantity * y.BruttoPrice),

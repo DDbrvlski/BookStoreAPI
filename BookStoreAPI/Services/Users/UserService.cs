@@ -30,6 +30,7 @@ namespace BookStoreAPI.Services.Users
     public class UserService
             (BookStoreContext context,
             UserManager<User> userManager,
+            RoleManager<IdentityRole> roleManager,
             ICustomerService customerService,
             IUserContextService userContextService,
             IAddressService addressService)
@@ -108,7 +109,14 @@ namespace BookStoreAPI.Services.Users
             }
             else
             {
-                await userManager.AddToRoleAsync(user, UserRoles.User);
+                var role = await roleManager.FindByNameAsync(userPost.RoleName);
+                if (role == null)
+                {
+                    throw new AccountException("Nie znaleziono podanej roli.");
+                }
+
+                await userManager.AddToRoleAsync(user, userPost.RoleName);
+
                 return user;
             }
         }

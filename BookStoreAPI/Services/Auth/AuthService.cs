@@ -68,7 +68,6 @@ namespace BookStoreAPI.Services.Auth
             {
                 try
                 {
-
                     await userService.ValidateUserFieldsAsync(registerData.Username, registerData.Email);
 
                     var customer = await customerService
@@ -91,9 +90,9 @@ namespace BookStoreAPI.Services.Auth
                             Username = registerData.Username,
                         });
 
-                    var emailConfirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var urlCodedEmailConfirmationToken = CodeTokenToURL(emailConfirmationToken);
-                    await emailSender.ConfirmEmailEmail(urlCodedEmailConfirmationToken, user);
+                    //var emailConfirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //var urlCodedEmailConfirmationToken = CodeTokenToURL(emailConfirmationToken);
+                    //await emailSender.ConfirmEmailEmail(urlCodedEmailConfirmationToken, user);
 
                     await transaction.CommitAsync();
                 }
@@ -168,7 +167,7 @@ namespace BookStoreAPI.Services.Auth
                 throw new BadRequestException("Wystąpił błąd podczas zmiany hasła.");
             }
         }
-
+        
         private async Task<string> GenerateTokenAsync(User user, string audience)
         {
             var userRoles = await userManager.GetRolesAsync(user);
@@ -180,7 +179,13 @@ namespace BookStoreAPI.Services.Auth
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
-            authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
+            foreach (var roleName in userRoles)
+            {
+                var roleClaims = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(roleName));
+                authClaims.AddRange(roleClaims);
+            }
+
+            //authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

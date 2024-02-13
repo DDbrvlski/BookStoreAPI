@@ -1,6 +1,7 @@
 using BookStoreAPI.Helpers.BaseService;
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Addresses;
+using BookStoreAPI.Services.Admin;
 using BookStoreAPI.Services.Auth;
 using BookStoreAPI.Services.Availability;
 using BookStoreAPI.Services.BookItems;
@@ -18,6 +19,7 @@ using BookStoreAPI.Services.Notifications;
 using BookStoreAPI.Services.Orders;
 using BookStoreAPI.Services.PageElements;
 using BookStoreAPI.Services.Payments;
+using BookStoreAPI.Services.Policies;
 using BookStoreAPI.Services.Rentals;
 using BookStoreAPI.Services.Reviews;
 using BookStoreAPI.Services.Statistic;
@@ -46,7 +48,7 @@ namespace BookStoreAPI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddDbContext<BookStoreContext>(options =>
@@ -70,7 +72,9 @@ namespace BookStoreAPI
             var audiences = builder.Configuration.GetSection("Audiences").Get<Dictionary<string, string>>();
             var emailConfiguration = builder.Configuration.GetSection("EmailConfiguration").Get<AccountEmailConfigurationViewModel>();
             builder.Services.AddSingleton(emailConfiguration);
+            builder.Services.AddScoped<PolicyService>();
             builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
+            builder.Services.AddTransient<IAdminPanelService, AdminPanelService>();
             builder.Services.AddTransient<IInvoiceService, InvoiceService>();
             builder.Services.AddTransient<IAvailabilityService, AvailabilityService>();
             builder.Services.AddTransient<IBookDiscountService, BookDiscountService>();
@@ -118,7 +122,6 @@ namespace BookStoreAPI
             builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
 
-
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
@@ -149,13 +152,25 @@ namespace BookStoreAPI
                     };
                 });
 
+            var claimService = builder.Services.BuildServiceProvider().GetService<PolicyService>();
+            var policyClaims = await claimService.CreateAuthorizationPoliciesAsync();
+
+            builder.Services.AddAuthorization(options =>
+            {
+                foreach(var claim in policyClaims)
+                {
+                    options.AddPolicy(claim.PolicyName, c =>
+                    {
+                        c.RequireClaim(claim.ClaimName, claim.ClaimValue);
+                        c.RequireRole("Admin");
+                    });
+                }
+            });
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             //builder.Services.AddProblemDetails();
 
-            // Add services to the container.
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             //builder.Services.AddSwaggerGen();
             builder.Services.AddSwaggerGen(options =>
@@ -222,10 +237,8 @@ namespace BookStoreAPI
             }
             app.UseHttpsRedirection();
 
-
             app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

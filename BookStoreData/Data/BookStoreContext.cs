@@ -31,6 +31,8 @@ namespace BookStoreData.Data
 
         //Accounts
         public DbSet<User> User { get; set; }
+        public DbSet<Claims> Claims { get; set; }
+        public DbSet<ClaimValues> ClaimValues { get; set; }
 
         //CMS
         public DbSet<Statistics> Statistics { get; set; }

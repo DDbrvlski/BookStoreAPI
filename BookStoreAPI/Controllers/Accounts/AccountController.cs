@@ -1,6 +1,7 @@
 ﻿using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Auth;
 using BookStoreViewModels.ViewModels.Accounts.Account;
+using BookStoreViewModels.ViewModels.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

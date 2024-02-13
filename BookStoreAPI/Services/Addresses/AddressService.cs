@@ -106,16 +106,14 @@ namespace BookStoreAPI.Services.Addresses
         }
         public async Task UpdateAddressAsync(int addressId, BaseAddressViewModel newAddress)
         {
-            //var oldAddress = await context.Address.Where(x => x.IsActive && x.Id == addressId).FirstOrDefaultAsync();
+            var oldAddress = await context.Address.Where(x => x.IsActive && x.Id == addressId).FirstOrDefaultAsync();
 
-            //if (oldAddress == null)
-            //{
-            //    throw new BadRequestException("Wystąpił błąd podczas aktualizacji adresu.");
-            //}
+            if (oldAddress == null)
+            {
+                throw new BadRequestException("Wystąpił błąd podczas aktualizacji adresu.");
+            }
 
-            //oldAddress.CopyProperties(newAddress);
-            await AddAddressesAsync(newAddress);
-            await DeactivateAddressAsync(addressId);
+            oldAddress.CopyProperties(newAddress);
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }

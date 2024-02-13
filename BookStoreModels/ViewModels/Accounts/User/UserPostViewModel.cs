@@ -18,5 +18,7 @@ namespace BookStoreViewModels.ViewModels.Accounts.User
         public string Password { get; set; }
         [Required]
         public int CustomerId { get; set; }
+        [Required]
+        public string RoleName { get; set; } = "User";
     }
 }
