@@ -127,12 +127,13 @@ namespace BookStoreAPI.Services.Users
             await ValidateUserFieldsAsync(userData.Username, userData.Email, user.Id);
             await customerService.CreateCustomerHistoryAsync((int)user.CustomerID);
 
+            user.UserName = userData.Username;
             user.Email = userData.Email;
-            user.Customer.Email = userData.Email;
             user.PhoneNumber = userData.PhoneNumber;
             user.Customer.Name = userData.Name;
             user.Customer.Surname = userData.Surname;
             user.Customer.PhoneNumber = userData.PhoneNumber;
+            user.Customer.Email = userData.Email;
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }

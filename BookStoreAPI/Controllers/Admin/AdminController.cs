@@ -15,6 +15,22 @@ namespace BookStoreAPI.Controllers.Admin
         IAdminPanelService adminPanelService) 
         : ControllerBase
     {
+        [HttpGet]
+        [Route("Employees")]
+        public async Task<ActionResult<IEnumerable<EmployeeDataViewModel>>> GetEmployees()
+        {
+            var employees = await adminPanelService.GetEmployeesAsync();
+            return Ok(employees);
+        }
+
+        [HttpGet]
+        [Route("Employees/{employeeId}")]
+        public async Task<ActionResult<EmployeeDetailsViewModel>> GetEmployeeDetails(string employeeId)
+        {
+            var employee = await adminPanelService.GetEmployeeDetailsAsync(employeeId);
+            return Ok(employee);
+        }
+
         [HttpPost]
         [Route("Register/Employee")]
         public async Task<IActionResult> RegisterEmployee(AccountRegisterViewModel registerData)
@@ -46,7 +62,7 @@ namespace BookStoreAPI.Controllers.Admin
         }
 
         [HttpDelete]
-        [Route("Roles")]
+        [Route("Roles/{roleName}")]
         public async Task<IActionResult> RemoveRole(string roleName)
         {
             await adminPanelService.RemoveRole(roleName);

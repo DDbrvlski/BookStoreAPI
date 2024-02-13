@@ -2,6 +2,7 @@
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
+using BookStoreViewModels.ViewModels.Admin;
 using BookStoreViewModels.ViewModels.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,8 @@ namespace BookStoreAPI.Services.Admin
 {
     public interface IAdminPanelService
     {
+        Task<IEnumerable<EmployeeDataViewModel>> GetEmployeesAsync();
+        Task<EmployeeDetailsViewModel> GetEmployeeDetailsAsync(string userId);
         Task AddClaims(List<string> claimsToAdd);
         Task AddClaimsToRole(RoleClaimsPost roleClaims);
         Task AddNewRole(string roleName);
@@ -24,8 +27,65 @@ namespace BookStoreAPI.Services.Admin
 
     public class AdminPanelService
             (BookStoreContext context,
-            RoleManager<IdentityRole> roleManager) : IAdminPanelService
+            RoleManager<IdentityRole> roleManager,
+            UserManager<User> userManager)
+            : IAdminPanelService
     {
+        public async Task<IEnumerable<EmployeeDataViewModel>> GetEmployeesAsync()
+        {
+            var roles = await roleManager.Roles.Where(x => x.Name != "User").ToListAsync();
+            List<EmployeeDataViewModel> employees = new();
+            foreach (var role in roles)
+            {
+                var usersInRole = await userManager.GetUsersInRoleAsync(role.Name);
+                foreach (var user in usersInRole)
+                {
+                    if (user.IsActive)
+                    {
+                        employees.Add(new EmployeeDataViewModel
+                        {
+                            Id = user.Id,
+                            Username = user.UserName,
+                            Email = user.Email,
+                            PhoneNumber = user.PhoneNumber,
+                            RoleName = role.Name,
+                        });
+                    }
+                }
+            }
+
+            return employees;
+        }
+        public async Task<EmployeeDetailsViewModel> GetEmployeeDetailsAsync(string userId)
+        {
+            var user = await context.User
+                .Where(x => x.IsActive && x.Id == userId)
+                .Select(x => new EmployeeDetailsViewModel()
+                {
+                    Id = x.Id,
+                    Name = x.Customer.Name,
+                    Email = x.Email,
+                    PhoneNumber = x.PhoneNumber,
+                    Surname = x.Customer.Surname,
+                    Username = x.UserName,
+                })
+                .FirstAsync();
+
+            var userRoles = await GetUserRolesAsync(userId);
+            user.RoleNames = userRoles.ToList();
+
+            return user;
+        }
+        private async Task<IEnumerable<string>> GetUserRolesAsync(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new BadRequestException("Wystąpił błąd podczas pobierania usera.");
+            }
+
+            return await userManager.GetRolesAsync(user);
+        }
         public async Task AddNewRole(string roleName)
         {
             var roleExists = await roleManager.RoleExistsAsync(roleName);
