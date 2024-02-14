@@ -1,34 +1,41 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
+using BookStoreAPI.Services.Customers;
+using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
+using BookStoreViewModels.ViewModels.Accounts.User;
 using BookStoreViewModels.ViewModels.Admin;
 using BookStoreViewModels.ViewModels.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Security.Claims;
 
 namespace BookStoreAPI.Services.Admin
 {
     public interface IAdminPanelService
     {
-        Task<IEnumerable<EmployeeDataViewModel>> GetEmployeesAsync();
-        Task<EmployeeDetailsViewModel> GetEmployeeDetailsAsync(string userId);
         Task AddClaims(List<string> claimsToAdd);
         Task AddClaimsToRole(RoleClaimsPost roleClaims);
         Task AddNewRole(string roleName);
-        Task RemoveClaims(string claimName);
-        Task RemoveRole(string roleName);
+        Task DeactivateUserAsync(string userId);
+        Task EditEmployeeDataAsync(EmployeeDetailsViewModel employeeDetails);
         Task<IEnumerable<Claims>> GetAllClaimsAsync();
         Task<IEnumerable<ClaimValues>> GetAllClaimValuesAsync();
         Task<RoleClaimsPost> GetAllRoleClaimsAsync(string roleName);
         Task<List<string>> GetAllRolesAsync();
+        Task<EmployeeDetailsViewModel> GetEmployeeDetailsAsync(string userId);
+        Task<IEnumerable<EmployeeDataViewModel>> GetEmployeesAsync();
+        Task RemoveClaims(string claimName);
+        Task RemoveRole(string roleName);
     }
 
     public class AdminPanelService
             (BookStoreContext context,
             RoleManager<IdentityRole> roleManager,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IUserService userService)
             : IAdminPanelService
     {
         public async Task<IEnumerable<EmployeeDataViewModel>> GetEmployeesAsync()
@@ -76,9 +83,43 @@ namespace BookStoreAPI.Services.Admin
 
             return user;
         }
+        public async Task EditEmployeeDataAsync(EmployeeDetailsViewModel employeeDetails)
+        {
+            var user = await context.User.Where(x => x.IsActive && x.Id == employeeDetails.Id).FirstOrDefaultAsync();
+            if (user == null)
+            {
+                throw new BadRequestException("Wystąpił błąd podczas pobierania usera.");
+            }
+            await userService.EditUserDataAsync(new UserDataViewModel().CopyProperties(employeeDetails));
+
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            var rolesToAdd = employeeDetails.RoleNames.Where(x => !userRoles.Contains(x)).ToList();
+            var rolesToRemove = userRoles.Except(employeeDetails.RoleNames).ToList();
+
+            if (rolesToAdd.Any())
+            {
+                await userManager.AddToRolesAsync(user, rolesToAdd);
+            }
+            if (rolesToRemove.Any())
+            {
+                await userManager.RemoveFromRolesAsync(user, rolesToRemove);
+            }
+        }
+        public async Task DeactivateUserAsync(string userId)
+        {
+            var user = await context.User.Where(x => x.IsActive && x.Id == userId).FirstOrDefaultAsync();
+            if (user == null)
+            {
+                throw new BadRequestException("Wystąpił błąd podczas pobierania usera.");
+            }
+
+            user.IsActive = false;
+            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+        }
         private async Task<IEnumerable<string>> GetUserRolesAsync(string userId)
         {
-            var user = await userManager.FindByIdAsync(userId);
+            var user = await context.User.Where(x => x.IsActive && x.Id == userId).FirstOrDefaultAsync();
             if (user == null)
             {
                 throw new BadRequestException("Wystąpił błąd podczas pobierania usera.");
@@ -102,16 +143,23 @@ namespace BookStoreAPI.Services.Admin
         }
         public async Task AddClaims(List<string> claimsToAdd)
         {
-            List<Claims> claims = new List<Claims>();
-            foreach (var claim in claimsToAdd)
-            {
-                claims.Add(new Claims()
-                {
-                    Name = claim
-                });
-            }
+            var existingClaims = await context.Claims.Where(x => x.IsActive && claimsToAdd.Any(y => x.Name == y)).Select(x => x.Name).ToListAsync();
+            claimsToAdd = claimsToAdd.Where(x => !existingClaims.Contains(x)).ToList();
 
-            await context.Claims.AddRangeAsync(claims);
+            if (claimsToAdd.Any())
+            {
+                List<Claims> claims = new List<Claims>();
+                foreach (var claim in claimsToAdd)
+                {
+                    claims.Add(new Claims()
+                    {
+                        Name = claim
+                    });
+                }
+
+                await context.Claims.AddRangeAsync(claims);
+                await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+            }
         }
         public async Task AddClaimsToRole(RoleClaimsPost roleClaims)
         {

@@ -1,6 +1,7 @@
 ﻿using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Books;
 using BookStoreViewModels.ViewModels.Products.Books;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers.Products.Books
@@ -17,6 +18,7 @@ namespace BookStoreAPI.Controllers.Products.Books
         }
 
         [HttpGet]
+        [Authorize("BooksRead")]
         public async Task<ActionResult<IEnumerable<BooksCMSViewModel>>> GetAllBooksAsync()
         {
             return Ok(await bookService.GetAllBooksForCMSAsync());

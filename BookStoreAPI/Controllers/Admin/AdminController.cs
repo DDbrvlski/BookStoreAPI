@@ -40,9 +40,26 @@ namespace BookStoreAPI.Controllers.Admin
                 throw new AccountException("Wprowadzono błędne dane.");
             }
 
+            registerData.RoleName ??= "Employee";
             await authService.Register(registerData);
 
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("Employee/Edit")]
+        public async Task <IActionResult> EditEmployee(EmployeeDetailsViewModel employeeDetails)
+        {
+            await adminPanelService.EditEmployeeDataAsync(employeeDetails);
+            return NoContent();
+        }
+
+        [HttpDelete]
+        [Route("Employee/Delete")]
+        public async Task<IActionResult> DeactivateEmployee(string userId)
+        {
+            await adminPanelService.DeactivateUserAsync(userId);
+            return NoContent();
         }
 
         [HttpGet]

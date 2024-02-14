@@ -26,6 +26,7 @@ public class AccountRegisterViewModel
     [Phone(ErrorMessage = "Wprowadź prawidłowy numer telefonu.")]
     public string? PhoneNumber { get; set; }
 
-    [Required(ErrorMessage = "Pole 'IsSubscribed' jest wymagane.")]
-    public bool IsSubscribed { get; set; }
+    public bool? IsSubscribed { get; set; } = false;
+
+    public string? RoleName { get; set; }
 }

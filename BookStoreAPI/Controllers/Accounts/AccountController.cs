@@ -32,6 +32,7 @@ namespace BookStoreAPI.Controllers.Accounts
                 throw new AccountException("Wprowadzono błędne dane.");
             }
 
+            registerData.RoleName = "User";
             await authService.Register(registerData);
 
             return Ok();

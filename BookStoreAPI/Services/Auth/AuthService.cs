@@ -54,6 +54,15 @@ namespace BookStoreAPI.Services.Auth
                 throw new UnauthorizedException("Wprowadzono błędne dane logowania.");
             }
 
+            if (loginData.Audience == "CMS")
+            {
+                var isUserInUserRole = await userManager.IsInRoleAsync(user, "User");
+                if (isUserInUserRole)
+                {
+                    throw new BadRequestException("Brak możliwości zalogowania się do systemu pracowników.");
+                }
+            }
+
             if (!user.EmailConfirmed)
             {
                 throw new UnauthorizedException("Adres email nie został potwierdzony.");
@@ -77,7 +86,7 @@ namespace BookStoreAPI.Services.Auth
                             Surname = registerData.Surname,
                             Email = registerData.Email,
                             PhoneNumber = registerData.PhoneNumber,
-                            IsSubscribed = registerData.IsSubscribed
+                            IsSubscribed = (bool)registerData.IsSubscribed
                         });
 
                     var user = await userService
@@ -88,6 +97,7 @@ namespace BookStoreAPI.Services.Auth
                             Password = registerData.Password,
                             PhoneNumber = registerData.PhoneNumber,
                             Username = registerData.Username,
+                            RoleName = registerData.RoleName
                         });
 
                     //var emailConfirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -181,6 +191,7 @@ namespace BookStoreAPI.Services.Auth
 
             foreach (var roleName in userRoles)
             {
+                authClaims.Add(new Claim("Role", roleName));
                 var roleClaims = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(roleName));
                 authClaims.AddRange(roleClaims);
             }

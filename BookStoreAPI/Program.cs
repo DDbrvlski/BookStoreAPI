@@ -12,6 +12,7 @@ using BookStoreAPI.Services.Customers;
 using BookStoreAPI.Services.Discounts.DiscountCodes;
 using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreAPI.Services.Email;
+using BookStoreAPI.Services.Employees;
 using BookStoreAPI.Services.Invoices;
 using BookStoreAPI.Services.Library;
 using BookStoreAPI.Services.Media;
@@ -75,6 +76,7 @@ namespace BookStoreAPI
             builder.Services.AddScoped<PolicyService>();
             builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
             builder.Services.AddTransient<IAdminPanelService, AdminPanelService>();
+            builder.Services.AddTransient<IEmployeeService, EmployeeService>();
             builder.Services.AddTransient<IInvoiceService, InvoiceService>();
             builder.Services.AddTransient<IAvailabilityService, AvailabilityService>();
             builder.Services.AddTransient<IBookDiscountService, BookDiscountService>();

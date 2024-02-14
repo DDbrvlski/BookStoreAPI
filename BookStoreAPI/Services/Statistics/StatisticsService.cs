@@ -5,9 +5,7 @@ using BookStoreAPI.Services.Supplies;
 using BookStoreBusinessLogic.BusinessLogic.CMS;
 using BookStoreData.Data;
 using BookStoreData.Models.CMS;
-using BookStoreData.Models.Orders.Dictionaries;
 using BookStoreViewModels.ViewModels.Statistics;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.Statistic
@@ -61,7 +59,7 @@ namespace BookStoreAPI.Services.Statistic
 
             var statistics = await statisticsQuery.FirstOrDefaultAsync();
 
-            if (statistics == null)
+            if (statistics == null || statistics.Month == DateTime.Now.Month)
             {
                 await GenerateMonthlyRaportAsync(month, year);
                 statistics = await statisticsQuery.FirstOrDefaultAsync();
@@ -80,7 +78,15 @@ namespace BookStoreAPI.Services.Statistic
             {
                 try
                 {
+                    bool isUpdate = true;
+                    var statisticsDB = await context.Statistics.Where(x => x.IsActive && x.Month == month && x.Year == year).FirstOrDefaultAsync();
                     Statistics statistics = new();
+                    if (statisticsDB != null)
+                    {
+                        isUpdate = true;
+                        statistics = statisticsDB;
+                    }
+                    
                     statistics.Month = month;
                     statistics.Year = year;
 
@@ -92,11 +98,14 @@ namespace BookStoreAPI.Services.Statistic
                     statistics.TotalDiscounts = orderStats.TotalDiscounts;
                     statistics.GrossRevenue = orderStats.GrossRevenue;
 
-                    await context.Statistics.AddAsync(statistics);
+                    if (!isUpdate)
+                    {
+                        await context.Statistics.AddAsync(statistics);
+                    }
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
-                    await GenerateMonthlyBookItemsInSalesAsync(orderStats.TopBookItemIds, statistics.Id);
-                    await GenerateMonthlyCategoriesInSalesAsync(orderStats.TopCategoryIds, statistics.Id);
+                    await GenerateMonthlyBookItemsInSalesAsync(orderStats.TopBookItemIds, statistics.Id, isUpdate);
+                    await GenerateMonthlyCategoriesInSalesAsync(orderStats.TopCategoryIds, statistics.Id, isUpdate);
 
                     await transaction.CommitAsync();
 
@@ -110,7 +119,7 @@ namespace BookStoreAPI.Services.Statistic
             }
         }
 
-        private async Task GenerateMonthlyBookItemsInSalesAsync(List<StatisticsBookItemsViewModel> bookItems, int statisticsId)
+        private async Task GenerateMonthlyBookItemsInSalesAsync(List<StatisticsBookItemsViewModel> bookItems, int statisticsId, bool isUpdate)
         {
             if (bookItems.Any())
             {
@@ -126,11 +135,35 @@ namespace BookStoreAPI.Services.Statistic
                     });
                 }
 
-                await context.BookItemsStatistics.AddRangeAsync(topBookStats);
+                if (!isUpdate)
+                {
+                    await context.BookItemsStatistics.AddRangeAsync(topBookStats);
+                }
+                else
+                {
+                    var existingTopBookStats = await context.BookItemsStatistics
+                        .Where(x => x.IsActive && x.StatisticsID == statisticsId)
+                        .ToListAsync();
+
+                    var updateTopBookStats = existingTopBookStats.Where(x => topBookStats.Any(y => y.BookItemID == x.BookItemID && y.SoldQuantity != x.SoldQuantity && y.SoldPrice != x.SoldPrice)).ToList();
+                    var newTopBookStats = topBookStats.Where(x => !existingTopBookStats.Any(y => y.BookItemID == x.BookItemID)).ToList();
+
+                    foreach (var book in topBookStats)
+                    {
+                        var bookStatToUpdate = updateTopBookStats.Find(x => x.BookItemID == book.BookItemID);
+                        if (bookStatToUpdate != null)
+                        {
+                            bookStatToUpdate.SoldPrice = book.SoldPrice;
+                            bookStatToUpdate.SoldQuantity = book.SoldQuantity;
+                        }
+                    }
+
+                    await context.BookItemsStatistics.AddRangeAsync(newTopBookStats);
+                }
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }
         }
-        private async Task GenerateMonthlyCategoriesInSalesAsync(List<StatisticsCategoriesViewModel> categoryIds, int statisticsId)
+        private async Task GenerateMonthlyCategoriesInSalesAsync(List<StatisticsCategoriesViewModel> categoryIds, int statisticsId, bool isUpdate)
         {
             if (categoryIds.Any())
             {
@@ -145,7 +178,30 @@ namespace BookStoreAPI.Services.Statistic
                     });
                 }
 
-                await context.CategoriesStatistics.AddRangeAsync(topCategoryStats);
+                if (!isUpdate)
+                {                    
+                    await context.CategoriesStatistics.AddRangeAsync(topCategoryStats);
+                }
+                else
+                {
+                    var existingTopCategoryStats = await context.CategoriesStatistics
+                        .Where(x => x.IsActive && x.StatisticsID == statisticsId)
+                        .ToListAsync();
+
+                    var updateTopCategoryStats = existingTopCategoryStats.Where(x => topCategoryStats.Any(y => y.CategoryID == x.CategoryID && y.NumberOfAppearances != x.NumberOfAppearances)).ToList();
+                    var newTopCategoryStats = topCategoryStats.Where(x => !existingTopCategoryStats.Any(y => y.CategoryID == x.CategoryID)).ToList();
+
+                    foreach (var category in topCategoryStats)
+                    {
+                        var categoryStatToUpdate = updateTopCategoryStats.Find(x => x.CategoryID == category.CategoryID);
+                        if (categoryStatToUpdate != null)
+                        {
+                            categoryStatToUpdate.NumberOfAppearances = category.NumberOfAppearances;
+                        }
+                    }
+
+                    await context.CategoriesStatistics.AddRangeAsync(newTopCategoryStats);
+                }
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }
         }

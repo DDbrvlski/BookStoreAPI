@@ -19,6 +19,6 @@ namespace BookStoreViewModels.ViewModels.Accounts.User
         [Required]
         public int CustomerId { get; set; }
         [Required]
-        public string RoleName { get; set; } = "User";
+        public string RoleName { get; set; }
     }
 }

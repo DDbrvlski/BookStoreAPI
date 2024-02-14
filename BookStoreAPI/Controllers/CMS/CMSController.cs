@@ -35,7 +35,7 @@ namespace BookStoreAPI.Controllers.CMS
         }
 
         [HttpGet]
-        [Authorize("CMSRead")]
+        //[Authorize("CMSRead")]
         [Route("MonthlyRaport")]
         public async Task<ActionResult<StatisticsMonthlyRaportViewModel>> GetMonthlyRaportAsync(int month, int year)
         {

@@ -1,9 +1,6 @@
 ﻿using BookStoreData.Data;
 using BookStoreViewModels.ViewModels.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System.Security.Claims;
 
 namespace BookStoreAPI.Services.Policies
 {
