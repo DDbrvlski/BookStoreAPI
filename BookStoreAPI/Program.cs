@@ -161,10 +161,13 @@ namespace BookStoreAPI
             {
                 foreach(var claim in policyClaims)
                 {
-                    options.AddPolicy(claim.PolicyName, c =>
-                    {
-                        c.RequireClaim(claim.ClaimName, claim.ClaimValue);
-                        c.RequireRole("Admin");
+                    options.AddPolicy(claim.PolicyName, policy => {
+                        policy.RequireAssertion(context =>
+                        {
+                            bool isApiUserHaveAccess = context.User.HasClaim(c => c.Type == claim.ClaimName && c.Value == claim.ClaimValue);
+                            bool isAdmin = context.User.IsInRole(UserRoles.Admin);
+                            return isAdmin || isApiUserHaveAccess;
+                        });
                     });
                 }
             });

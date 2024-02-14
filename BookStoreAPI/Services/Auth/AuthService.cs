@@ -191,7 +191,7 @@ namespace BookStoreAPI.Services.Auth
 
             foreach (var roleName in userRoles)
             {
-                authClaims.Add(new Claim("Role", roleName));
+                authClaims.Add(new Claim(ClaimTypes.Role, roleName));
                 var roleClaims = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(roleName));
                 authClaims.AddRange(roleClaims);
             }
