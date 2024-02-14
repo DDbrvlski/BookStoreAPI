@@ -1,5 +1,6 @@
 ﻿using BookStoreAPI.Services.PageElements;
 using BookStoreViewModels.ViewModels.PageContent.DiscountBanners;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers.PageContent
@@ -9,6 +10,7 @@ namespace BookStoreAPI.Controllers.PageContent
     public class DiscountsBannerController(IDiscountBannerService discountBannerService) : ControllerBase
     {
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<DiscountBannerViewModel>> GetDiscountBannerByIdAsync(int id)
         {
             var discountbanner = await discountBannerService.GetDiscountBannerByIdAsync(id);
@@ -16,6 +18,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DiscountBannerViewModel>>> GetAllDiscountBannersAsync()
         {
             var discountbanners = await discountBannerService.GetAllDiscountBannersAsync();
@@ -23,6 +26,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPost]
+        [Authorize("DiscountBannerWrite")]
         public async Task<IActionResult> CreateDiscountBannerAsync(DiscountBannerViewModel discountBannerViewModel)
         {
             await discountBannerService.CreateDiscountBannerAsync(discountBannerViewModel);
@@ -30,6 +34,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPut("{id}")]
+        [Authorize("DiscountBannerEdit")]
         public async Task<IActionResult> EditDiscountBannerAsync(int id, DiscountBannerViewModel discountBannerViewModel)
         {
             await discountBannerService.EditDiscountBannerAsync(id, discountBannerViewModel);
@@ -37,6 +42,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpDelete("{id}")]
+        [Authorize("DiscountBannerDelete")]
         public async Task<IActionResult> DeactivateDiscountBannerAsync(int id)
         {
             await discountBannerService.DeactivateDiscountBannerAsync(id);

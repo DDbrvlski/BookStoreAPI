@@ -1,5 +1,6 @@
 ﻿using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreViewModels.ViewModels.Products.Discounts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers.Products.BookItems
@@ -9,6 +10,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
     public class DiscountController(IDiscountService discountService) : ControllerBase
     {
         [HttpGet]
+        [Authorize("DiscountRead")]
         public async Task<ActionResult<IEnumerable<DiscountCMSViewModel>>> GetAllDiscountsAsync()
         {
             var discounts = await discountService.GetAllDiscountsCMSAsync();
@@ -16,6 +18,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         }
 
         [HttpGet("{id}")]
+        [Authorize("DiscountRead")]
         public async Task<ActionResult<DiscountDetailsCMSViewModel>> GetDiscountByIdAsync(int id)
         {
             var discount = await discountService.GetDiscountByIdCMSAsync(id);
@@ -23,6 +26,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         }
 
         [HttpPost]
+        [Authorize("DiscountWrite")]
         public async Task<IActionResult> PostDiscountAsync(DiscountCMSPostViewModel discountModel)
         {
             await discountService.CreateDiscountAsync(discountModel);
@@ -30,6 +34,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         }
 
         [HttpPut("{id}")]
+        [Authorize("DiscountEdit")]
         public async Task<IActionResult> PutDiscountAsync(int id, DiscountCMSPostViewModel discountModel)
         {
             await discountService.UpdateDiscountAsync(id, discountModel);
@@ -37,6 +42,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         }
 
         [HttpDelete("{id}")]
+        [Authorize("DiscountDelete")]
         public async Task<IActionResult> DeactivateDiscountAsync(int id)
         {
             await discountService.DeactivateDiscountAsync(id);

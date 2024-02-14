@@ -4,12 +4,14 @@ using BookStoreAPI.Services.Auth;
 using BookStoreData.Models.Accounts;
 using BookStoreViewModels.ViewModels.Admin;
 using BookStoreViewModels.ViewModels.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers.Admin
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = UserRoles.Admin)]
     public class AdminController
         (IAuthService authService,
         IAdminPanelService adminPanelService) 
@@ -48,7 +50,7 @@ namespace BookStoreAPI.Controllers.Admin
 
         [HttpPost]
         [Route("Employee/Edit")]
-        public async Task <IActionResult> EditEmployee(EmployeeDetailsViewModel employeeDetails)
+        public async Task <IActionResult> EditEmployee(EmployeeDataEditViewModel employeeDetails)
         {
             await adminPanelService.EditEmployeeDataAsync(employeeDetails);
             return NoContent();

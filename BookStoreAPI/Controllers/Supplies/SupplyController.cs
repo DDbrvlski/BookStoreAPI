@@ -1,5 +1,6 @@
 ﻿using BookStoreAPI.Services.Supplies;
 using BookStoreViewModels.ViewModels.Supply;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace BookStoreAPI.Controllers.Supplies
     public class SupplyController(ISupplyService supplyService) : ControllerBase
     {
         [HttpGet]
+        [Authorize("SupplyRead")]
         public async Task<ActionResult<IEnumerable<SupplyViewModel>>> GetAllSuppliesAsync()
         {
             var supplies = await supplyService.GetAllSuppliesAsync();
@@ -17,6 +19,7 @@ namespace BookStoreAPI.Controllers.Supplies
         }
 
         [HttpGet("{supplyId}")]
+        [Authorize("SupplyRead")]
         public async Task<ActionResult<SupplyDetailsViewModel>> GetSupplyDetailsAsync(int supplyId)
         {
             var supply = await supplyService.GetSupplyAsync(supplyId);
@@ -24,6 +27,7 @@ namespace BookStoreAPI.Controllers.Supplies
         }
 
         [HttpPost]
+        [Authorize("SupplyWrite")]
         public async Task<IActionResult> AddNewSupplyAsync(SupplyPostViewModel supplyData)
         {
             await supplyService.AddNewSupplyAsync(supplyData);
@@ -31,6 +35,7 @@ namespace BookStoreAPI.Controllers.Supplies
         }
 
         [HttpPut("{supplyId}")]
+        [Authorize("SupplyEdit")]
         public async Task<IActionResult> UpdateSupplyAsync(int supplyId, SupplyPutViewModel supplyData)
         {
             await supplyService.UpdateSupplyAsync(supplyId, supplyData);
@@ -38,6 +43,7 @@ namespace BookStoreAPI.Controllers.Supplies
         }
 
         [HttpDelete("{supplyId}")]
+        [Authorize("SupplyDelete")]
         public async Task<IActionResult> DeactivateSupplyAsync(int supplyId)
         {
             await supplyService.DeactivateSupplyAsync(supplyId);

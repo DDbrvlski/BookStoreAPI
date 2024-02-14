@@ -1,5 +1,6 @@
 ﻿using BookStoreAPI.Services.Notifications;
 using BookStoreData.Models.Notifications;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers.Notifications
@@ -9,6 +10,7 @@ namespace BookStoreAPI.Controllers.Notifications
     public class NewsletterController(INewsletterService newsletterService) : ControllerBase
     {
         [HttpGet]
+        [Authorize("NewsletterRead")]
         public async Task<ActionResult<IEnumerable<Newsletter>>> GetAllNewsletters()
         {
             var newsletters = await newsletterService.GetAllNewslettersAsync();
@@ -16,6 +18,7 @@ namespace BookStoreAPI.Controllers.Notifications
         }
 
         [HttpPut("{id}")]
+        [Authorize("NewsletterEdit")]
         public async Task<IActionResult> EditNewsletter(int id, Newsletter newNewsletter)
         {
             await newsletterService.EditNewsletterAsync(id, newNewsletter);
@@ -24,6 +27,7 @@ namespace BookStoreAPI.Controllers.Notifications
 
         [HttpPost]
         [Route("Subscriber")]
+        [AllowAnonymous]
         public async Task<IActionResult> AddNewNewsletterUser(string email)
         {
             await newsletterService.AddToNewsletterSubscribersAsync(email);
@@ -31,6 +35,7 @@ namespace BookStoreAPI.Controllers.Notifications
         }
 
         [HttpPost]
+        [Authorize("NewsletterWrite")]
         public async Task<IActionResult> CreateNewsletter(Newsletter newsletter)
         {
             await newsletterService.CreateNewsletterAsync(newsletter);

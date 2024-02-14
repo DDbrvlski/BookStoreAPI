@@ -1,5 +1,6 @@
 ﻿using BookStoreAPI.Services.PageElements;
 using BookStoreViewModels.ViewModels.PageContent.Banners;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers.PageContent
@@ -9,6 +10,7 @@ namespace BookStoreAPI.Controllers.PageContent
     public class BannerController(IBannerService bannerService) : ControllerBase
     {
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<BanerViewModel>> GetBannerByIdAsync(int id)
         {
             var banner = await bannerService.GetBannerByIdAsync(id);
@@ -16,6 +18,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<BanerViewModel>>> GetAllBannersAsync()
         {
             var banners = await bannerService.GetAllBannersAsync();
@@ -23,6 +26,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPost]
+        [Authorize("BannerWrite")]
         public async Task<IActionResult> CreateBannerAsync(BanerViewModel bannerModel)
         {
             await bannerService.CreateBannerAsync(bannerModel);
@@ -30,6 +34,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPut("{id}")]
+        [Authorize("BannerEdit")]
         public async Task<IActionResult> EditBannerAsync(int id, BanerViewModel bannerModel)
         {
             await bannerService.EditBannerAsync(id, bannerModel);
@@ -37,6 +42,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpDelete("{id}")]
+        [Authorize("BannerDelete")]
         public async Task<IActionResult> DeactivateBannerAsync(int id)
         {
             await bannerService.DeactivateBannerAsync(id);

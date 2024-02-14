@@ -3,6 +3,7 @@ using BookStoreData.Data;
 using BookStoreData.Models.PageContent;
 using BookStoreViewModels.ViewModels.PageContent.Banners;
 using BookStoreViewModels.ViewModels.PageContent.CategoryElements;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers.PageContent
@@ -12,6 +13,7 @@ namespace BookStoreAPI.Controllers.PageContent
     public class CategoryElementsController(ICategoryElementService categoryElementService) : ControllerBase
     {
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<CategoryElementViewModel>> GetCategoryElementByIdAsync(int id)
         {
             var categoryElement = await categoryElementService.GetCategoryElementByIdAsync(id);
@@ -19,6 +21,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<CategoryElementViewModel>>> GetAllCategoryElementsAsync()
         {
             var categoryElement = await categoryElementService.GetAllCategoryElementsAsync();
@@ -26,6 +29,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPost]
+        [Authorize("CategoryElementWrite")]
         public async Task<IActionResult> CreateCategoryElementAsync(CategoryElementViewModel categoryElementModel)
         {
             await categoryElementService.CreateCategoryElementAsync(categoryElementModel);
@@ -33,6 +37,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPut("{id}")]
+        [Authorize("CategoryElementEdit")]
         public async Task<IActionResult> EditCategoryElementAsync(int id, CategoryElementViewModel categoryElementModel)
         {
             await categoryElementService.EditCategoryElementAsync(id, categoryElementModel);
@@ -40,6 +45,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpDelete("{id}")]
+        [Authorize("CategoryElementDelete")]
         public async Task<IActionResult> DeactivateCategoryElementAsync(int categoryElementId)
         {
             await categoryElementService.DeactivateCategoryElementAsync(categoryElementId);

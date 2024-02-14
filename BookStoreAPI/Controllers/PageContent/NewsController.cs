@@ -12,6 +12,7 @@ namespace BookStoreAPI.Controllers.PageContent
     public class NewsController(INewsService newsService) : ControllerBase
     {
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<NewsViewModel>>> GetAllNewsAsync()
         {
             var news = await newsService.GetAllNewsAsync();
@@ -20,6 +21,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpGet]
         [Route("Elements")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<NewsViewModel>>> GetNumberOfNewsAsync([FromQuery] int numberOfElements = 1)
         {
             var news = await newsService.GetNumberOfNewsAsync(numberOfElements);
@@ -27,6 +29,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<NewsDetailsViewModel>> GetNewsByIdAsync(int id)
         {
             var news = await newsService.GetNewsByIdAsync(id);
@@ -34,7 +37,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPost]
-        //[Authorize(Roles = UserRoles.Employee)]
+        [Authorize("NewsWrite")]
         public async Task<IActionResult> CreateNewsAsync(NewsPostCMSViewModel newsModel)
         {
             await newsService.CreateNewsAsync(newsModel);
@@ -42,7 +45,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = UserRoles.Employee)]
+        [Authorize("NewsEdit")]
         public async Task<IActionResult> EditNewsAsync(int id, NewsPostCMSViewModel newsModel)
         {
             await newsService.EditNewsAsync(id, newsModel);
@@ -50,7 +53,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpDelete]
-        //[Authorize(Roles = UserRoles.Employee)]
+        [Authorize("NewsDelete")]
         public async Task<IActionResult> DeactivateNewsAsync(int id)
         {
             await newsService.DeactivateNewsAsync(id);

@@ -6,6 +6,7 @@ using BookStoreAPI.Helpers.BaseService;
 using BookStoreAPI.Helpers;
 using BookStoreAPI.Services.Supplies;
 using BookStoreViewModels.ViewModels.Supply;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookStoreAPI.Controllers.Supplies.Dictionaries
 {
@@ -17,6 +18,7 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
     public class SupplierController(ISupplierService supplierService) : ControllerBase
     {
         [HttpGet]
+        [Authorize("SupplierRead")]
         public async Task<ActionResult<SupplierShortViewModel>> GetAllSuppliersAsync()
         {
             var suppliers = await supplierService.GetSuppliersShortDataAsync();
@@ -24,6 +26,7 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
         }
 
         [HttpGet("{supplierId}")]
+        [Authorize("SupplierRead")]
         public async Task<ActionResult<SupplierViewModel>> GetSupplierDetailsAsync(int supplierId)
         {
             var supplier = await supplierService.GetSuppliersDataAsync(supplierId);
@@ -31,6 +34,7 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
         }
 
         [HttpPost]
+        [Authorize("SupplierWrite")]
         public async Task<IActionResult> AddNewSupplierAsync(SupplierPostViewModel supplierData)
         {
             await supplierService.AddNewSupplierAsync(supplierData);
@@ -38,6 +42,7 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
         }
 
         [HttpPut("{supplierId}")]
+        [Authorize("SupplierEdit")]
         public async Task<IActionResult> UpdateSupplierAsync(int supplierId, SupplierPostViewModel supplierData)
         {
             await supplierService.UpdateSupplierAsync(supplierId, supplierData);
@@ -45,6 +50,7 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
         }
 
         [HttpDelete("{supplierId}")]
+        [Authorize("SupplierDelete")]
         public async Task<IActionResult> DeactivateSupplierAsync(int supplierId)
         {
             await supplierService.DeactivateSupplierAsync(supplierId);

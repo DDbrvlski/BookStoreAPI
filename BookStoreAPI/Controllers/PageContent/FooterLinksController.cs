@@ -1,6 +1,7 @@
 ﻿using BookStoreAPI.Services.PageElements;
 using BookStoreData.Models.PageContent;
 using BookStoreViewModels.ViewModels.PageContent.FooterLinks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers.PageContent
@@ -10,6 +11,7 @@ namespace BookStoreAPI.Controllers.PageContent
     public class FooterLinksController(IFooterLinkService footerLinkService) : ControllerBase
     {
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<FooterLinkViewModel>>> GetAllFooterLinksAsync()
         {
             var footerLinks = await footerLinkService.GetAllFooterLinksAsync();
@@ -17,6 +19,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<FooterLinkViewModel>> GetFooterLinkByIdAsync(int id)
         {
             var footerLink = await footerLinkService.GetFooterLinkByIdAsync(id);
@@ -24,6 +27,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpGet("Column/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<FooterColumnDetailsViewModel>> GetFooterLinksInColumnByColumnIdAsync(int id)
         {
             var footerColumn = await footerLinkService.GetFooterLinksInColumnByColumnIdAsync(id);
@@ -31,6 +35,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpGet("Column")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<FooterColumnDetailsViewModel>>> GetFooterLinksInColumnsAsync()
         {
             var footerColumns = await footerLinkService.GetFooterLinksInColumnsAsync();
@@ -38,6 +43,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPost]
+        [Authorize("FooterLinksWrite")]
         public async Task<IActionResult> CreateFooterLinkAsync(FooterLinks footerLinkModel)
         {
             await footerLinkService.CreateFooterLinkAsync(footerLinkModel);
@@ -45,6 +51,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpPut("{id}")]
+        [Authorize("FooterLinksEdit")]
         public async Task<IActionResult> EditFooterLinkAsync(int id, FooterLinks footerLinkModel)
         {
             await footerLinkService.EditFooterLinkAsync(id, footerLinkModel);
@@ -52,6 +59,7 @@ namespace BookStoreAPI.Controllers.PageContent
         }
 
         [HttpDelete("{id}")]
+        [Authorize("FooterLinksDelete")]
         public async Task<IActionResult> DeactivateFooterLinkAsync(int id)
         {
             await footerLinkService.DeactivateFooterLinkAsync(id);

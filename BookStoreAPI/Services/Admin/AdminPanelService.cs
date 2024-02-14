@@ -20,7 +20,7 @@ namespace BookStoreAPI.Services.Admin
         Task AddClaimsToRole(RoleClaimsPost roleClaims);
         Task AddNewRole(string roleName);
         Task DeactivateUserAsync(string userId);
-        Task EditEmployeeDataAsync(EmployeeDetailsViewModel employeeDetails);
+        Task EditEmployeeDataAsync(EmployeeDataEditViewModel employeeDetails);
         Task<IEnumerable<Claims>> GetAllClaimsAsync();
         Task<IEnumerable<ClaimValues>> GetAllClaimValuesAsync();
         Task<RoleClaimsPost> GetAllRoleClaimsAsync(string roleName);
@@ -83,7 +83,7 @@ namespace BookStoreAPI.Services.Admin
 
             return user;
         }
-        public async Task EditEmployeeDataAsync(EmployeeDetailsViewModel employeeDetails)
+        public async Task EditEmployeeDataAsync(EmployeeDataEditViewModel employeeDetails)
         {
             var user = await context.User.Where(x => x.IsActive && x.Id == employeeDetails.Id).FirstOrDefaultAsync();
             if (user == null)
@@ -91,6 +91,12 @@ namespace BookStoreAPI.Services.Admin
                 throw new BadRequestException("Wystąpił błąd podczas pobierania usera.");
             }
             await userService.EditUserDataAsync(new UserDataViewModel().CopyProperties(employeeDetails));
+
+            if (employeeDetails.Password != null)
+            {
+                var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
+                await userManager.ResetPasswordAsync(user, resetToken, employeeDetails.Password);
+            }
 
             var userRoles = await userManager.GetRolesAsync(user);
 

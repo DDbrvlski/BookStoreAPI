@@ -11,6 +11,7 @@ namespace BookStoreAPI.Controllers.Products.Books
     public class BookController(IBookService bookService) : ControllerBase
     {
         [HttpDelete("{id}")]
+        [Authorize("BooksDelete")]
         public async Task<IActionResult> DeleteBookAsync(int id)
         {
             await bookService.DeactivateBookAsync(id);
@@ -18,19 +19,21 @@ namespace BookStoreAPI.Controllers.Products.Books
         }
 
         [HttpGet]
-        [Authorize("BooksRead")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<BooksCMSViewModel>>> GetAllBooksAsync()
         {
             return Ok(await bookService.GetAllBooksForCMSAsync());
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<BookDetailsCMSViewModel>> GetBookByIdAsync(int id)
         {
             return Ok(await bookService.GetBookDetailsForCMSByIdAsync(id));
         }
 
         [HttpPost]
+        [Authorize("BooksWrite")]
         public async Task<IActionResult> PostBookAsync(BookPostViewModel bookPost)
         {
             if (bookPost == null)
@@ -43,6 +46,7 @@ namespace BookStoreAPI.Controllers.Products.Books
         }
 
         [HttpPut("{id}")]
+        [Authorize("BooksEdit")]
         public async Task<IActionResult> PutBookAsync(int id, BookPostViewModel bookPut)
         {
             if (bookPut == null)
