@@ -2,29 +2,29 @@
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
-using BookStoreViewModels.ViewModels.Products.BookItems;
-using BookStoreViewModels.ViewModels.Products.Discounts;
+using BookStoreDto.Dtos.Products.BookItems;
+using BookStoreDto.Dtos.Products.Discounts;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.Discounts.Discounts
 {
     public interface IDiscountService
     {
-        Task CreateDiscountAsync(DiscountCMSPostViewModel discountModel);
+        Task CreateDiscountAsync(DiscountCMSPostDto discountModel);
         Task DeactivateDiscountAsync(int discountId);
-        Task<IEnumerable<DiscountCMSViewModel>> GetAllDiscountsCMSAsync();
-        Task<DiscountDetailsCMSViewModel> GetDiscountByIdCMSAsync(int id);
-        Task UpdateDiscountAsync(int discountId, DiscountCMSPostViewModel discountModel);
+        Task<IEnumerable<DiscountCMSDto>> GetAllDiscountsCMSAsync();
+        Task<DiscountDetailsCMSDto> GetDiscountByIdCMSAsync(int id);
+        Task UpdateDiscountAsync(int discountId, DiscountCMSPostDto discountModel);
     }
 
     public class DiscountService(BookStoreContext context, IBookDiscountService bookDiscountService) : IDiscountService
     {
-        public async Task<DiscountDetailsCMSViewModel> GetDiscountByIdCMSAsync(int id)
+        public async Task<DiscountDetailsCMSDto> GetDiscountByIdCMSAsync(int id)
         {
             var currentDate = DateTime.Now;
             return await context.Discount
                 .Where(x => x.Id == id && x.IsActive)
-                .Select(x => new DiscountDetailsCMSViewModel()
+                .Select(x => new DiscountDetailsCMSDto()
                 {
                     Id = x.Id,
                     IsAvailable = currentDate >= x.StartingDate && currentDate <= x.ExpiryDate.AddDays(1),
@@ -35,7 +35,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                     Title = x.Title,
                     ListOfBookItems = x.BookDiscounts
                         .Where(x => x.IsActive == true)
-                        .Select(x => new BookItemCMSViewModel
+                        .Select(x => new BookItemCMSDto
                         {
                             Id = x.BookItem.Id,
                             BookID = x.BookItem.BookID,
@@ -47,12 +47,12 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                 }).FirstAsync();
         }
 
-        public async Task<IEnumerable<DiscountCMSViewModel>> GetAllDiscountsCMSAsync()
+        public async Task<IEnumerable<DiscountCMSDto>> GetAllDiscountsCMSAsync()
         {
             var currentDate = DateTime.Now;
             return await context.Discount
                 .Where(x => x.IsActive == true)
-                .Select(x => new DiscountCMSViewModel
+                .Select(x => new DiscountCMSDto
                 {
                     Id = x.Id,
                     IsAvailable = currentDate >= x.StartingDate && currentDate <= x.ExpiryDate.AddDays(1),
@@ -63,45 +63,78 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                 .ToListAsync();
         }
 
-        public async Task CreateDiscountAsync(DiscountCMSPostViewModel discountModel)
+        public async Task CreateDiscountAsync(DiscountCMSPostDto discountModel)
         {
-            Discount discount = new();
-            discount.CopyProperties(discountModel);
-            await context.Discount.AddAsync(discount);
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    Discount discount = new();
+                    discount.CopyProperties(discountModel);
+                    await context.Discount.AddAsync(discount);
 
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
-            await bookDiscountService.AddNewBookDiscountAsync(discount.Id, discountModel.ListOfBookItems.Select(x => x.Id).ToList());
+                    await bookDiscountService.AddNewBookDiscountAsync(discount.Id, discountModel.ListOfBookItems.Select(x => x.Id).ToList());
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }            
         }
 
-        public async Task UpdateDiscountAsync(int discountId, DiscountCMSPostViewModel discountModel)
+        public async Task UpdateDiscountAsync(int discountId, DiscountCMSPostDto discountModel)
         {
-            var discount = await context.Discount.FirstOrDefaultAsync(x => x.IsActive && x.Id == discountId);
-
-            if (discount == null)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                throw new BadRequestException("Nie znaleziono elementu discount do aktualizacji.");
-            }
+                try
+                {
+                    var discount = await context.Discount.FirstOrDefaultAsync(x => x.IsActive && x.Id == discountId);
 
-            discount.CopyProperties(discountModel);
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    if (discount == null)
+                    {
+                        throw new BadRequestException("Nie znaleziono elementu discount do aktualizacji.");
+                    }
 
-            await bookDiscountService.UpdateBookDiscountAsync(discountId, discountModel.ListOfBookItems.Select(x => x.Id).ToList());
+                    discount.CopyProperties(discountModel);
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+
+                    await bookDiscountService.UpdateBookDiscountAsync(discountId, discountModel.ListOfBookItems.Select(x => x.Id).ToList());
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }            
         }
 
         public async Task DeactivateDiscountAsync(int discountId)
         {
-            var discount = await context.Discount.FirstOrDefaultAsync(x => x.IsActive && x.Id == discountId);
-
-            if (discount == null)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                throw new BadRequestException("Nie znaleziono elementu discount do deaktywacji.");
-            }
+                try
+                {
+                    var discount = await context.Discount.FirstOrDefaultAsync(x => x.IsActive && x.Id == discountId);
 
-            discount.IsActive = false;
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    if (discount == null)
+                    {
+                        throw new BadRequestException("Nie znaleziono elementu discount do deaktywacji.");
+                    }
 
-            await bookDiscountService.DeactivateAllBookDiscountsByDiscountAsync(discountId);
+                    discount.IsActive = false;
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+
+                    await bookDiscountService.DeactivateAllBookDiscountsByDiscountAsync(discountId);
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }            
         }
 
     }

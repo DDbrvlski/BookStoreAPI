@@ -1,14 +1,14 @@
 ﻿using BookStoreData.Models.Orders;
 using BookStoreData.Models.Products.BookItems;
-using BookStoreViewModels.ViewModels.Orders;
-using BookStoreViewModels.ViewModels.Products.BookItems;
+using BookStoreDto.Dtos.Orders;
+using BookStoreDto.Dtos.Products.BookItems;
 
 namespace BookStoreAPI.Helpers
 {
     public static class FiltersExtensions
     {
         #region BookItemFilters
-        public static IQueryable<BookItem> ApplyBookFilters(this IQueryable<BookItem> query, BookItemFiltersViewModel filters)
+        public static IQueryable<BookItem> ApplyBookFilters(this IQueryable<BookItem> query, BookItemFiltersDto filters)
         {
             if (filters == null)
                 return query;
@@ -141,7 +141,7 @@ namespace BookStoreAPI.Helpers
         }
         #endregion
         #region OrderFilters
-        public static IQueryable<Order> ApplyOrderFilters(this IQueryable<Order> query, OrderFiltersViewModel filters)
+        public static IQueryable<Order> ApplyOrderFilters(this IQueryable<Order> query, OrderFiltersDto filters)
         {
             if (filters == null)
                 return query;

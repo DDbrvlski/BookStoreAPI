@@ -1,7 +1,7 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.Books;
-using BookStoreViewModels.ViewModels.Products.Books;
+using BookStoreDto.Dtos.Products.Books;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
@@ -9,14 +9,14 @@ namespace BookStoreAPI.Services.Books.Dictionaries
 {
     public interface IAuthorService
     {
-        Task AddAuthorsForBookAsync(BookPostViewModel book, List<int>? authorIds = null);
-        Task UpdateAuthorsForBookAsync(BookPostViewModel book);
+        Task AddAuthorsForBookAsync(BookPostDto book, List<int>? authorIds = null);
+        Task UpdateAuthorsForBookAsync(BookPostDto book);
         Task DeactivateAllAuthorsForBookAsync(int? bookId);
         Task DeactivateChosenAuthorsForBookAsync(int? bookId, List<int> authorIds);
     }
     public class AuthorService(BookStoreContext context) : IAuthorService
     {
-        public async Task AddAuthorsForBookAsync(BookPostViewModel book, List<int>? authorIds = null)
+        public async Task AddAuthorsForBookAsync(BookPostDto book, List<int>? authorIds = null)
         {
             //Reużywalność funkcji dla dodawania nowych autorów i aktualizowania
             if(authorIds == null)
@@ -38,7 +38,7 @@ namespace BookStoreAPI.Services.Books.Dictionaries
             }
         }
 
-        public async Task UpdateAuthorsForBookAsync(BookPostViewModel book)
+        public async Task UpdateAuthorsForBookAsync(BookPostDto book)
         {
             List<int> authorIds = book.ListOfBookAuthors.Select(x => x.Id).ToList();
 

@@ -1,5 +1,5 @@
 ﻿using BookStoreAPI.Services.PageElements;
-using BookStoreViewModels.ViewModels.PageContent.Banners;
+using BookStoreDto.Dtos.PageContent.Banners;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +11,7 @@ namespace BookStoreAPI.Controllers.PageContent
     {
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<BanerViewModel>> GetBannerByIdAsync(int id)
+        public async Task<ActionResult<BanerDto>> GetBannerByIdAsync(int id)
         {
             var banner = await bannerService.GetBannerByIdAsync(id);
             return Ok(banner);
@@ -19,7 +19,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<BanerViewModel>>> GetAllBannersAsync()
+        public async Task<ActionResult<IEnumerable<BanerDto>>> GetAllBannersAsync()
         {
             var banners = await bannerService.GetAllBannersAsync();
             return Ok(banners);
@@ -27,7 +27,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpPost]
         [Authorize("BannerWrite")]
-        public async Task<IActionResult> CreateBannerAsync(BanerViewModel bannerModel)
+        public async Task<IActionResult> CreateBannerAsync(BanerDto bannerModel)
         {
             await bannerService.CreateBannerAsync(bannerModel);
             return NoContent();
@@ -35,7 +35,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpPut("{id}")]
         [Authorize("BannerEdit")]
-        public async Task<IActionResult> EditBannerAsync(int id, BanerViewModel bannerModel)
+        public async Task<IActionResult> EditBannerAsync(int id, BanerDto bannerModel)
         {
             await bannerService.EditBannerAsync(id, bannerModel);
             return NoContent();

@@ -6,24 +6,24 @@ using BookStoreBusinessLogic.BusinessLogic.CMS;
 using BookStoreData.Data;
 using BookStoreData.Models.CMS;
 using BookStoreData.Models.Helpers;
-using BookStoreViewModels.ViewModels.CMS;
-using BookStoreViewModels.ViewModels.Statistics;
+using BookStoreDto.Dtos.CMS;
+using BookStoreDto.Dtos.Statistics;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.CMS
 {
     public interface ICMSService
     {
-        Task<CMSWeeklySummaryViewModel> GetWeeklySummaryOfOrdersRentalsReservationsAsync();
+        Task<CMSWeeklySummaryDto> GetWeeklySummaryOfOrdersRentalsReservationsAsync();
     }
 
     public class CMSService
         (BookStoreContext context) 
         : ICMSService
     {
-        public async Task<CMSWeeklySummaryViewModel> GetWeeklySummaryOfOrdersRentalsReservationsAsync()
+        public async Task<CMSWeeklySummaryDto> GetWeeklySummaryOfOrdersRentalsReservationsAsync()
         {
-            return new CMSWeeklySummaryViewModel()
+            return new CMSWeeklySummaryDto()
             {
                 NumberOfOrdersThisWeek = await GetNumberOfItemsThisWeek(context.Order),
                 NumberOfRentalsThisWeek = await GetNumberOfItemsThisWeek(context.Rental)

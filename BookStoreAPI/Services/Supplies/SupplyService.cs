@@ -3,11 +3,11 @@ using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Payments;
 using BookStoreData.Data;
 using BookStoreData.Models.Supplies;
-using BookStoreViewModels.ViewModels.Customers.Address;
-using BookStoreViewModels.ViewModels.Payments;
-using BookStoreViewModels.ViewModels.Payments.Dictionaries;
-using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
-using BookStoreViewModels.ViewModels.Supply;
+using BookStoreDto.Dtos.Customers.Address;
+using BookStoreDto.Dtos.Payments;
+using BookStoreDto.Dtos.Payments.Dictionaries;
+using BookStoreDto.Dtos.Products.Books.Dictionaries;
+using BookStoreDto.Dtos.Supply;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -15,12 +15,12 @@ namespace BookStoreAPI.Services.Supplies
 {
     public interface ISupplyService
     {
-        Task<IEnumerable<SupplyViewModel>> GetAllSuppliesAsync();
-        Task<SupplyDetailsViewModel> GetSupplyAsync(int supplyId);
-        Task AddNewSupplyAsync(SupplyPostViewModel supplyData);
+        Task<IEnumerable<SupplyDto>> GetAllSuppliesAsync();
+        Task<SupplyDetailsDto> GetSupplyAsync(int supplyId);
+        Task AddNewSupplyAsync(SupplyPostDto supplyData);
         Task DeactivateSupplyAsync(int supplyId);
-        Task UpdateSupplyAsync(int supplyId, SupplyPutViewModel supplyData);
-        Task<SupplyStatisticsViewModel> GetMonthlySupplyGrossExpensesAsync(int month, int year);
+        Task UpdateSupplyAsync(int supplyId, SupplyPutDto supplyData);
+        Task<SupplyStatisticsDto> GetMonthlySupplyGrossExpensesAsync(int month, int year);
     }
 
     public class SupplyService
@@ -28,11 +28,11 @@ namespace BookStoreAPI.Services.Supplies
             ISupplyGoodsService supplyGoodsService,
             IPaymentService paymentService) : ISupplyService
     {
-        public async Task<IEnumerable<SupplyViewModel>> GetAllSuppliesAsync()
+        public async Task<IEnumerable<SupplyDto>> GetAllSuppliesAsync()
         {
             return await context.Supply
                 .Where(x => x.IsActive)
-                .Select(x => new SupplyViewModel()
+                .Select(x => new SupplyDto()
                 {
                     Id = x.Id,
                     SupplierName = x.Supplier.Name,
@@ -44,23 +44,23 @@ namespace BookStoreAPI.Services.Supplies
                 })
                 .ToListAsync();
         }
-        public async Task<SupplyDetailsViewModel> GetSupplyAsync(int supplyId)
+        public async Task<SupplyDetailsDto> GetSupplyAsync(int supplyId)
         {
             var supply = await context.Supply
                 .Where(x => x.IsActive && x.Id == supplyId)
-                .Select(x => new SupplyDetailsViewModel()
+                .Select(x => new SupplyDetailsDto()
                 {
                     Id = x.Id,
                     DeliveryDate = x.DeliveryDate,
                     DeliveryStatusId = (int)x.DeliveryStatusID,
                     DeliveryStatusName = x.DeliveryStatus.Name,
-                    SupplierData = new SupplierViewModel()
+                    SupplierData = new SupplierDto()
                     {
                         Id = x.Supplier.Id,
                         Name = x.Supplier.Name,
                         Email = x.Supplier.Email,
                         PhoneNumber = x.Supplier.PhoneNumber,
-                        SupplierAddress = new AddressDetailsViewModel()
+                        SupplierAddress = new AddressDetailsDto()
                         {
                             Id = x.Supplier.Address.Id,
                             AddressTypeID = x.Supplier.Address.AddressTypeID,
@@ -74,17 +74,17 @@ namespace BookStoreAPI.Services.Supplies
                             StreetNumber = x.Supplier.Address.StreetNumber,
                         }
                     },
-                    PaymentData = new PaymentDetailsViewModel()
+                    PaymentData = new PaymentDetailsDto()
                     {
                         Id = x.Payment.Id,
                         Amount = x.Payment.Amount,
                         PaymentDate = x.Payment.PaymentDate,
-                        PaymentMethod = new PaymentMethodViewModel()
+                        PaymentMethod = new PaymentMethodDto()
                         {
                             Id = x.Payment.PaymentMethod.Id,
                             Name = x.Payment.PaymentMethod.Name
                         },
-                        TransactionStatus = new TransactionStatusViewModel()
+                        TransactionStatus = new TransactionStatusDto()
                         {
                             Id = x.Payment.TransactionStatus.Id,
                             Name = x.Payment.TransactionStatus.Name
@@ -92,7 +92,7 @@ namespace BookStoreAPI.Services.Supplies
                     },
                     SupplyBooksData = x.SupplyGoods
                     .Where(y => y.IsActive && y.SupplyID == supplyId)
-                    .Select(y => new SupplyBooksViewModel()
+                    .Select(y => new SupplyBooksDto()
                     {
                         BookItemId = y.BookItemID,
                         BookTitle = y.BookItem.Book.Title,
@@ -103,7 +103,7 @@ namespace BookStoreAPI.Services.Supplies
                         Quantity = y.Quantity,
                         Authors = y.BookItem.Book.BookAuthors
                             .Where(y => y.IsActive)
-                            .Select(y => new AuthorViewModel()
+                            .Select(y => new AuthorDto()
                             {
                                 Id = (int)y.AuthorID,
                                 Name = y.Author.Name,
@@ -120,7 +120,7 @@ namespace BookStoreAPI.Services.Supplies
 
             return supply;
         }
-        public async Task AddNewSupplyAsync(SupplyPostViewModel supplyData)
+        public async Task AddNewSupplyAsync(SupplyPostDto supplyData)
         {
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -157,7 +157,7 @@ namespace BookStoreAPI.Services.Supplies
                 }
             }
         }
-        public async Task UpdateSupplyAsync(int supplyId, SupplyPutViewModel supplyData)
+        public async Task UpdateSupplyAsync(int supplyId, SupplyPutDto supplyData)
         {
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -210,18 +210,18 @@ namespace BookStoreAPI.Services.Supplies
                 }
             }
         }
-        public async Task<SupplyStatisticsViewModel> GetMonthlySupplyGrossExpensesAsync(int month, int year)
+        public async Task<SupplyStatisticsDto> GetMonthlySupplyGrossExpensesAsync(int month, int year)
         {
             var supplyStats = await context.SupplyGoods
                 .Where(x => x.IsActive && x.CreationDate.Month == month && x.CreationDate.Year == year)
                 .GroupBy(x => 1)
-                .Select(group => new SupplyStatisticsViewModel()
+                .Select(group => new SupplyStatisticsDto()
                 {
                     GrossExpenses = group.Sum(y => y.BruttoPrice * y.Quantity)
                 })
                 .FirstOrDefaultAsync();
 
-            return supplyStats ?? new SupplyStatisticsViewModel();
+            return supplyStats ?? new SupplyStatisticsDto();
         }
     }
 }

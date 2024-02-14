@@ -1,8 +1,9 @@
 ﻿using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Orders;
+using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
-using BookStoreViewModels.ViewModels.Invoices;
+using BookStoreDto.Dtos.Invoices;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -17,10 +18,21 @@ namespace BookStoreAPI.Services.Invoices
         Task<InvoiceDocument> CreateInvoice(int orderId);
     }
 
-    public class InvoiceService(BookStoreContext context, IOrderService orderService) : IInvoiceService
+    public class InvoiceService
+        (BookStoreContext context,
+        IUserContextService userContextService,
+        IOrderService orderService)
+        : IInvoiceService
     {
         public async Task<InvoiceDocument> CreateInvoice(int orderId)
         {
+            var customer = await userContextService.GetCustomerByTokenAsync();
+            var isOrderBelongsToUser = await orderService.CheckIfOrderBelongsToCustomer(customer.Id, orderId);
+            if (!isOrderBelongsToUser)
+            {
+                throw new BadRequestException("Nie można pobrać faktury zamówienia, które nie należy do zalogowanego użytkownika.");
+            }
+
             var invoiceData = await orderService.GetUserOrderForInvoiceByOrderIdAsync(orderId);
             return new InvoiceDocument(invoiceData);
         }
@@ -28,9 +40,9 @@ namespace BookStoreAPI.Services.Invoices
 
     public class InvoiceDocument : IDocument
     {
-        public InvoiceDataViewModel Model { get; }
+        public InvoiceDataDto Model { get; }
 
-        public InvoiceDocument(InvoiceDataViewModel model)
+        public InvoiceDocument(InvoiceDataDto model)
         {
             Model = model;
         }
@@ -231,7 +243,7 @@ namespace BookStoreAPI.Services.Invoices
         private decimal TaxValue { get; }
         private decimal TotalBrutto { get; }
 
-        public PaymentComponent(List<ProductInvoiceViewModel> orderItems)
+        public PaymentComponent(List<ProductInvoiceDto> orderItems)
         {
             TotalNetto = orderItems.Sum(x => x.NettoPrice * x.Quantity);
             TaxValue = orderItems.Sum(x => x.TaxValue * x.Quantity);
@@ -322,9 +334,9 @@ namespace BookStoreAPI.Services.Invoices
     public class SellerAddressComponent : IComponent
     {
         private string Title { get; }
-        private SellerInvoiceViewModel SellerData { get; }
+        private SellerInvoiceDto SellerData { get; }
 
-        public SellerAddressComponent(string title, SellerInvoiceViewModel sellerData)
+        public SellerAddressComponent(string title, SellerInvoiceDto sellerData)
         {
             Title = title;
             SellerData = sellerData;
@@ -351,9 +363,9 @@ namespace BookStoreAPI.Services.Invoices
     public class BuyerAddressComponent : IComponent
     {
         private string Title { get; }
-        private CustomerInvoiceViewModel BuyerData { get; }
+        private CustomerInvoiceDto BuyerData { get; }
 
-        public BuyerAddressComponent(string title, CustomerInvoiceViewModel buyerData)
+        public BuyerAddressComponent(string title, CustomerInvoiceDto buyerData)
         {
             Title = title;
             BuyerData = buyerData;

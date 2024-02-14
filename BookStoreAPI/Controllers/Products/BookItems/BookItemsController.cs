@@ -1,5 +1,5 @@
 ﻿using BookStoreAPI.Services.BookItems;
-using BookStoreViewModels.ViewModels.Products.BookItems;
+using BookStoreDto.Dtos.Products.BookItems;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +12,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         [HttpGet]
         [Route("Carousel/{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<BookItemCarouselViewModel>>> GetBookItemsByFormIdForCarouselAsync(int id)
+        public async Task<ActionResult<IEnumerable<BookItemCarouselDto>>> GetBookItemsByFormIdForCarouselAsync(int id)
         {
             var bookItems = await bookItemService.GetBookItemsByFormIdForCarouselAsync(id);
             return Ok(bookItems);
@@ -21,7 +21,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         [HttpGet]
         [Route("Store")]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<BookItemViewModel>>> GetBookItemsAsync([FromQuery]BookItemFiltersViewModel bookItemFilters)
+        public async Task<ActionResult<IEnumerable<BookItemDto>>> GetBookItemsAsync([FromQuery]BookItemFiltersDto bookItemFilters)
         {
             var bookItems = await bookItemService.GetBookItemsAsync(bookItemFilters);
             return Ok(bookItems);
@@ -30,7 +30,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         [HttpGet]
         [Route("Store/{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<BookItemDetailsViewModel>> GetBookItemDetailsAsync(int id)
+        public async Task<ActionResult<BookItemDetailsDto>> GetBookItemDetailsAsync(int id)
         {
             var bookItem = await bookItemService.GetBookItemDetailsAsync(id);
             return Ok(bookItem);
@@ -38,7 +38,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpGet]
         [Authorize("BookItemsRead")]
-        public async Task<ActionResult<IEnumerable<BookItemCMSViewModel>>> GetBookItemsForCMSAync()
+        public async Task<ActionResult<IEnumerable<BookItemCMSDto>>> GetBookItemsForCMSAync()
         {
             var bookItems = await bookItemService.GetBookItemsForCMSAync();
             return Ok(bookItems);
@@ -46,7 +46,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpGet("{id}")]
         [Authorize("BookItemsRead")]
-        public async Task<ActionResult<BookItemDetailsCMSViewModel>> GetBookItemByIdForCMSAsync(int id)
+        public async Task<ActionResult<BookItemDetailsCMSDto>> GetBookItemByIdForCMSAsync(int id)
         {
             var bookItem = await bookItemService.GetBookItemByIdForCMSAsync(id);
             return Ok(bookItem);
@@ -54,7 +54,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpPost]
         [Authorize("BookItemsWrite")]
-        public async Task<IActionResult> PostBookItemAsync(BookItemPostCMSViewModel bookItemModel)
+        public async Task<IActionResult> PostBookItemAsync(BookItemPostCMSDto bookItemModel)
         {
             await bookItemService.CreateBookItemAsync(bookItemModel);
             return NoContent();
@@ -62,7 +62,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpPut("{id}")]
         [Authorize("BookItemsEdit")]
-        public async Task<IActionResult> PutBookItemAsync(int id, BookItemPostCMSViewModel bookItemModel)
+        public async Task<IActionResult> PutBookItemAsync(int id, BookItemPostCMSDto bookItemModel)
         {
             await bookItemService.UpdateBookItemAsync(id, bookItemModel);
             return NoContent();

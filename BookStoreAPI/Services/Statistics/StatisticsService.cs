@@ -5,14 +5,14 @@ using BookStoreAPI.Services.Supplies;
 using BookStoreBusinessLogic.BusinessLogic.CMS;
 using BookStoreData.Data;
 using BookStoreData.Models.CMS;
-using BookStoreViewModels.ViewModels.Statistics;
+using BookStoreDto.Dtos.Statistics;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.Statistic
 {
     public interface IStatisticsService
     {
-        Task<StatisticsMonthlyRaportViewModel> GetMonthlyRaportAsync(int month, int year);
+        Task<StatisticsMonthlyRaportDto> GetMonthlyRaportAsync(int month, int year);
     }
 
     public class StatisticsService
@@ -21,11 +21,11 @@ namespace BookStoreAPI.Services.Statistic
             ISupplyService supplyService,
             IStatisticsLogic statisticsLogic) : IStatisticsService
     {
-        public async Task<StatisticsMonthlyRaportViewModel> GetMonthlyRaportAsync(int month, int year)
+        public async Task<StatisticsMonthlyRaportDto> GetMonthlyRaportAsync(int month, int year)
         {
             var statisticsQuery = context.Statistics
                 .Where(x => x.IsActive && x.Month == month && x.Year == year)
-                .Select(x => new StatisticsMonthlyRaportViewModel()
+                .Select(x => new StatisticsMonthlyRaportDto()
                 {
                     Month = month,
                     Year = year,
@@ -36,7 +36,7 @@ namespace BookStoreAPI.Services.Statistic
                     TotalIncome = 0,
                     BookItems = x.BookItemsStatistics
                         .Where(y => y.IsActive)
-                        .Select(y => new StatisticsBookItemsDetailsViewModel()
+                        .Select(y => new StatisticsBookItemsDetailsDto()
                         {
                             BookTitle = y.BookItem.Book.Title,
                             FormTitle = y.BookItem.Form.Name,
@@ -48,7 +48,7 @@ namespace BookStoreAPI.Services.Statistic
                         .ToList(),
                     Categories = x.CategoriesStatistics
                         .Where(y => y.IsActive)
-                        .Select(y => new StatisticsCategoriesDetailsViewModel()
+                        .Select(y => new StatisticsCategoriesDetailsDto()
                         {
                             CategoryName = y.Category.Name,
                             NumberOfAppearances = y.NumberOfAppearances,
@@ -119,7 +119,7 @@ namespace BookStoreAPI.Services.Statistic
             }
         }
 
-        private async Task GenerateMonthlyBookItemsInSalesAsync(List<StatisticsBookItemsViewModel> bookItems, int statisticsId, bool isUpdate)
+        private async Task GenerateMonthlyBookItemsInSalesAsync(List<StatisticsBookItemsDto> bookItems, int statisticsId, bool isUpdate)
         {
             if (bookItems.Any())
             {
@@ -163,7 +163,7 @@ namespace BookStoreAPI.Services.Statistic
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }
         }
-        private async Task GenerateMonthlyCategoriesInSalesAsync(List<StatisticsCategoriesViewModel> categoryIds, int statisticsId, bool isUpdate)
+        private async Task GenerateMonthlyCategoriesInSalesAsync(List<StatisticsCategoriesDto> categoryIds, int statisticsId, bool isUpdate)
         {
             if (categoryIds.Any())
             {
@@ -205,7 +205,7 @@ namespace BookStoreAPI.Services.Statistic
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }
         }
-        private List<StatisticsBookItemsDetailsViewModel> CalculatePercentageDataInBookStats(List<StatisticsBookItemsDetailsViewModel> bookItems)
+        private List<StatisticsBookItemsDetailsDto> CalculatePercentageDataInBookStats(List<StatisticsBookItemsDetailsDto> bookItems)
         {
             int totalSoldUnits = bookItems.Select(x => x.SoldUnits).Sum();
             decimal totalSoldPrices = bookItems.Select(x => x.SoldPrice).Sum();
@@ -218,7 +218,7 @@ namespace BookStoreAPI.Services.Statistic
 
             return bookItems;
         }
-        private List<StatisticsCategoriesDetailsViewModel> CalculatePercentageDataInCategoryStats(List<StatisticsCategoriesDetailsViewModel> categories)
+        private List<StatisticsCategoriesDetailsDto> CalculatePercentageDataInCategoryStats(List<StatisticsCategoriesDetailsDto> categories)
         {
             int totalNumberOfAppearances = categories.Select(x => x.NumberOfAppearances).Sum();
 

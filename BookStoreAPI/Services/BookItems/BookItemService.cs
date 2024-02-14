@@ -8,10 +8,10 @@ using BookStoreAPI.Services.Wishlists;
 using BookStoreData.Data;
 using BookStoreData.Models.Orders;
 using BookStoreData.Models.Products.BookItems;
-using BookStoreViewModels.ViewModels.Media.Images;
-using BookStoreViewModels.ViewModels.Orders;
-using BookStoreViewModels.ViewModels.Products.BookItems;
-using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
+using BookStoreDto.Dtos.Media.Images;
+using BookStoreDto.Dtos.Orders;
+using BookStoreDto.Dtos.Products.BookItems;
+using BookStoreDto.Dtos.Products.Books.Dictionaries;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
@@ -19,16 +19,16 @@ namespace BookStoreAPI.Services.BookItems
 {
     public interface IBookItemService
     {
-        Task<BookItemDetailsCMSViewModel> GetBookItemByIdForCMSAsync(int bookItemId);
-        Task<BookItemDetailsViewModel> GetBookItemDetailsAsync(int bookItemId);
-        Task<IEnumerable<BookItemViewModel>> GetBookItemsAsync(BookItemFiltersViewModel bookItemFilters);
-        Task<IEnumerable<BookItemCarouselViewModel>> GetBookItemsByFormIdForCarouselAsync(int formId);
-        Task<IEnumerable<BookItemCMSViewModel>> GetBookItemsForCMSAync();
-        Task CreateBookItemAsync(BookItemPostCMSViewModel bookItemModel);
-        Task UpdateBookItemAsync(int bookItemId, BookItemPostCMSViewModel bookItemModel);
+        Task<BookItemDetailsCMSDto> GetBookItemByIdForCMSAsync(int bookItemId);
+        Task<BookItemDetailsDto> GetBookItemDetailsAsync(int bookItemId);
+        Task<IEnumerable<BookItemDto>> GetBookItemsAsync(BookItemFiltersDto bookItemFilters);
+        Task<IEnumerable<BookItemCarouselDto>> GetBookItemsByFormIdForCarouselAsync(int formId);
+        Task<IEnumerable<BookItemCMSDto>> GetBookItemsForCMSAync();
+        Task CreateBookItemAsync(BookItemPostCMSDto bookItemModel);
+        Task UpdateBookItemAsync(int bookItemId, BookItemPostCMSDto bookItemModel);
         Task DeactivateBookItemAsync(int bookItemId);
         Task ManageSoldUnitsAsync(List<OrderItems> orderItems);
-        Task<List<BookItemDiscountViewModel>> GetBookItemsFromOrderAsync(List<OrderItemsListViewModel> cartItems);
+        Task<List<BookItemDiscountDto>> GetBookItemsFromOrderAsync(List<OrderItemsListDto> cartItems);
     }
 
     public class BookItemService
@@ -39,11 +39,11 @@ namespace BookStoreAPI.Services.BookItems
         IStockAmountService stockAmountService)
         : IBookItemService
     {
-        public async Task<BookItemDetailsCMSViewModel> GetBookItemByIdForCMSAsync(int bookItemId)
+        public async Task<BookItemDetailsCMSDto> GetBookItemByIdForCMSAsync(int bookItemId)
         {
             return await context.BookItem
                 .Where(x => x.IsActive && x.Id == bookItemId)
-                .Select(element => new BookItemDetailsCMSViewModel
+                .Select(element => new BookItemDetailsCMSDto
                 {
                     Id = element.Id,
                     TranslatorName = element.Translator.Name + " " + element.Translator.Surname,
@@ -69,13 +69,13 @@ namespace BookStoreAPI.Services.BookItems
                 })
                 .FirstAsync();
         }
-        public async Task<IEnumerable<BookItemCMSViewModel>> GetBookItemsForCMSAync()
+        public async Task<IEnumerable<BookItemCMSDto>> GetBookItemsForCMSAync()
         {
             return await context.BookItem
                 .Include(x => x.Book)
                 .Include(x => x.Form)
                 .Where(x => x.IsActive == true)
-                .Select(x => new BookItemCMSViewModel
+                .Select(x => new BookItemCMSDto
                 {
                     Id = x.Id,
                     FormName = x.Form.Name,
@@ -86,12 +86,12 @@ namespace BookStoreAPI.Services.BookItems
                 })
                 .ToListAsync();
         }
-        public async Task<IEnumerable<BookItemCarouselViewModel>> GetBookItemsByFormIdForCarouselAsync(int formId)
+        public async Task<IEnumerable<BookItemCarouselDto>> GetBookItemsByFormIdForCarouselAsync(int formId)
         {
             return await context.BookItem
                 .Include(x => x.Form)
                 .Where(x => x.IsActive == true && x.FormID == formId)
-                .Select(x => new BookItemCarouselViewModel
+                .Select(x => new BookItemCarouselDto
                 {
                     Id = x.Id,
                     Title = x.Book.Title,
@@ -103,13 +103,13 @@ namespace BookStoreAPI.Services.BookItems
                 }).Take(25)
                 .ToListAsync();
         }
-        public async Task<IEnumerable<BookItemViewModel>> GetBookItemsAsync(BookItemFiltersViewModel bookItemFilters)
+        public async Task<IEnumerable<BookItemDto>> GetBookItemsAsync(BookItemFiltersDto bookItemFilters)
         {
             var items = context.BookItem
                         .Where(x => x.IsActive == true)
                         .ApplyBookFilters(bookItemFilters);
 
-            var bookItems = await items.Select(x => new BookItemViewModel
+            var bookItems = await items.Select(x => new BookItemDto
             {
                 Id = x.Id,
                 ImageURL = x.Book.BookImages
@@ -126,9 +126,9 @@ namespace BookStoreAPI.Services.BookItems
                 Score = x.Score,
                 AvailabilityID = x.AvailabilityID,
                 AvailabilityName = x.Availability.Name,
-                Authors = x.Book.BookAuthors.Where(x => x.IsActive).Select(y => new AuthorViewModel
+                Authors = x.Book.BookAuthors.Where(x => x.IsActive).Select(y => new AuthorDto
                 {
-                    Id = (int)y.AuthorID,
+                    Id = y.AuthorID,
                     Name = y.Author.Name,
                     Surname = y.Author.Surname,
                 }).ToList(),
@@ -140,14 +140,14 @@ namespace BookStoreAPI.Services.BookItems
 
             return bookItems;
         }
-        public async Task<BookItemDetailsViewModel> GetBookItemDetailsAsync(int bookItemId)
+        public async Task<BookItemDetailsDto> GetBookItemDetailsAsync(int bookItemId)
         {
             bool isWishlisted = await wishlistService.IsBookItemWishlistedByCustomer(bookItemId);
             var scoreValues = await bookReviewService.GetBookItemReviewScoresAsync(bookItemId);
 
             var bookItem = await context.BookItem
                 .Where(x => x.Id == bookItemId && x.IsActive)
-                .Select(x => new BookItemDetailsViewModel()
+                .Select(x => new BookItemDetailsDto()
                 {
                     Id = x.Id,
                     BookTitle = x.Book.Title,
@@ -169,18 +169,18 @@ namespace BookStoreAPI.Services.BookItems
                     IsWishlisted = isWishlisted,
                     Description = x.Book.Description,
                     ReleaseDate = x.PublishingDate,
-                    Authors = x.Book.BookAuthors.Select(y => new AuthorViewModel
+                    Authors = x.Book.BookAuthors.Select(y => new AuthorDto
                     {
                         Id = (int)y.AuthorID,
                         Name = y.Author.Name,
                         Surname = y.Author.Surname,
                     }).ToList(),
-                    Categories = x.Book.BookCategories.Select(y => new CategoryViewModel
+                    Categories = x.Book.BookCategories.Select(y => new CategoryDto
                     {
                         Id = (int)y.CategoryID,
                         Name = y.Category.Name
                     }).ToList(),
-                    Images = x.Book.BookImages.Select(y => new ImageViewModel
+                    Images = x.Book.BookImages.Select(y => new ImageDto
                     {
                         Id = (int)y.ImageID,
                         ImageURL = y.Image.ImageURL,
@@ -198,25 +198,36 @@ namespace BookStoreAPI.Services.BookItems
 
             return bookItem;
         }
-        public async Task CreateBookItemAsync(BookItemPostCMSViewModel bookItemModel)
+        public async Task CreateBookItemAsync(BookItemPostCMSDto bookItemModel)
         {
-            BookItem bookItem = new();
-            bookItem.CopyProperties(bookItemModel);
-            bookItem.AvailabilityID = 2;
-            await context.BookItem.AddAsync(bookItem);
-
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
-
-            if (bookItem.FormID == 1)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
-            }
-            else if (bookItem.FormID == 2)
-            {
-                await stockAmountService.CreateStockAmountAsync(bookItem.Id, 0);
-            }
+                try
+                {
+                    BookItem bookItem = new();
+                    bookItem.CopyProperties(bookItemModel);
+                    bookItem.AvailabilityID = 2;
+                    await context.BookItem.AddAsync(bookItem);
+
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+
+                    if (bookItem.FormID == 1)
+                    {
+                        await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
+                    }
+                    else if (bookItem.FormID == 2)
+                    {
+                        await stockAmountService.CreateStockAmountAsync(bookItem.Id, 0);
+                    }
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }            
         }
-        public async Task UpdateBookItemAsync(int bookItemId, BookItemPostCMSViewModel bookItemModel)
+        public async Task UpdateBookItemAsync(int bookItemId, BookItemPostCMSDto bookItemModel)
         {
             var bookItem = await context.BookItem.FirstOrDefaultAsync(x => x.Id == bookItemId && x.IsActive);
             if (bookItem == null)
@@ -229,17 +240,28 @@ namespace BookStoreAPI.Services.BookItems
         }
         public async Task DeactivateBookItemAsync(int bookItemId)
         {
-            var bookItem = await context.BookItem.FirstOrDefaultAsync(x => x.IsActive && x.Id == bookItemId);
-            if (bookItem == null)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                throw new NotFoundException("Nie znaleziono elementu bookItem.");
-            }
+                try
+                {
+                    var bookItem = await context.BookItem.FirstOrDefaultAsync(x => x.IsActive && x.Id == bookItemId);
+                    if (bookItem == null)
+                    {
+                        throw new NotFoundException("Nie znaleziono elementu bookItem.");
+                    }
 
-            await bookDiscountService.DeactivateAllBookDiscountsByBookItemAsync(bookItemId);
-            await stockAmountService.DeactivateStockAmountAsync(bookItemId);
+                    await bookDiscountService.DeactivateAllBookDiscountsByBookItemAsync(bookItemId);
+                    await stockAmountService.DeactivateStockAmountAsync(bookItemId);
 
-            bookItem.IsActive = false;
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    bookItem.IsActive = false;
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }            
         }
         public async Task ManageSoldUnitsAsync(List<OrderItems> orderItems)
         {
@@ -256,12 +278,12 @@ namespace BookStoreAPI.Services.BookItems
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
 
-        public async Task<List<BookItemDiscountViewModel>> GetBookItemsFromOrderAsync(List<OrderItemsListViewModel> cartItems)
+        public async Task<List<BookItemDiscountDto>> GetBookItemsFromOrderAsync(List<OrderItemsListDto> cartItems)
         {
             List<int> cartItemIds = cartItems.Select(x => x.BookItemID).ToList();
             return await context.BookItem
                 .Where(x => cartItemIds.Contains(x.Id))
-                .Select(x => new BookItemDiscountViewModel()
+                .Select(x => new BookItemDiscountDto()
                 {
                     BookItemId = x.Id,
                     BookItemQuantity = 1,

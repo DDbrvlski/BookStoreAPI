@@ -1,6 +1,6 @@
 ﻿using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Books;
-using BookStoreViewModels.ViewModels.Products.Books;
+using BookStoreDto.Dtos.Products.Books;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,21 +20,21 @@ namespace BookStoreAPI.Controllers.Products.Books
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<BooksCMSViewModel>>> GetAllBooksAsync()
+        public async Task<ActionResult<IEnumerable<BooksCMSDto>>> GetAllBooksAsync()
         {
             return Ok(await bookService.GetAllBooksForCMSAsync());
         }
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<BookDetailsCMSViewModel>> GetBookByIdAsync(int id)
+        public async Task<ActionResult<BookDetailsCMSDto>> GetBookByIdAsync(int id)
         {
             return Ok(await bookService.GetBookDetailsForCMSByIdAsync(id));
         }
 
         [HttpPost]
         [Authorize("BooksWrite")]
-        public async Task<IActionResult> PostBookAsync(BookPostViewModel bookPost)
+        public async Task<IActionResult> PostBookAsync(BookPostDto bookPost)
         {
             if (bookPost == null)
             {
@@ -47,7 +47,7 @@ namespace BookStoreAPI.Controllers.Products.Books
 
         [HttpPut("{id}")]
         [Authorize("BooksEdit")]
-        public async Task<IActionResult> PutBookAsync(int id, BookPostViewModel bookPut)
+        public async Task<IActionResult> PutBookAsync(int id, BookPostDto bookPut)
         {
             if (bookPut == null)
             {

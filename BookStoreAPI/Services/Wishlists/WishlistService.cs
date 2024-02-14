@@ -5,8 +5,8 @@ using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
 using BookStoreData.Models.Wishlist;
-using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
-using BookStoreViewModels.ViewModels.Wishlists;
+using BookStoreDto.Dtos.Products.Books.Dictionaries;
+using BookStoreDto.Dtos.Wishlists;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.Wishlists
@@ -14,7 +14,7 @@ namespace BookStoreAPI.Services.Wishlists
     public interface IWishlistService
     {
         Task<Wishlist> CreateWishlistAsync(Customer customer);
-        Task<WishlistViewModel> GetUserWishlistAsync(Guid publicIdentifier);
+        Task<WishlistDto> GetUserWishlistAsync(Guid publicIdentifier);
         Task<Guid> GetUserGuidWishlistAsync();
         Task UpdateWishlistAsync(int bookItemId, bool isWishlisted);
         Task DeactivateWishlistAsync(int customerId);
@@ -23,7 +23,7 @@ namespace BookStoreAPI.Services.Wishlists
     }
     public class WishlistService(BookStoreContext context, IUserContextService userContextService, IBookDiscountService bookDiscountService) : IWishlistService
     {
-        public async Task<WishlistViewModel> GetUserWishlistAsync(Guid publicIdentifier)
+        public async Task<WishlistDto> GetUserWishlistAsync(Guid publicIdentifier)
         {
             var isPublicWishlist = await context.Wishlist
                 .Where(x => x.PublicIdentifier == publicIdentifier && x.IsActive)
@@ -41,13 +41,13 @@ namespace BookStoreAPI.Services.Wishlists
 
             var wishlistToSend = await context.Wishlist
                 .Where(x => x.PublicIdentifier == publicIdentifier && x.IsActive)
-                .Select(x => new WishlistViewModel()
+                .Select(x => new WishlistDto()
                 {
                     Id = x.Id,
                     IsPublic = x.IsPublic,
                     Items = x.WishlistItems
                         .Where(y => y.WishlistID == x.Id && y.IsActive)
-                        .Select(y => new WishlistItemViewModel()
+                        .Select(y => new WishlistItemDto()
                         {
                             Id = (int)y.BookItemID,
                             BookTitle = y.BookItem.Book.Title,
@@ -57,7 +57,7 @@ namespace BookStoreAPI.Services.Wishlists
                             FileFormatName = y.BookItem.FileFormat.Name,
                             ImageURL = y.BookItem.Book.BookImages.Where(z => z.Image.Position == 1).FirstOrDefault().Image.ImageURL,
                             BruttoPrice = y.BookItem.NettoPrice * (1 + ((decimal)y.BookItem.Tax / 100)),
-                            authors = y.BookItem.Book.BookAuthors.Select(y => new AuthorViewModel
+                            authors = y.BookItem.Book.BookAuthors.Select(y => new AuthorDto
                             {
                                 Id = (int)y.AuthorID,
                                 Name = y.Author.Name,

@@ -1,4 +1,4 @@
-﻿using BookStoreViewModels.ViewModels.Accounts.Account;
+﻿using BookStoreDto.Dtos.Accounts.Account;
 using System.Net.Mail;
 using System.Net;
 
@@ -8,7 +8,7 @@ namespace BookStoreAPI.Services.Email
     {
         void SendEmail(string to, string subject, string body);
     }
-    public class EmailService(AccountEmailConfigurationViewModel emailConfiguration) : IEmailService
+    public class EmailService(AccountEmailConfigurationDto emailConfiguration) : IEmailService
     {
         public void SendEmail(string to, string subject, string body)
         {

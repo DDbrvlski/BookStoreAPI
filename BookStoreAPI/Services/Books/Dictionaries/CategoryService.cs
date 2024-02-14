@@ -1,21 +1,21 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.Books;
-using BookStoreViewModels.ViewModels.Products.Books;
+using BookStoreDto.Dtos.Products.Books;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.Books.Dictionaries
 {
     public interface ICategoryService
     {
-        Task AddCategoriesForBookAsync(BookPostViewModel book, List<int>? categoryIds = null);
-        Task UpdateCategoriesForBookAsync(BookPostViewModel book);
+        Task AddCategoriesForBookAsync(BookPostDto book, List<int>? categoryIds = null);
+        Task UpdateCategoriesForBookAsync(BookPostDto book);
         Task DeactivateAllCategoriesForBookAsync(int? bookId);
         Task DeactivateChosenCategoriesForBookAsync(int? bookId, List<int> categoryIds);
     }
     public class CategoryService(BookStoreContext context) : ICategoryService
     {
-        public async Task AddCategoriesForBookAsync(BookPostViewModel book, List<int>? categoryIds = null)
+        public async Task AddCategoriesForBookAsync(BookPostDto book, List<int>? categoryIds = null)
         {
             //Reużywalność funkcji dla dodawania nowych kategorii i aktualizowania
             if (categoryIds == null)
@@ -37,7 +37,7 @@ namespace BookStoreAPI.Services.Books.Dictionaries
             }
         }
 
-        public async Task UpdateCategoriesForBookAsync(BookPostViewModel book)
+        public async Task UpdateCategoriesForBookAsync(BookPostDto book)
         {
             List<int> categoryIds = book.ListOfBookCategories.Select(x => x.Id).ToList();
 

@@ -1859,7 +1859,7 @@ namespace BookStoreAPI.Migrations
                     b.ToTable("WishlistItem");
                 });
 
-            modelBuilder.Entity("BookStoreViewModels.ViewModels.Helpers.ListOfIds", b =>
+            modelBuilder.Entity("BookStoreDto.Dtos.Helpers.ListOfIds", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2379,7 +2379,7 @@ namespace BookStoreAPI.Migrations
                     b.Navigation("PaymentMethod");
                 });
 
-            modelBuilder.Entity("BookStoreViewModels.ViewModels.Helpers.ListOfIds", b =>
+            modelBuilder.Entity("BookStoreDto.Dtos.Helpers.ListOfIds", b =>
                 {
                     b.HasOne("BookStoreData.Models.Products.Books.Book", null)
                         .WithMany("ListOfBookAuthors")

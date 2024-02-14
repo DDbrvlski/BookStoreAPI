@@ -9,30 +9,31 @@ using BookStoreAPI.Services.Stock;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
 using BookStoreData.Models.Orders;
-using BookStoreViewModels.ViewModels.Customers;
-using BookStoreViewModels.ViewModels.Customers.Address;
-using BookStoreViewModels.ViewModels.Invoices;
-using BookStoreViewModels.ViewModels.Orders;
-using BookStoreViewModels.ViewModels.Orders.Dictionaries;
-using BookStoreViewModels.ViewModels.Payments;
-using BookStoreViewModels.ViewModels.Payments.Dictionaries;
-using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
-using BookStoreViewModels.ViewModels.Statistics;
-using BookStoreViewModels.ViewModels.Stock;
+using BookStoreDto.Dtos.Customers;
+using BookStoreDto.Dtos.Customers.Address;
+using BookStoreDto.Dtos.Invoices;
+using BookStoreDto.Dtos.Orders;
+using BookStoreDto.Dtos.Orders.Dictionaries;
+using BookStoreDto.Dtos.Payments;
+using BookStoreDto.Dtos.Payments.Dictionaries;
+using BookStoreDto.Dtos.Products.Books.Dictionaries;
+using BookStoreDto.Dtos.Statistics;
+using BookStoreDto.Dtos.Stock;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.Orders
 {
     public interface IOrderService
     {
-        Task CreateNewOrderAsync(OrderPostViewModel orderModel);
-        Task<IEnumerable<OrderViewModel>> GetAllOrdersAsync();
-        Task<OrderDetailsViewModel> GetOrderByIdAsync(int orderId);
-        Task<OrderDetailsViewModel> GetUserOrderByIdAsync(int orderId);
-        Task<IEnumerable<OrderViewModel>> GetUserOrdersAsync(OrderFiltersViewModel orderFilters);
-        Task<InvoiceDataViewModel> GetUserOrderForInvoiceByOrderIdAsync(int orderId);
-        Task<OrderDiscountCheckViewModel> ApplyDiscountCodeToOrderAsync(OrderDiscountCheckViewModel discountCode);
-        Task<OrderStatisticDetailsViewModel> GetMonthlyOrderStatisticsAsync(int month, int year);
+        Task CreateNewOrderAsync(OrderPostDto orderModel);
+        Task<IEnumerable<OrderDto>> GetAllOrdersAsync();
+        Task<OrderDetailsDto> GetOrderByIdAsync(int orderId);
+        Task<OrderDetailsDto> GetUserOrderByIdAsync(int orderId);
+        Task<IEnumerable<OrderDto>> GetUserOrdersAsync(OrderFiltersDto orderFilters);
+        Task<InvoiceDataDto> GetUserOrderForInvoiceByOrderIdAsync(int orderId);
+        Task<OrderDiscountCheckDto> ApplyDiscountCodeToOrderAsync(OrderDiscountCheckDto discountCode);
+        Task<OrderStatisticDetailsDto> GetMonthlyOrderStatisticsAsync(int month, int year);
+        Task<bool> CheckIfOrderBelongsToCustomer(int customerId, int orderId);
     }
 
     public class OrderService
@@ -46,42 +47,42 @@ namespace BookStoreAPI.Services.Orders
                 IStockAmountService stockAmountService)
                 : IOrderService
     {
-        public async Task<OrderDetailsViewModel> GetOrderByIdAsync(int orderId)
+        public async Task<OrderDetailsDto> GetOrderByIdAsync(int orderId)
         {
             var order = await context.Order
                 .Where(x => x.Id == orderId && x.IsActive)
-                .Select(element => new OrderDetailsViewModel()
+                .Select(element => new OrderDetailsDto()
                 {
                     Id = element.Id,
                     OrderDate = element.OrderDate,
-                    DeliveryMethod = new DeliveryMethodViewModel
+                    DeliveryMethod = new DeliveryMethodDto
                     {
                         Id = (int)element.DeliveryMethodID,
                         Name = element.DeliveryMethod.Name,
                         Price = element.DeliveryMethod.Price
                     },
-                    OrderStatus = new OrderStatusViewModel
+                    OrderStatus = new OrderStatusDto
                     {
                         Id = (int)element.OrderStatusID,
                         Name = element.OrderStatus.Name
                     },
-                    Payment = new PaymentDetailsViewModel
+                    Payment = new PaymentDetailsDto
                     {
                         Id = (int)element.PaymentID,
                         Amount = element.Payment.Amount,
                         PaymentDate = element.Payment.PaymentDate,
-                        PaymentMethod = new PaymentMethodViewModel
+                        PaymentMethod = new PaymentMethodDto
                         {
                             Id = (int)element.Payment.PaymentMethodID,
                             Name = element.Payment.PaymentMethod.Name
                         },
-                        TransactionStatus = new TransactionStatusViewModel
+                        TransactionStatus = new TransactionStatusDto
                         {
                             Id = (int)element.Payment.TransactionStatusID,
                             Name = element.Payment.TransactionStatus.Name
                         }
                     },
-                    Customer = new CustomerShortDetailsViewModel
+                    Customer = new CustomerShortDetailsDto
                     {
                         Id = (int)element.CustomerID,
                         Name = element.Customer.Name,
@@ -90,7 +91,7 @@ namespace BookStoreAPI.Services.Orders
                     },
                     OrderItems = element.OrderItems
                     .Where(x => x.IsActive && x.OrderID == element.Id)
-                    .Select(x => new OrderItemDetailsViewModel
+                    .Select(x => new OrderItemDetailsDto
                     {
                         Id = (int)x.BookItemID,
                         Quantity = x.Quantity,
@@ -104,7 +105,7 @@ namespace BookStoreAPI.Services.Orders
                             .First(x => x.Image.Position == 1).Image.ImageURL,
                         Authors = x.BookItem.Book.BookAuthors
                             .Where(y => y.IsActive)
-                            .Select(y => new AuthorViewModel()
+                            .Select(y => new AuthorDto()
                             {
                                 Id = (int)y.AuthorID,
                                 Name = y.Author.Name,
@@ -117,11 +118,11 @@ namespace BookStoreAPI.Services.Orders
             order.TotalBruttoPrice = (decimal)order.OrderItems.Sum(x => x.TotalBruttoPrice);
             return order;
         }
-        public async Task<IEnumerable<OrderViewModel>> GetAllOrdersAsync()
+        public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
         {
             return await context.Order
                 .Where(x => x.IsActive)
-                .Select(x => new OrderViewModel()
+                .Select(x => new OrderDto()
                 {
                     Id = x.Id,
                     OrderDate = x.OrderDate,
@@ -130,7 +131,7 @@ namespace BookStoreAPI.Services.Orders
                     .Sum(y => y.Quantity * y.BruttoPrice),
                     OrderItems = x.OrderItems
                     .Where(y => y.IsActive && y.OrderID == x.Id)
-                    .Select(y => new OrderItemDetailsViewModel
+                    .Select(y => new OrderItemDetailsDto
                     {
                         Id = y.Id,
                         Quantity = y.Quantity,
@@ -143,14 +144,14 @@ namespace BookStoreAPI.Services.Orders
                             .First(z => z.Image.Position == 1).Image.ImageURL,
                         Authors = y.BookItem.Book.BookAuthors
                             .Where(z => z.IsActive)
-                            .Select(z => new AuthorViewModel()
+                            .Select(z => new AuthorDto()
                             {
                                 Id = (int)z.AuthorID,
                                 Name = z.Author.Name,
                                 Surname = z.Author.Surname,
                             }).ToList()
                     }).ToList(),
-                    CustomerDetails = new CustomerShortDetailsViewModel()
+                    CustomerDetails = new CustomerShortDetailsDto()
                     {
                         Id = x.CustomerID,
                         Name = x.CustomerHistory.Name,
@@ -159,44 +160,44 @@ namespace BookStoreAPI.Services.Orders
                     }
                 }).ToListAsync();
         }
-        public async Task<OrderDetailsViewModel> GetUserOrderByIdAsync(int orderId)
+        public async Task<OrderDetailsDto> GetUserOrderByIdAsync(int orderId)
         {
             Customer customer = await customerService.GetCustomerByTokenAsync();
 
             var order = await context.Order
                 .Where(x => x.CustomerID == customer.Id && x.Id == orderId && x.IsActive)
-                .Select(element => new OrderDetailsViewModel()
+                .Select(element => new OrderDetailsDto()
                 {
                     Id = element.Id,
                     OrderDate = element.OrderDate,
-                    DeliveryMethod = new DeliveryMethodViewModel
+                    DeliveryMethod = new DeliveryMethodDto
                     {
                         Id = element.DeliveryMethodID,
                         Name = element.DeliveryMethod.Name,
                         Price = element.DeliveryMethod.Price
                     },
-                    OrderStatus = new OrderStatusViewModel
+                    OrderStatus = new OrderStatusDto
                     {
                         Id = element.OrderStatusID,
                         Name = element.OrderStatus.Name
                     },
-                    Payment = new PaymentDetailsViewModel
+                    Payment = new PaymentDetailsDto
                     {
                         Id = element.PaymentID,
                         Amount = element.Payment.Amount,
                         PaymentDate = element.Payment.PaymentDate,
-                        PaymentMethod = new PaymentMethodViewModel
+                        PaymentMethod = new PaymentMethodDto
                         {
                             Id = element.Payment.PaymentMethodID,
                             Name = element.Payment.PaymentMethod.Name
                         },
-                        TransactionStatus = new TransactionStatusViewModel
+                        TransactionStatus = new TransactionStatusDto
                         {
                             Id = (int)element.Payment.TransactionStatusID,
                             Name = element.Payment.TransactionStatus.Name
                         }
                     },
-                    Customer = new CustomerShortDetailsViewModel
+                    Customer = new CustomerShortDetailsDto
                     {
                         Id = (int)element.CustomerID,
                         Name = element.Customer.Name,
@@ -205,7 +206,7 @@ namespace BookStoreAPI.Services.Orders
                     },
                     OrderItems = element.OrderItems
                     .Where(x => x.IsActive && x.OrderID == element.Id)
-                    .Select(x => new OrderItemDetailsViewModel
+                    .Select(x => new OrderItemDetailsDto
                     {
                         Id = (int)x.BookItemID,
                         Quantity = x.Quantity,
@@ -218,7 +219,7 @@ namespace BookStoreAPI.Services.Orders
                             .First(x => x.Image.Position == 1).Image.ImageURL,
                         Authors = x.BookItem.Book.BookAuthors
                             .Where(y => y.IsActive)
-                            .Select(y => new AuthorViewModel()
+                            .Select(y => new AuthorDto()
                             {
                                 Id = (int)y.AuthorID,
                                 Name = y.Author.Name,
@@ -232,7 +233,7 @@ namespace BookStoreAPI.Services.Orders
 
             return order;
         }
-        public async Task<IEnumerable<OrderViewModel>> GetUserOrdersAsync(OrderFiltersViewModel orderFilters)
+        public async Task<IEnumerable<OrderDto>> GetUserOrdersAsync(OrderFiltersDto orderFilters)
         {
             Customer customer = await customerService.GetCustomerByTokenAsync();
 
@@ -240,11 +241,11 @@ namespace BookStoreAPI.Services.Orders
                 .Where(x => x.CustomerID == customer.Id && x.IsActive)
                 .ApplyOrderFilters(orderFilters);
 
-            return await orders.Select(x => new OrderViewModel()
+            return await orders.Select(x => new OrderDto()
             {
                 Id = x.Id,
                 OrderDate = x.OrderDate,
-                CustomerDetails = new CustomerShortDetailsViewModel()
+                CustomerDetails = new CustomerShortDetailsDto()
                 {
                     Id = x.CustomerID,
                     Name = x.CustomerHistory.Name,
@@ -256,7 +257,7 @@ namespace BookStoreAPI.Services.Orders
                     .Sum(y => y.Quantity * y.BruttoPrice),
                 OrderItems = x.OrderItems
                     .Where(y => y.IsActive && y.OrderID == x.Id)
-                    .Select(y => new OrderItemDetailsViewModel
+                    .Select(y => new OrderItemDetailsDto
                     {
                         Id = (int)y.BookItemID,
                         Quantity = y.Quantity,
@@ -270,7 +271,7 @@ namespace BookStoreAPI.Services.Orders
                             .First(z => z.Image.Position == 1).Image.ImageURL,
                         Authors = y.BookItem.Book.BookAuthors
                             .Where(z => z.IsActive)
-                            .Select(z => new AuthorViewModel()
+                            .Select(z => new AuthorDto()
                             {
                                 Id = (int)z.AuthorID,
                                 Name = z.Author.Name,
@@ -279,111 +280,122 @@ namespace BookStoreAPI.Services.Orders
                     }).ToList()
             }).ToListAsync();
         }
-        public async Task CreateNewOrderAsync(OrderPostViewModel orderModel)
+        public async Task CreateNewOrderAsync(OrderPostDto orderModel)
         {
-            Customer customer = new Customer();
-
-            if (orderModel.CustomerGuest == null)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                customer = await customerService.GetCustomerByTokenAsync();
-            }
-            else
-            {
-                customer = await customerService
-                    .CreateCustomerAsync(new CustomerPostViewModel()
-                    {
-                        Name = orderModel.CustomerGuest.Name,
-                        Surname = orderModel.CustomerGuest.Surname,
-                        Email = orderModel.CustomerGuest.Email,
-                    });
-            }
-
-            orderModel.InvoiceAddress.AddressTypeID = 3;
-
-            List<BaseAddressViewModel> orderAddresses = [orderModel.InvoiceAddress];
-            if (orderModel.DeliveryAddress != null)
-            {
-                orderModel.DeliveryAddress.AddressTypeID = 4;
-                orderAddresses.Add(orderModel.DeliveryAddress);
-            }
-
-            orderModel.CartItems = await SetOriginalPriceForItems(orderModel.CartItems);
-            orderModel.CartItems = await bookDiscountService.ApplyDiscount(orderModel.CartItems);
-            if (orderModel.DiscountCodeID != null)
-            {
-                orderModel.CartItems = await discountCodeService.ApplyDiscountCodeToCartItemsAsync(orderModel.CartItems, (int)orderModel.DiscountCodeID);
-            }
-
-            decimal totalOrderBruttoPrice = 0;
-            foreach (var item in orderModel.CartItems)
-            {
-                totalOrderBruttoPrice += (decimal)(item.SingleItemBruttoPrice * (decimal)item.Quantity);
-            }
-
-            var payment = await paymentService
-                .CreateNewPayment
-                (orderModel.PaymentMethodID,
-                totalOrderBruttoPrice);
-
-            var customerHistory = await context.CustomerHistory.FirstOrDefaultAsync(x => x.IsActive && x.CustomerID == customer.Id);
-            int customerHistoryId = 0;
-
-            if (customerHistory == null)
-            {
-                customerHistoryId = await customerService.CreateCustomerHistoryAsync(customer.Id);
-            }
-            else
-            {
-                customerHistoryId = customerHistory.Id;
-            }
-
-            Order order = new Order()
-            {
-                DeliveryMethodID = orderModel.DeliveryMethodID,
-                CustomerID = customer.Id,
-                OrderStatusID = 1,
-                PaymentID = payment.Id,
-                DiscountCodeID = orderModel.DiscountCodeID,
-                OrderDate = DateTime.Now,
-                CustomerHistoryID = customerHistoryId,
-            };
-
-            await context.Order.AddAsync(order);
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
-            await addressService.AddAddressesForOrderAsync(order.Id, orderAddresses);
-
-            List<OrderItems> orderItems = new List<OrderItems>();
-            List<BookItemStockAmountUpdateViewModel> bookItemsForStockUpdate = new List<BookItemStockAmountUpdateViewModel>();
-            foreach (var item in orderModel.CartItems)
-            {
-                orderItems.Add(new OrderItems()
+                try
                 {
-                    BookItemID = item.BookItemID,
-                    Quantity = (int)item.Quantity,
-                    BruttoPrice = (decimal)item.SingleItemBruttoPrice,
-                    TotalBruttoPrice = (decimal)(item.SingleItemBruttoPrice * (decimal)item.Quantity),
-                    OrderID = order.Id,
-                    OriginalBruttoPrice = (decimal)item.OriginalItemBruttoPrice,
-                    IsDiscounted = item.IsDiscounted
-                });
-                bookItemsForStockUpdate.Add(new BookItemStockAmountUpdateViewModel() { BookItemId = item.BookItemID, Quantity = -(int)item.Quantity });
-            }
+                    Customer customer = new Customer();
 
-            await context.OrderItems.AddRangeAsync(orderItems);
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    if (orderModel.CustomerGuest == null)
+                    {
+                        customer = await customerService.GetCustomerByTokenAsync();
+                    }
+                    else
+                    {
+                        customer = await customerService
+                            .CreateCustomerAsync(new CustomerPostDto()
+                            {
+                                Name = orderModel.CustomerGuest.Name,
+                                Surname = orderModel.CustomerGuest.Surname,
+                                Email = orderModel.CustomerGuest.Email,
+                            });
+                    }
 
-            await bookItemService.ManageSoldUnitsAsync(orderItems);
-            await stockAmountService.UpdateStockAmountAsync(bookItemsForStockUpdate);
+                    orderModel.InvoiceAddress.AddressTypeID = 3;
+
+                    List<BaseAddressDto> orderAddresses = [orderModel.InvoiceAddress];
+                    if (orderModel.DeliveryAddress != null)
+                    {
+                        orderModel.DeliveryAddress.AddressTypeID = 4;
+                        orderAddresses.Add(orderModel.DeliveryAddress);
+                    }
+
+                    orderModel.CartItems = await SetOriginalPriceForItems(orderModel.CartItems);
+                    orderModel.CartItems = await bookDiscountService.ApplyDiscount(orderModel.CartItems);
+                    if (orderModel.DiscountCodeID != null)
+                    {
+                        orderModel.CartItems = await discountCodeService.ApplyDiscountCodeToCartItemsAsync(orderModel.CartItems, (int)orderModel.DiscountCodeID);
+                    }
+
+                    decimal totalOrderBruttoPrice = 0;
+                    foreach (var item in orderModel.CartItems)
+                    {
+                        totalOrderBruttoPrice += (decimal)(item.SingleItemBruttoPrice * (decimal)item.Quantity);
+                    }
+
+                    var payment = await paymentService
+                        .CreateNewPayment
+                        (orderModel.PaymentMethodID,
+                        totalOrderBruttoPrice);
+
+                    var customerHistory = await context.CustomerHistory.FirstOrDefaultAsync(x => x.IsActive && x.CustomerID == customer.Id);
+                    int customerHistoryId = 0;
+
+                    if (customerHistory == null)
+                    {
+                        customerHistoryId = await customerService.CreateCustomerHistoryAsync(customer.Id);
+                    }
+                    else
+                    {
+                        customerHistoryId = customerHistory.Id;
+                    }
+
+                    Order order = new Order()
+                    {
+                        DeliveryMethodID = orderModel.DeliveryMethodID,
+                        CustomerID = customer.Id,
+                        OrderStatusID = 1,
+                        PaymentID = payment.Id,
+                        DiscountCodeID = orderModel.DiscountCodeID,
+                        OrderDate = DateTime.Now,
+                        CustomerHistoryID = customerHistoryId,
+                    };
+
+                    await context.Order.AddAsync(order);
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    await addressService.AddAddressesForOrderAsync(order.Id, orderAddresses);
+
+                    List<OrderItems> orderItems = new List<OrderItems>();
+                    List<BookItemStockAmountUpdateDto> bookItemsForStockUpdate = new List<BookItemStockAmountUpdateDto>();
+                    foreach (var item in orderModel.CartItems)
+                    {
+                        orderItems.Add(new OrderItems()
+                        {
+                            BookItemID = item.BookItemID,
+                            Quantity = (int)item.Quantity,
+                            BruttoPrice = (decimal)item.SingleItemBruttoPrice,
+                            TotalBruttoPrice = (decimal)(item.SingleItemBruttoPrice * (decimal)item.Quantity),
+                            OrderID = order.Id,
+                            OriginalBruttoPrice = (decimal)item.OriginalItemBruttoPrice,
+                            IsDiscounted = item.IsDiscounted
+                        });
+                        bookItemsForStockUpdate.Add(new BookItemStockAmountUpdateDto() { BookItemId = item.BookItemID, Quantity = -(int)item.Quantity });
+                    }
+
+                    await context.OrderItems.AddRangeAsync(orderItems);
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+
+                    await bookItemService.ManageSoldUnitsAsync(orderItems);
+                    await stockAmountService.UpdateStockAmountAsync(bookItemsForStockUpdate);
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }            
         }
-        public async Task<InvoiceDataViewModel> GetUserOrderForInvoiceByOrderIdAsync(int orderId)
+        public async Task<InvoiceDataDto> GetUserOrderForInvoiceByOrderIdAsync(int orderId)
         {
             var invoice = await context.Order.Where(x => x.IsActive && x.Id == orderId)
-                .Select(x => new InvoiceDataViewModel()
+                .Select(x => new InvoiceDataDto()
                 {
                     InvoiceNumber = x.Id,
                     IssueDate = DateTime.Now,
                     DueDate = x.OrderDate,
-                    SellerInvoice = new SellerInvoiceViewModel()
+                    SellerInvoice = new SellerInvoiceDto()
                     {
                         Name = "Spellarium",
                         TaxIdentificationNumber = "2814871289823",
@@ -395,7 +407,7 @@ namespace BookStoreAPI.Services.Orders
                         Email = "spellarium@gmail.com",
                         Phone = "123123123"
                     },
-                    CustomerInvoice = new CustomerInvoiceViewModel()
+                    CustomerInvoice = new CustomerInvoiceDto()
                     {
                         Name = x.CustomerHistory.Name,
                         Surname = x.CustomerHistory.Surname,
@@ -403,7 +415,7 @@ namespace BookStoreAPI.Services.Orders
                         Phone = x.CustomerHistory.PhoneNumber,
                         Address = x.OrderAddresses
                         .Where(y => y.IsActive && y.Address.AddressTypeID == 3 && y.OrderID == orderId)
-                        .Select(y => new CustomerAddressInvoiceViewModel()
+                        .Select(y => new CustomerAddressInvoiceDto()
                         {
                             Street = y.Address.Street,
                             StreetNumber = y.Address.StreetNumber,
@@ -413,7 +425,7 @@ namespace BookStoreAPI.Services.Orders
                             HouseNumber = "/"+y.Address.HouseNumber,
                         }).First(),
                     },
-                    AdditionalInfoInvoice = new AdditionalInfoInvoiceViewModel()
+                    AdditionalInfoInvoice = new AdditionalInfoInvoiceDto()
                     {
                         PaymentDate = x.Payment.PaymentDate,
                         CurrencyName = "PLN",
@@ -422,7 +434,7 @@ namespace BookStoreAPI.Services.Orders
                     },
                     InvoiceProducts = x.OrderItems
                     .Where(y => y.IsActive)
-                    .Select(y => new ProductInvoiceViewModel()
+                    .Select(y => new ProductInvoiceDto()
                     {
                         UnitOfMeasure = "szt.",
                         Tax = y.BookItem.Tax,
@@ -443,7 +455,7 @@ namespace BookStoreAPI.Services.Orders
 
             return invoice;
         }
-        public async Task<OrderDiscountCheckViewModel> ApplyDiscountCodeToOrderAsync(OrderDiscountCheckViewModel discountCode)
+        public async Task<OrderDiscountCheckDto> ApplyDiscountCodeToOrderAsync(OrderDiscountCheckDto discountCode)
         {
             var discount = await discountCodeService.CheckIfDiscountCodeIsValidAsync(discountCode.DiscountCode);
             discountCode.CartItems = await SetOriginalPriceForItems(discountCode.CartItems);
@@ -454,11 +466,11 @@ namespace BookStoreAPI.Services.Orders
 
             return discountCode;
         }
-        public async Task<OrderStatisticDetailsViewModel> GetMonthlyOrderStatisticsAsync(int month, int year)
+        public async Task<OrderStatisticDetailsDto> GetMonthlyOrderStatisticsAsync(int month, int year)
         {
             var order = await context.OrderItems
                 .Where(x => x.IsActive && x.CreationDate.Month == month && x.CreationDate.Year == year)
-                .Select(x => new OrderStatisticsViewModel()
+                .Select(x => new OrderStatisticsDto()
                 {
                     SoldQuantity = x.Quantity,
                     GrossRevenue = x.TotalBruttoPrice,
@@ -474,7 +486,7 @@ namespace BookStoreAPI.Services.Orders
             var topBookItemIds = order
                 .GroupBy(x => x.BookItemID)
                 .OrderByDescending(g => g.Count())
-                .Select(g => new StatisticsBookItemsViewModel()
+                .Select(g => new StatisticsBookItemsDto()
                 {
                     BookItemId = g.Key,
                     SoldQuantity = g.Sum(x => x.SoldQuantity),
@@ -486,14 +498,14 @@ namespace BookStoreAPI.Services.Orders
                 .SelectMany(x => x.CategoryIDs)
                 .GroupBy(categoryId => categoryId)
                 .OrderByDescending(g => g.Count())
-                .Select(g => new StatisticsCategoriesViewModel()
+                .Select(g => new StatisticsCategoriesDto()
                 {
                     CategoryId = (int)g.Key,
                     NumberOfAppearances = g.Count()
                 })
                 .ToList();
 
-            return new OrderStatisticDetailsViewModel()
+            return new OrderStatisticDetailsDto()
             {
                 SoldQuantity = order.Sum(x => x.SoldQuantity),
                 GrossRevenue = order.Sum(x => x.GrossRevenue),
@@ -502,7 +514,7 @@ namespace BookStoreAPI.Services.Orders
                 TopCategoryIds = topCategoryIds
             };
         }
-        private async Task<List<OrderItemsListViewModel>> SetOriginalPriceForItems(List<OrderItemsListViewModel> cartItems)
+        private async Task<List<OrderItemsListDto>> SetOriginalPriceForItems(List<OrderItemsListDto> cartItems)
         {
             var bookItems = await bookItemService.GetBookItemsFromOrderAsync(cartItems);
             foreach (var item in cartItems)
@@ -511,6 +523,10 @@ namespace BookStoreAPI.Services.Orders
                 item.OriginalItemBruttoPrice = item.SingleItemBruttoPrice;
             }
             return cartItems;
+        }
+        public async Task<bool> CheckIfOrderBelongsToCustomer(int customerId, int orderId)
+        {
+            return await context.Order.AnyAsync(x => x.CustomerID == customerId);
         }
     }
 }

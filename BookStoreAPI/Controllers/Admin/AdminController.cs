@@ -2,8 +2,8 @@
 using BookStoreAPI.Services.Admin;
 using BookStoreAPI.Services.Auth;
 using BookStoreData.Models.Accounts;
-using BookStoreViewModels.ViewModels.Admin;
-using BookStoreViewModels.ViewModels.Claims;
+using BookStoreDto.Dtos.Admin;
+using BookStoreDto.Dtos.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +19,7 @@ namespace BookStoreAPI.Controllers.Admin
     {
         [HttpGet]
         [Route("Employees")]
-        public async Task<ActionResult<IEnumerable<EmployeeDataViewModel>>> GetEmployees()
+        public async Task<ActionResult<IEnumerable<EmployeeDataDto>>> GetEmployees()
         {
             var employees = await adminPanelService.GetEmployeesAsync();
             return Ok(employees);
@@ -27,7 +27,7 @@ namespace BookStoreAPI.Controllers.Admin
 
         [HttpGet]
         [Route("Employees/{employeeId}")]
-        public async Task<ActionResult<EmployeeDetailsViewModel>> GetEmployeeDetails(string employeeId)
+        public async Task<ActionResult<EmployeeDetailsDto>> GetEmployeeDetails(string employeeId)
         {
             var employee = await adminPanelService.GetEmployeeDetailsAsync(employeeId);
             return Ok(employee);
@@ -35,7 +35,7 @@ namespace BookStoreAPI.Controllers.Admin
 
         [HttpPost]
         [Route("Register/Employee")]
-        public async Task<IActionResult> RegisterEmployee(AccountRegisterViewModel registerData)
+        public async Task<IActionResult> RegisterEmployee(AccountRegisterDto registerData)
         {
             if (!ModelState.IsValid)
             {
@@ -50,7 +50,7 @@ namespace BookStoreAPI.Controllers.Admin
 
         [HttpPost]
         [Route("Employee/Edit")]
-        public async Task <IActionResult> EditEmployee(EmployeeDataEditViewModel employeeDetails)
+        public async Task <IActionResult> EditEmployee(EmployeeDataEditDto employeeDetails)
         {
             await adminPanelService.EditEmployeeDataAsync(employeeDetails);
             return NoContent();
@@ -90,7 +90,7 @@ namespace BookStoreAPI.Controllers.Admin
 
         [HttpGet]
         [Route("Roles/Claims")]
-        public async Task<ActionResult<RoleClaimsPost>> GetRoleClaims(string roleName)
+        public async Task<ActionResult<RoleClaimsPostDto>> GetRoleClaims(string roleName)
         {
             var roleClaims = await adminPanelService.GetAllRoleClaimsAsync(roleName);
             return Ok(roleClaims);
@@ -98,7 +98,7 @@ namespace BookStoreAPI.Controllers.Admin
 
         [HttpPost]
         [Route("Roles/Claims")]
-        public async Task<IActionResult> AddClaimsToRole(RoleClaimsPost roleClaims)
+        public async Task<IActionResult> AddClaimsToRole(RoleClaimsPostDto roleClaims)
         {
             await adminPanelService.AddClaimsToRole(roleClaims);
             return NoContent();

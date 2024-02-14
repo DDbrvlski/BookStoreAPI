@@ -6,7 +6,7 @@ using BookStoreAPI.Services.Users;
 using BookStoreAPI.Services.Wishlists;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
-using BookStoreViewModels.ViewModels.Customers;
+using BookStoreDto.Dtos.Customers;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -14,7 +14,7 @@ namespace BookStoreAPI.Services.Customers
 {
     public interface ICustomerService
     {
-        Task<Customer> CreateCustomerAsync(CustomerPostViewModel customerPost);
+        Task<Customer> CreateCustomerAsync(CustomerPostDto customerPost);
         Task DeactivateCustomerAsync(int customerId);
         Task<Customer?> GetCustomerByDataAsync(Expression<Func<Customer, bool>> customerFunction);
         Task<Customer> GetCustomerByTokenAsync();
@@ -29,7 +29,7 @@ namespace BookStoreAPI.Services.Customers
         IAddressService addressService)
         : ICustomerService
     {
-        public async Task<Customer> CreateCustomerAsync(CustomerPostViewModel customerPost)
+        public async Task<Customer> CreateCustomerAsync(CustomerPostDto customerPost)
         {
             Customer customer = new();
             customer.CopyProperties(customerPost);

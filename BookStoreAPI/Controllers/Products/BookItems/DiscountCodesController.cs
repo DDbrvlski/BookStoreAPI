@@ -1,6 +1,6 @@
 ﻿using BookStoreAPI.Services.Discounts.DiscountCodes;
-using BookStoreViewModels.ViewModels.Orders;
-using BookStoreViewModels.ViewModels.Products.DiscountCodes;
+using BookStoreDto.Dtos.Orders;
+using BookStoreDto.Dtos.Products.DiscountCodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +12,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
     {
         [HttpGet]
         [Authorize("DiscountCodesRead")]
-        public async Task<ActionResult<IEnumerable<DiscountCodeCMSViewModel>>> GetAllDiscountCodesAsync()
+        public async Task<ActionResult<IEnumerable<DiscountCodeCMSDto>>> GetAllDiscountCodesAsync()
         {
             var discountCodes = await discountCodeService.GetAllDiscountCodesCMSAsync();
             return Ok(discountCodes);
@@ -20,7 +20,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpGet("{id}")]
         [Authorize("DiscountCodesRead")]
-        public async Task<ActionResult<DiscountCodeDetailsCMSViewModel>> GetDiscountCodeByIdAsync(int id)
+        public async Task<ActionResult<DiscountCodeDetailsCMSDto>> GetDiscountCodeByIdAsync(int id)
         {
             var discountCode = await discountCodeService.GetDiscountCodeByIdCMSAsync(id);
             return Ok(discountCode);
@@ -28,7 +28,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpPost]
         [Authorize("DiscountCodesWrite")]
-        public async Task<IActionResult> PostDiscountCodeAsync(DiscountCodePostCMSViewModel discountCodeModel)
+        public async Task<IActionResult> PostDiscountCodeAsync(DiscountCodePostCMSDto discountCodeModel)
         {
             await discountCodeService.CreateDiscountCodeAsync(discountCodeModel);
             return NoContent();
@@ -36,7 +36,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpPut("{id}")]
         [Authorize("DiscountCodesEdit")]
-        public async Task<IActionResult> PutDiscountCodeAsync(int id, DiscountCodePostCMSViewModel discountCodeModel)
+        public async Task<IActionResult> PutDiscountCodeAsync(int id, DiscountCodePostCMSDto discountCodeModel)
         {
             await discountCodeService.UpdateDiscountCodeAsync(id, discountCodeModel);
             return NoContent();

@@ -25,7 +25,6 @@ namespace BookStoreData.Data
 {
     public class BookStoreContext : IdentityDbContext<User>
     {
-        //private static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => { builder.AddConsole(); });
         public BookStoreContext(DbContextOptions<BookStoreContext> options) : base(options) { }
 
 
@@ -118,11 +117,6 @@ namespace BookStoreData.Data
         public DbSet<Wishlist> Wishlist { get; set; }
         public DbSet<WishlistItems> WishlistItems { get; set; }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder
-        //    .UseLoggerFactory(MyLoggerFactory);
-        //}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

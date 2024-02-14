@@ -2,8 +2,8 @@
 using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
-using BookStoreViewModels.ViewModels.Library;
-using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
+using BookStoreDto.Dtos.Library;
+using BookStoreDto.Dtos.Products.Books.Dictionaries;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,13 +11,13 @@ namespace BookStoreAPI.Services.Library
 {
     public interface ILibraryService
     {
-        Task<IEnumerable<LibraryItemsViewModel>> GetAllEbooksAvailableForUserAsync(int libraryStatusId);
+        Task<IEnumerable<LibraryItemsDto>> GetAllEbooksAvailableForUserAsync(int libraryStatusId);
         Task<byte[]> GetEbookPdfFileAsync(int bookItemId);
     }
 
     public class LibraryService(BookStoreContext context, IUserContextService userContextService, IWebHostEnvironment hostEnvironment) : ILibraryService
     {
-        public async Task<IEnumerable<LibraryItemsViewModel>> GetAllEbooksAvailableForUserAsync(int libraryStatusId)
+        public async Task<IEnumerable<LibraryItemsDto>> GetAllEbooksAvailableForUserAsync(int libraryStatusId)
         {
             var user = await userContextService.GetUserByTokenAsync();
             if (user == null)
@@ -25,15 +25,15 @@ namespace BookStoreAPI.Services.Library
                 throw new UnauthorizedException("Należy się zalogować");
             }
 
-            List<LibraryItemsViewModel>? rentedEbooks = new();
-            List<LibraryItemsViewModel>? boughtEbooks = new();
-            IEnumerable<LibraryItemsViewModel> allLibraryItems = null;
+            List<LibraryItemsDto>? rentedEbooks = new();
+            List<LibraryItemsDto>? boughtEbooks = new();
+            IEnumerable<LibraryItemsDto> allLibraryItems = null;
 
             if (libraryStatusId == 0 || libraryStatusId == 1)
             {
                 rentedEbooks = await context.Rental
                 .Where(x => x.CustomerID == user.CustomerID)
-                .Select(x => new LibraryItemsViewModel()
+                .Select(x => new LibraryItemsDto()
                 {
                     Id = (int)x.BookItemID,
                     BookTitle = x.BookItem.Book.Title,
@@ -44,7 +44,7 @@ namespace BookStoreAPI.Services.Library
                             .First(x => x.Image.Position == 1).Image.ImageURL,
                     Authors = x.BookItem.Book.BookAuthors
                             .Where(y => y.IsActive)
-                            .Select(y => new AuthorViewModel()
+                            .Select(y => new AuthorDto()
                             {
                                 Id = (int)y.AuthorID,
                                 Name = y.Author.Name,
@@ -62,7 +62,7 @@ namespace BookStoreAPI.Services.Library
             {
                 boughtEbooks = await context.OrderItems
                     .Where(x => x.IsActive && x.Order.CustomerID == user.CustomerID && x.BookItem.FormID == 2)
-                    .Select(x => new LibraryItemsViewModel()
+                    .Select(x => new LibraryItemsDto()
                     {
                         Id = (int)x.BookItemID,
                         BookTitle = x.BookItem.Book.Title,
@@ -72,7 +72,7 @@ namespace BookStoreAPI.Services.Library
                             .First(y => y.Image.Position == 1).Image.ImageURL,
                         Authors = x.BookItem.Book.BookAuthors
                             .Where(y => y.IsActive)
-                            .Select(y => new AuthorViewModel()
+                            .Select(y => new AuthorDto()
                             {
                                 Id = (int)y.AuthorID,
                                 Name = y.Author.Name,

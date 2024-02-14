@@ -549,10 +549,8 @@ C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\D
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Windows.Extensions.dll
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreBusinessLogic.dll
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreData.dll
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreViewModels.dll
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreBusinessLogic.pdb
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreData.pdb
-C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreViewModels.pdb
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.csproj.AssemblyReference.cache
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\MvcTestingAppManifest.json
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.GeneratedMSBuildEditorConfig.editorconfig
@@ -576,3 +574,5 @@ C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\D
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.pdb
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\BookStoreAPI.genruntimeconfig.cache
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\ref\BookStoreAPI.dll
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreDto.dll
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreDto.pdb

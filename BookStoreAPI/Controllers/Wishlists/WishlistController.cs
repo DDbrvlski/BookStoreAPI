@@ -1,7 +1,7 @@
 ﻿using BookStoreAPI.Services.Wishlists;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
-using BookStoreViewModels.ViewModels.Wishlists;
+using BookStoreDto.Dtos.Wishlists;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +13,7 @@ namespace BookStoreAPI.Controllers.Wishlist
     {
         [HttpGet]
         [Route("{publicIdentifier}")]
-        public async Task<ActionResult<WishlistViewModel>> GetUserWishlist(Guid publicIdentifier)
+        public async Task<ActionResult<WishlistDto>> GetUserWishlist(Guid publicIdentifier)
         {
             var wishlist = await wishlistService.GetUserWishlistAsync(publicIdentifier);
 

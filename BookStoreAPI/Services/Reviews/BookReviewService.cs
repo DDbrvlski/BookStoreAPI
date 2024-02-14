@@ -3,28 +3,28 @@ using BookStoreAPI.Services.Customers;
 using BookStoreBusinessLogic.BusinessLogic.BookReviews;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
-using BookStoreViewModels.ViewModels.Products.BookItems.Review;
+using BookStoreDto.Dtos.Products.BookItems.Review;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.Reviews
 {
     public interface IBookReviewService
     {
-        Task CreateBookReview(BookReviewPostViewModel bookReviewModel);
-        Task<IEnumerable<BookReviewViewModel>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int numberOfElements);
+        Task CreateBookReview(BookReviewPostDto bookReviewModel);
+        Task<IEnumerable<BookReviewDto>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int numberOfElements);
         Task<Dictionary<int, int>> GetBookItemReviewScoresAsync(int bookItemId);
-        Task<BookReviewPostViewModel> GetExistingUserBookReviewByBookItemIdAsync(int bookItemId);
+        Task<BookReviewPostDto> GetExistingUserBookReviewByBookItemIdAsync(int bookItemId);
     }
 
     public class BookReviewService(BookStoreContext context, IBookReviewLogic bookReviewLogic, ICustomerService customerService) : IBookReviewService
     {
-        public async Task<IEnumerable<BookReviewViewModel>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int numberOfElements)
+        public async Task<IEnumerable<BookReviewDto>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int numberOfElements)
         {
             return await context.BookItemReview
                         .Include(x => x.Customer)
                         .Include(x => x.Score)
                         .Where(x => x.IsActive && x.BookItemID == bookItemId)
-                        .Select(x => new BookReviewViewModel()
+                        .Select(x => new BookReviewDto()
                         {
                             Id = x.Id,
                             Content = x.Content,
@@ -33,13 +33,13 @@ namespace BookStoreAPI.Services.Reviews
                             ScoreValue = x.Score.Value
                         }).Take(numberOfElements).ToListAsync();
         }
-        public async Task<BookReviewPostViewModel> GetExistingUserBookReviewByBookItemIdAsync(int bookItemId)
+        public async Task<BookReviewPostDto> GetExistingUserBookReviewByBookItemIdAsync(int bookItemId)
         {
             var customer = await customerService.GetCustomerByTokenAsync();
             var bookReview = await context.BookItemReview
                 .FirstOrDefaultAsync(x => x.IsActive && x.CustomerID == customer.Id && x.BookItemID == bookItemId);
 
-            return new BookReviewPostViewModel()
+            return new BookReviewPostDto()
             {
                 Content = bookReview.Content,
                 BookItemId = bookReview.BookItemID,
@@ -47,7 +47,7 @@ namespace BookStoreAPI.Services.Reviews
                 ScoreId = bookReview.ScoreID
             };
         }
-        public async Task CreateBookReview(BookReviewPostViewModel bookReviewModel)
+        public async Task CreateBookReview(BookReviewPostDto bookReviewModel)
         {
             var customer = await customerService.GetCustomerByTokenAsync();
             var existingBookReview = await context.BookItemReview

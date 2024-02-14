@@ -1,7 +1,7 @@
 ﻿using BookStoreAPI.Services.Invoices;
 using BookStoreAPI.Services.Orders;
 using BookStoreData.Models.Accounts;
-using BookStoreViewModels.ViewModels.Orders;
+using BookStoreDto.Dtos.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuestPDF.Fluent;
@@ -14,7 +14,7 @@ namespace BookStoreAPI.Controllers.Orders
     {
         [HttpGet]
         [Authorize("OrderRead")]
-        public async Task<ActionResult<IEnumerable<OrderViewModel>>> GetAllOrdersAsync()
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetAllOrdersAsync()
         {
             var orders = await orderService.GetAllOrdersAsync();
             return Ok(orders);
@@ -22,7 +22,7 @@ namespace BookStoreAPI.Controllers.Orders
 
         [HttpGet("{id}")]
         [Authorize("OrderRead")]
-        public async Task<ActionResult<OrderDetailsViewModel>> GetOrderByIdAsync(int id)
+        public async Task<ActionResult<OrderDetailsDto>> GetOrderByIdAsync(int id)
         {
             var order = await orderService.GetOrderByIdAsync(id);
             return Ok(order);

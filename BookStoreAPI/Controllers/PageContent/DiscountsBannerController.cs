@@ -1,5 +1,5 @@
 ﻿using BookStoreAPI.Services.PageElements;
-using BookStoreViewModels.ViewModels.PageContent.DiscountBanners;
+using BookStoreDto.Dtos.PageContent.DiscountBanners;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +11,7 @@ namespace BookStoreAPI.Controllers.PageContent
     {
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<DiscountBannerViewModel>> GetDiscountBannerByIdAsync(int id)
+        public async Task<ActionResult<DiscountBannerDto>> GetDiscountBannerByIdAsync(int id)
         {
             var discountbanner = await discountBannerService.GetDiscountBannerByIdAsync(id);
             return Ok(discountbanner);
@@ -19,7 +19,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<DiscountBannerViewModel>>> GetAllDiscountBannersAsync()
+        public async Task<ActionResult<IEnumerable<DiscountBannerDto>>> GetAllDiscountBannersAsync()
         {
             var discountbanners = await discountBannerService.GetAllDiscountBannersAsync();
             return Ok(discountbanners);
@@ -27,17 +27,17 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpPost]
         [Authorize("DiscountBannerWrite")]
-        public async Task<IActionResult> CreateDiscountBannerAsync(DiscountBannerViewModel discountBannerViewModel)
+        public async Task<IActionResult> CreateDiscountBannerAsync(DiscountBannerDto discountBannerDto)
         {
-            await discountBannerService.CreateDiscountBannerAsync(discountBannerViewModel);
+            await discountBannerService.CreateDiscountBannerAsync(discountBannerDto);
             return NoContent();
         }
 
         [HttpPut("{id}")]
         [Authorize("DiscountBannerEdit")]
-        public async Task<IActionResult> EditDiscountBannerAsync(int id, DiscountBannerViewModel discountBannerViewModel)
+        public async Task<IActionResult> EditDiscountBannerAsync(int id, DiscountBannerDto discountBannerDto)
         {
-            await discountBannerService.EditDiscountBannerAsync(id, discountBannerViewModel);
+            await discountBannerService.EditDiscountBannerAsync(id, discountBannerDto);
             return NoContent();
         }
 

@@ -1,6 +1,6 @@
 ﻿using BookStoreAPI.Services.Reviews;
 using BookStoreData.Models.Accounts;
-using BookStoreViewModels.ViewModels.Products.BookItems.Review;
+using BookStoreDto.Dtos.Products.BookItems.Review;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,14 +12,14 @@ namespace BookStoreAPI.Controllers.Products.BookItems
     {
         [HttpGet("{bookItemId}")]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<ActionResult<BookReviewPostViewModel>> GetUserBookReviewByBookItemIdAsync(int bookItemId)
+        public async Task<ActionResult<BookReviewPostDto>> GetUserBookReviewByBookItemIdAsync(int bookItemId)
         {
             var bookReview = await bookReviewService.GetExistingUserBookReviewByBookItemIdAsync(bookItemId);
             return Ok(bookReview);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookReviewViewModel>>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int numberOfElements = 4)
+        public async Task<ActionResult<IEnumerable<BookReviewDto>>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int numberOfElements = 4)
         {
             var bookReviews = await bookReviewService.GetAllBookReviewsByBookItemIdAsync(bookItemId, numberOfElements);
             return Ok(bookReviews);
@@ -27,7 +27,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpPost]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<IActionResult> PostBookReview(BookReviewPostViewModel bookReviewModel)
+        public async Task<IActionResult> PostBookReview(BookReviewPostDto bookReviewModel)
         {
             await bookReviewService.CreateBookReview(bookReviewModel);
             return NoContent();

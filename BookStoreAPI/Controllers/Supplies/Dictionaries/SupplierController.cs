@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Helpers.BaseService;
 using BookStoreAPI.Helpers;
 using BookStoreAPI.Services.Supplies;
-using BookStoreViewModels.ViewModels.Supply;
+using BookStoreDto.Dtos.Supply;
 using Microsoft.AspNetCore.Authorization;
 
 namespace BookStoreAPI.Controllers.Supplies.Dictionaries
@@ -19,7 +19,7 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
     {
         [HttpGet]
         [Authorize("SupplierRead")]
-        public async Task<ActionResult<SupplierShortViewModel>> GetAllSuppliersAsync()
+        public async Task<ActionResult<SupplierShortDto>> GetAllSuppliersAsync()
         {
             var suppliers = await supplierService.GetSuppliersShortDataAsync();
             return Ok(suppliers);
@@ -27,7 +27,7 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
 
         [HttpGet("{supplierId}")]
         [Authorize("SupplierRead")]
-        public async Task<ActionResult<SupplierViewModel>> GetSupplierDetailsAsync(int supplierId)
+        public async Task<ActionResult<SupplierDto>> GetSupplierDetailsAsync(int supplierId)
         {
             var supplier = await supplierService.GetSuppliersDataAsync(supplierId);
             return Ok(supplier);
@@ -35,7 +35,7 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
 
         [HttpPost]
         [Authorize("SupplierWrite")]
-        public async Task<IActionResult> AddNewSupplierAsync(SupplierPostViewModel supplierData)
+        public async Task<IActionResult> AddNewSupplierAsync(SupplierPostDto supplierData)
         {
             await supplierService.AddNewSupplierAsync(supplierData);
             return NoContent();
@@ -43,7 +43,7 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
 
         [HttpPut("{supplierId}")]
         [Authorize("SupplierEdit")]
-        public async Task<IActionResult> UpdateSupplierAsync(int supplierId, SupplierPostViewModel supplierData)
+        public async Task<IActionResult> UpdateSupplierAsync(int supplierId, SupplierPostDto supplierData)
         {
             await supplierService.UpdateSupplierAsync(supplierId, supplierData);
             return NoContent();

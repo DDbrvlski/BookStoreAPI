@@ -3,7 +3,7 @@ using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
 using BookStoreData.Models.Orders;
-using BookStoreViewModels.ViewModels.Customers.Address;
+using BookStoreDto.Dtos.Customers.Address;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,25 +12,25 @@ namespace BookStoreAPI.Services.Addresses
 {
     public interface IAddressService
     {
-        Task<List<Address>> AddAddressesAsync(List<BaseAddressViewModel> addresses);
-        Task<Address> AddAddressesAsync(BaseAddressViewModel address);
-        Task AddAddressesForOrderAsync(int orderId, List<BaseAddressViewModel> addresses);
-        Task AddAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> addresses);
-        Task UpdateAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> newAddresses);
+        Task<List<Address>> AddAddressesAsync(List<BaseAddressDto> addresses);
+        Task<Address> AddAddressesAsync(BaseAddressDto address);
+        Task AddAddressesForOrderAsync(int orderId, List<BaseAddressDto> addresses);
+        Task AddAddressesForCustomerAsync(int customerId, List<BaseAddressDto> addresses);
+        Task UpdateAddressesForCustomerAsync(int customerId, List<BaseAddressDto> newAddresses);
         Task DeactivateAllAddressesForCustomerAsync(int customerId);
         Task DeactivateChosenAddressForCustomerAsync(int customerId, int addressId);
-        Task<IEnumerable<BaseAddressViewModel>> GetCustomerAddressDataAsync(int customerId);
-        Task UpdateAddressAsync(int addressId, BaseAddressViewModel newAddress);
+        Task<IEnumerable<BaseAddressDto>> GetCustomerAddressDataAsync(int customerId);
+        Task UpdateAddressAsync(int addressId, BaseAddressDto newAddress);
         Task DeactivateAddressAsync(int addressId);
     }
     public class AddressService(BookStoreContext context) : IAddressService
     {
-        public async Task<IEnumerable<BaseAddressViewModel>> GetCustomerAddressDataAsync(int customerId)
+        public async Task<IEnumerable<BaseAddressDto>> GetCustomerAddressDataAsync(int customerId)
         {
             return await context.CustomerAddress
                 .Where(x => x.CustomerID == customerId && x.IsActive && (x.Address.AddressTypeID == 1 || x.Address.AddressTypeID == 2))
                 .OrderBy(x => x.Address.AddressTypeID)
-                .Select(x => new BaseAddressViewModel()
+                .Select(x => new BaseAddressDto()
                 {
                     Id = (int)x.AddressID,
                     AddressTypeID = x.Address.AddressTypeID,
@@ -43,7 +43,7 @@ namespace BookStoreAPI.Services.Addresses
                 })
                 .ToListAsync();
         }
-        public async Task<List<Address>> AddAddressesAsync(List<BaseAddressViewModel> addresses)
+        public async Task<List<Address>> AddAddressesAsync(List<BaseAddressDto> addresses)
         {
             var newAddresses = addresses
                     .Where(address => address != null)
@@ -56,7 +56,7 @@ namespace BookStoreAPI.Services.Addresses
 
             return newAddresses;
         }
-        public async Task<Address> AddAddressesAsync(BaseAddressViewModel address)
+        public async Task<Address> AddAddressesAsync(BaseAddressDto address)
         {
             Address newAddress = new();
             newAddress.CopyProperties(address);
@@ -66,7 +66,7 @@ namespace BookStoreAPI.Services.Addresses
 
             return newAddress;
         }
-        public async Task AddAddressesForOrderAsync(int orderId, List<BaseAddressViewModel> addresses)
+        public async Task AddAddressesForOrderAsync(int orderId, List<BaseAddressDto> addresses)
         {
             if (addresses.Any())
             {
@@ -85,7 +85,7 @@ namespace BookStoreAPI.Services.Addresses
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }
         }
-        public async Task AddAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> addresses)
+        public async Task AddAddressesForCustomerAsync(int customerId, List<BaseAddressDto> addresses)
         {
             if (addresses.Any())
             {
@@ -104,7 +104,7 @@ namespace BookStoreAPI.Services.Addresses
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }
         }
-        public async Task UpdateAddressAsync(int addressId, BaseAddressViewModel newAddress)
+        public async Task UpdateAddressAsync(int addressId, BaseAddressDto newAddress)
         {
             var oldAddress = await context.Address.Where(x => x.IsActive && x.Id == addressId).FirstOrDefaultAsync();
 
@@ -117,7 +117,7 @@ namespace BookStoreAPI.Services.Addresses
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-        public async Task UpdateAddressesForCustomerAsync(int customerId, List<BaseAddressViewModel> newAddresses)
+        public async Task UpdateAddressesForCustomerAsync(int customerId, List<BaseAddressDto> newAddresses)
         {
             if (newAddresses.Any())
             {
@@ -137,7 +137,7 @@ namespace BookStoreAPI.Services.Addresses
                 var newAddress = newAddresses.FirstOrDefault(x => x.AddressTypeID == 1);
                 var newMaillingAddress = newAddresses.FirstOrDefault(x => x.AddressTypeID == 2);
 
-                List<BaseAddressViewModel> addressesToAdd = new();
+                List<BaseAddressDto> addressesToAdd = new();
 
                 if (address == null)
                 {
@@ -203,7 +203,7 @@ namespace BookStoreAPI.Services.Addresses
             address.IsActive = false;
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-        //private bool AreAddressesEqual(Address address, BaseAddressViewModel newAddress)
+        //private bool AreAddressesEqual(Address address, BaseAddressDto newAddress)
         //{
         //    return address.IsEqual(newAddress);
         //}

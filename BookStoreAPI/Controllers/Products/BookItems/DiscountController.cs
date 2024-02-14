@@ -1,5 +1,5 @@
 ﻿using BookStoreAPI.Services.Discounts.Discounts;
-using BookStoreViewModels.ViewModels.Products.Discounts;
+using BookStoreDto.Dtos.Products.Discounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +11,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
     {
         [HttpGet]
         [Authorize("DiscountRead")]
-        public async Task<ActionResult<IEnumerable<DiscountCMSViewModel>>> GetAllDiscountsAsync()
+        public async Task<ActionResult<IEnumerable<DiscountCMSDto>>> GetAllDiscountsAsync()
         {
             var discounts = await discountService.GetAllDiscountsCMSAsync();
             return Ok(discounts);
@@ -19,7 +19,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpGet("{id}")]
         [Authorize("DiscountRead")]
-        public async Task<ActionResult<DiscountDetailsCMSViewModel>> GetDiscountByIdAsync(int id)
+        public async Task<ActionResult<DiscountDetailsCMSDto>> GetDiscountByIdAsync(int id)
         {
             var discount = await discountService.GetDiscountByIdCMSAsync(id);
             return Ok(discount);
@@ -27,7 +27,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpPost]
         [Authorize("DiscountWrite")]
-        public async Task<IActionResult> PostDiscountAsync(DiscountCMSPostViewModel discountModel)
+        public async Task<IActionResult> PostDiscountAsync(DiscountCMSPostDto discountModel)
         {
             await discountService.CreateDiscountAsync(discountModel);
             return NoContent();
@@ -35,7 +35,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 
         [HttpPut("{id}")]
         [Authorize("DiscountEdit")]
-        public async Task<IActionResult> PutDiscountAsync(int id, DiscountCMSPostViewModel discountModel)
+        public async Task<IActionResult> PutDiscountAsync(int id, DiscountCMSPostDto discountModel)
         {
             await discountService.UpdateDiscountAsync(id, discountModel);
             return NoContent();

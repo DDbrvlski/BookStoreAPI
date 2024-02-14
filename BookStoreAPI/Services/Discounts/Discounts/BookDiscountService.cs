@@ -2,9 +2,9 @@
 using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
-using BookStoreViewModels.ViewModels.Orders;
-using BookStoreViewModels.ViewModels.Products.BookItems;
-using BookStoreViewModels.ViewModels.Wishlists;
+using BookStoreDto.Dtos.Orders;
+using BookStoreDto.Dtos.Products.BookItems;
+using BookStoreDto.Dtos.Wishlists;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
@@ -20,9 +20,9 @@ namespace BookStoreAPI.Services.Discounts.Discounts
         Task UpdateBookDiscountAsync(int discountId, List<int> bookItemIds);
         Task<Discount?> GetDiscountForBookItemAsync(int bookItemId);
         Task<IEnumerable<BookDiscount>> GetAllAvailableDiscountsForBookItemIdsAsync(List<int> bookItemIds);
-        Task<List<OrderItemsListViewModel>> ApplyDiscount(List<OrderItemsListViewModel> cartItems);
-        Task<List<BookItemViewModel>> ApplyDiscount(List<BookItemViewModel> bookItems);
-        Task<List<WishlistItemViewModel>> ApplyDiscount(List<WishlistItemViewModel> wishlistBookItems);
+        Task<List<OrderItemsListDto>> ApplyDiscount(List<OrderItemsListDto> cartItems);
+        Task<List<BookItemDto>> ApplyDiscount(List<BookItemDto> bookItems);
+        Task<List<WishlistItemDto>> ApplyDiscount(List<WishlistItemDto> wishlistBookItems);
     }
 
     public class BookDiscountService(BookStoreContext context, IDiscountLogic discountLogic) : IBookDiscountService
@@ -111,7 +111,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                 .Where(x => bookItemIds.Contains((int)x.BookItemID))
                 .ToListAsync();
         }
-        public async Task<List<OrderItemsListViewModel>> ApplyDiscount(List<OrderItemsListViewModel> cartItems)
+        public async Task<List<OrderItemsListDto>> ApplyDiscount(List<OrderItemsListDto> cartItems)
         {
             var bookItemIds = cartItems.Select(x => x.BookItemID).ToList();
             var activeDiscounts = await GetAllAvailableDiscountsForBookItemIdsAsync(bookItemIds);
@@ -132,7 +132,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
 
             return cartItems;
         }
-        public async Task<List<BookItemViewModel>> ApplyDiscount(List<BookItemViewModel> bookItems)
+        public async Task<List<BookItemDto>> ApplyDiscount(List<BookItemDto> bookItems)
         {
             var bookItemIds = bookItems.Select(x => x.Id).ToList();
             var activeDiscounts = await GetAllAvailableDiscountsForBookItemIdsAsync(bookItemIds);
@@ -152,7 +152,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
 
             return bookItems;
         }
-        public async Task<List<WishlistItemViewModel>> ApplyDiscount(List<WishlistItemViewModel> wishlistBookItems)
+        public async Task<List<WishlistItemDto>> ApplyDiscount(List<WishlistItemDto> wishlistBookItems)
         {
             var bookItemIds = wishlistBookItems.Select(x => x.Id).ToList();
             var activeDiscounts = await GetAllAvailableDiscountsForBookItemIdsAsync(bookItemIds);

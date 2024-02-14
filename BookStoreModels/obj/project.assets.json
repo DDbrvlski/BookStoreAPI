@@ -14,9 +14,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreViewModels.csproj",
-      "projectName": "BookStoreViewModels",
-      "projectPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreViewModels.csproj",
+      "projectUniqueName": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreDTO.csproj",
+      "projectName": "BookStoreDTO",
+      "projectPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreDTO.csproj",
       "packagesPath": "C:\\Users\\Damian\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\obj\\",
       "projectStyle": "PackageReference",

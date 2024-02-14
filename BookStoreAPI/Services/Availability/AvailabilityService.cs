@@ -2,7 +2,7 @@
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
-using BookStoreViewModels.ViewModels.Availability;
+using BookStoreDto.Dtos.Availability;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.Availability
@@ -10,7 +10,7 @@ namespace BookStoreAPI.Services.Availability
     public interface IAvailabilityService
     {
         Task UpdateBookItemAvailabilityAsync(int bookItemId, int stockAmount = 0);
-        Task UpdateBookItemsAvailabilityAsync(List<AvailabilityBookItemsCheckViewModel> stockBookItems);
+        Task UpdateBookItemsAvailabilityAsync(List<AvailabilityBookItemsCheckDto> stockBookItems);
         Task DisableAvailabilityForBookItemAsync(int bookItemId);
     }
 
@@ -44,7 +44,7 @@ namespace BookStoreAPI.Services.Availability
             }
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-        public async Task UpdateBookItemsAvailabilityAsync(List<AvailabilityBookItemsCheckViewModel> stockBookItems)
+        public async Task UpdateBookItemsAvailabilityAsync(List<AvailabilityBookItemsCheckDto> stockBookItems)
         {
             var bookItemIds = stockBookItems.Select(x => x.BookItemId).ToList();
             var bookItems = await context.BookItem.Where(x => x.IsActive && bookItemIds.Contains(x.Id)).ToListAsync();

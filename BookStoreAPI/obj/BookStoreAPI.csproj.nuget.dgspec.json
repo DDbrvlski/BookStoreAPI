@@ -39,8 +39,8 @@
               "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreData\\BookStoreData.csproj": {
                 "projectPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreData\\BookStoreData.csproj"
               },
-              "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreViewModels.csproj": {
-                "projectPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreViewModels.csproj"
+              "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreDto.csproj": {
+                "projectPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreDto.csproj"
               }
             }
           }
@@ -269,12 +269,12 @@
         }
       }
     },
-    "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreViewModels.csproj": {
+    "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreDto.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreViewModels.csproj",
-        "projectName": "BookStoreViewModels",
-        "projectPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreViewModels.csproj",
+        "projectUniqueName": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreDto.csproj",
+        "projectName": "BookStoreDto",
+        "projectPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreDto.csproj",
         "packagesPath": "C:\\Users\\Damian\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\obj\\",
         "projectStyle": "PackageReference",

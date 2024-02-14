@@ -1,6 +1,6 @@
 ﻿using BookStoreAPI.Services.PageElements;
 using BookStoreData.Models.PageContent;
-using BookStoreViewModels.ViewModels.PageContent.FooterLinks;
+using BookStoreDto.Dtos.PageContent.FooterLinks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +12,7 @@ namespace BookStoreAPI.Controllers.PageContent
     {
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<FooterLinkViewModel>>> GetAllFooterLinksAsync()
+        public async Task<ActionResult<IEnumerable<FooterLinkDto>>> GetAllFooterLinksAsync()
         {
             var footerLinks = await footerLinkService.GetAllFooterLinksAsync();
             return Ok(footerLinks);
@@ -20,7 +20,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<FooterLinkViewModel>> GetFooterLinkByIdAsync(int id)
+        public async Task<ActionResult<FooterLinkDto>> GetFooterLinkByIdAsync(int id)
         {
             var footerLink = await footerLinkService.GetFooterLinkByIdAsync(id);
             return Ok(footerLink);
@@ -28,7 +28,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpGet("Column/{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<FooterColumnDetailsViewModel>> GetFooterLinksInColumnByColumnIdAsync(int id)
+        public async Task<ActionResult<FooterColumnDetailsDto>> GetFooterLinksInColumnByColumnIdAsync(int id)
         {
             var footerColumn = await footerLinkService.GetFooterLinksInColumnByColumnIdAsync(id);
             return Ok(footerColumn);
@@ -36,7 +36,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpGet("Column")]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<FooterColumnDetailsViewModel>>> GetFooterLinksInColumnsAsync()
+        public async Task<ActionResult<IEnumerable<FooterColumnDetailsDto>>> GetFooterLinksInColumnsAsync()
         {
             var footerColumns = await footerLinkService.GetFooterLinksInColumnsAsync();
             return Ok(footerColumns);

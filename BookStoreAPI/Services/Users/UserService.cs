@@ -5,8 +5,9 @@ using BookStoreAPI.Services.Auth;
 using BookStoreAPI.Services.Customers;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
-using BookStoreViewModels.ViewModels.Accounts.User;
-using BookStoreViewModels.ViewModels.Customers.Address;
+using BookStoreDto.Dtos.Accounts.User;
+using BookStoreDto.Dtos.Customers;
+using BookStoreDto.Dtos.Customers.Address;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -17,13 +18,13 @@ namespace BookStoreAPI.Services.Users
 {
     public interface IUserService
     {
-        Task<User> CreateUserAsync(UserPostViewModel userPost);
+        Task<User> CreateUserAsync(UserPostDto userPost);
         Task DeactivateUserAccountAsync();
-        Task EditUserAddressDataAsync(UserAddressViewModel userData);
-        Task EditUserDataAsync(UserDataViewModel userData);
-        Task EditUserPasswordAsync(UserChangePasswordViewModel userData);
-        Task<IEnumerable<AddressDetailsViewModel>> GetUserAddressDataAsync();
-        Task<UserDataViewModel> GetUserDataAsync();
+        Task EditUserAddressDataAsync(UserAddressDto userData);
+        Task EditUserDataAsync(UserDataDto userData);
+        Task EditUserPasswordAsync(UserChangePasswordDto userData);
+        Task<IEnumerable<AddressDetailsDto>> GetUserAddressDataAsync();
+        Task<UserDataDto> GetUserDataAsync();
         Task ValidateUserFieldsAsync(string username, string email, string userId = "");
     }
 
@@ -36,11 +37,11 @@ namespace BookStoreAPI.Services.Users
             IAddressService addressService)
             : IUserService
     {
-        public async Task<UserDataViewModel> GetUserDataAsync()
+        public async Task<UserDataDto> GetUserDataAsync()
         {
             var user = await userContextService.GetUserAndCustomerDataByTokenAsync();
 
-            return new UserDataViewModel()
+            return new UserDataDto()
             {
                 Name = user.Customer.Name,
                 Surname = user.Customer.Surname,
@@ -49,7 +50,7 @@ namespace BookStoreAPI.Services.Users
                 Username = user.UserName,
             };
         }
-        public async Task<IEnumerable<AddressDetailsViewModel>> GetUserAddressDataAsync()
+        public async Task<IEnumerable<AddressDetailsDto>> GetUserAddressDataAsync()
         {
             var user = await userContextService.GetUserByTokenAsync();
             if (user == null)
@@ -60,7 +61,7 @@ namespace BookStoreAPI.Services.Users
             return await context.CustomerAddress
                 .Where(x => x.IsActive && x.CustomerID == user.CustomerID && (x.Address.AddressTypeID == 1 || x.Address.AddressTypeID == 2))
                 .OrderBy(x => x.Address.AddressTypeID)
-                .Select(x => new AddressDetailsViewModel()
+                .Select(x => new AddressDetailsDto()
                 {
                     Id = (int)x.AddressID,
                     AddressTypeID = x.Address.AddressTypeID,
@@ -78,19 +79,30 @@ namespace BookStoreAPI.Services.Users
         }
         public async Task DeactivateUserAccountAsync()
         {
-            var user = await userContextService.GetUserByTokenAsync();
-            if (user == null)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                throw new AccountException("Nie znaleziono użytkownika.");
-            }
+                try
+                {
+                    var user = await userContextService.GetUserByTokenAsync();
+                    if (user == null)
+                    {
+                        throw new AccountException("Nie znaleziono użytkownika.");
+                    }
 
-            user.IsActive = false;
+                    user.IsActive = false;
 
-            await customerService.DeactivateCustomerAsync((int)user.CustomerID);
+                    await customerService.DeactivateCustomerAsync((int)user.CustomerID);
 
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }            
         }
-        public async Task<User> CreateUserAsync(UserPostViewModel userPost)
+        public async Task<User> CreateUserAsync(UserPostDto userPost)
         {
             User user = new()
             {
@@ -120,24 +132,42 @@ namespace BookStoreAPI.Services.Users
                 return user;
             }
         }
-        public async Task EditUserDataAsync(UserDataViewModel userData)
+        public async Task EditUserDataAsync(UserDataDto userData)
         {
-            var user = await userContextService.GetUserAndCustomerDataByTokenAsync();
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var user = await userContextService.GetUserAndCustomerDataByTokenAsync();
+                    string userId = user.Id;
 
-            await ValidateUserFieldsAsync(userData.Username, userData.Email, user.Id);
-            await customerService.CreateCustomerHistoryAsync((int)user.CustomerID);
+                    if (userData.UserId != null || user.Id != userData.UserId)
+                    {
+                        userId = userData.UserId;
+                        user = await userContextService.GetUserByDataAsync(x => x.Id == userData.UserId);
+                    }
 
-            user.UserName = userData.Username;
-            user.Email = userData.Email;
-            user.PhoneNumber = userData.PhoneNumber;
-            user.Customer.Name = userData.Name;
-            user.Customer.Surname = userData.Surname;
-            user.Customer.PhoneNumber = userData.PhoneNumber;
-            user.Customer.Email = userData.Email;
+                    await ValidateUserFieldsAsync(userData.Username, userData.Email, userId);
+                    await customerService.CreateCustomerHistoryAsync(user.CustomerID);
 
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    user.UserName = userData.Username;
+                    user.Email = userData.Email;
+                    user.PhoneNumber = userData.PhoneNumber;
+                    user.Customer.Name = userData.Name;
+                    user.Customer.Surname = userData.Surname;
+                    user.Customer.PhoneNumber = userData.PhoneNumber;
+                    user.Customer.Email = userData.Email;
+
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }            
         }
-        public async Task EditUserPasswordAsync(UserChangePasswordViewModel userData)
+        public async Task EditUserPasswordAsync(UserChangePasswordDto userData)
         {
             var user = await userContextService.GetUserByTokenAsync();
             if (user == null)
@@ -166,39 +196,50 @@ namespace BookStoreAPI.Services.Users
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-        public async Task EditUserAddressDataAsync(UserAddressViewModel userData)
+        public async Task EditUserAddressDataAsync(UserAddressDto userData)
         {
-            var user = await userContextService.GetUserByTokenAsync();
-            if (user == null)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                throw new AccountException("Nie znaleziono użytkownika.");
-            }
+                try
+                {
+                    var user = await userContextService.GetUserByTokenAsync();
+                    if (user == null)
+                    {
+                        throw new AccountException("Nie znaleziono użytkownika.");
+                    }
 
-            var customerAddresses = await addressService.GetCustomerAddressDataAsync((int)user.CustomerID);
+                    var customerAddresses = await addressService.GetCustomerAddressDataAsync((int)user.CustomerID);
 
-            if (userData.address == null)
-            {
-                throw new AccountException("Wystąpił błąd z pobieraniem adresu");
-            }
+                    if (userData.address == null)
+                    {
+                        throw new AccountException("Wystąpił błąd z pobieraniem adresu");
+                    }
 
-            if (userData.mailingAddress == null)
-            {
-                userData.mailingAddress = new();
-                userData.mailingAddress.CopyProperties(userData.address);
-            }
+                    if (userData.mailingAddress == null)
+                    {
+                        userData.mailingAddress = new();
+                        userData.mailingAddress.CopyProperties(userData.address);
+                    }
 
-            userData.mailingAddress.AddressTypeID = 2;
-            List<BaseAddressViewModel> addresses = [userData.address, userData.mailingAddress];
-            await customerService.CreateCustomerHistoryAsync((int)user.CustomerID);
+                    userData.mailingAddress.AddressTypeID = 2;
+                    List<BaseAddressDto> addresses = [userData.address, userData.mailingAddress];
+                    await customerService.CreateCustomerHistoryAsync((int)user.CustomerID);
 
-            if (!customerAddresses.IsNullOrEmpty())
-            {
-                await addressService.UpdateAddressesForCustomerAsync((int)user.CustomerID, addresses);
-            }
-            else
-            {
-                await addressService.AddAddressesForCustomerAsync((int)user.CustomerID, addresses);
-            }
+                    if (!customerAddresses.IsNullOrEmpty())
+                    {
+                        await addressService.UpdateAddressesForCustomerAsync((int)user.CustomerID, addresses);
+                    }
+                    else
+                    {
+                        await addressService.AddAddressesForCustomerAsync((int)user.CustomerID, addresses);
+                    }
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }            
         }
 
         public async Task ValidateUserFieldsAsync(string username, string email, string userId = "")

@@ -1,8 +1,8 @@
 ﻿using BookStoreAPI.Services.Orders;
 using BookStoreAPI.Services.Users;
 using BookStoreData.Models.Accounts;
-using BookStoreViewModels.ViewModels.Accounts.User;
-using BookStoreViewModels.ViewModels.Orders;
+using BookStoreDto.Dtos.Accounts.User;
+using BookStoreDto.Dtos.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +18,7 @@ namespace BookStoreAPI.Controllers.Accounts
 
         [HttpGet]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<ActionResult<UserDataViewModel>> GetUserData()
+        public async Task<ActionResult<UserDataDto>> GetUserData()
         {
             var user = await userService.GetUserDataAsync();
             return Ok(user);
@@ -26,7 +26,7 @@ namespace BookStoreAPI.Controllers.Accounts
 
         [HttpGet("Address")]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<ActionResult<IEnumerable<UserAddressViewModel>>> GetUserDataAddress()
+        public async Task<ActionResult<IEnumerable<UserAddressDto>>> GetUserDataAddress()
         {
             var userAddress = await userService.GetUserAddressDataAsync();
             return Ok(userAddress);
@@ -42,7 +42,7 @@ namespace BookStoreAPI.Controllers.Accounts
 
         [HttpPut]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<IActionResult> EditUserData(UserDataViewModel userData)
+        public async Task<IActionResult> EditUserData(UserDataDto userData)
         {
             await userService.EditUserDataAsync(userData);
             return NoContent();
@@ -50,7 +50,7 @@ namespace BookStoreAPI.Controllers.Accounts
 
         [HttpPut("Password")]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<IActionResult> EditUserPassword(UserChangePasswordViewModel userData)
+        public async Task<IActionResult> EditUserPassword(UserChangePasswordDto userData)
         {
             await userService.EditUserPasswordAsync(userData);
             return NoContent();
@@ -59,7 +59,7 @@ namespace BookStoreAPI.Controllers.Accounts
         [HttpPost]
         [Authorize(Roles = UserRoles.User)]
         [Route("Address")]
-        public async Task<IActionResult> EditUserAddressData(UserAddressViewModel userData)
+        public async Task<IActionResult> EditUserAddressData(UserAddressDto userData)
         {
             await userService.EditUserAddressDataAsync(userData);
             return NoContent();
@@ -67,7 +67,7 @@ namespace BookStoreAPI.Controllers.Accounts
 
         [HttpPost]
         [Route("Order")]
-        public async Task<IActionResult> CreateNewOrder(OrderPostViewModel orderModel)
+        public async Task<IActionResult> CreateNewOrder(OrderPostDto orderModel)
         {
             await orderService.CreateNewOrderAsync(orderModel);
             return Created();
@@ -76,7 +76,7 @@ namespace BookStoreAPI.Controllers.Accounts
         [HttpGet]
         [Route("Order")]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<ActionResult<IEnumerable<OrderViewModel>>> GetUserOrdersAsync([FromQuery] OrderFiltersViewModel orderFilters)
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetUserOrdersAsync([FromQuery] OrderFiltersDto orderFilters)
         {
             var orders = await orderService.GetUserOrdersAsync(orderFilters);
             return Ok(orders);
@@ -85,7 +85,7 @@ namespace BookStoreAPI.Controllers.Accounts
         [HttpGet]
         [Route("Order/{id}")]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<ActionResult<OrderDetailsViewModel>> GetUserOrderByIdAsync(int id)
+        public async Task<ActionResult<OrderDetailsDto>> GetUserOrderByIdAsync(int id)
         {
             var order = await orderService.GetUserOrderByIdAsync(id);
             return Ok(order);
@@ -94,7 +94,7 @@ namespace BookStoreAPI.Controllers.Accounts
 
         [HttpPost]
         [Route("Order/DiscountCode")]
-        public async Task<ActionResult<OrderDiscountCheckViewModel>> ApplyDiscountForOrder(OrderDiscountCheckViewModel orderDiscountModel)
+        public async Task<ActionResult<OrderDiscountCheckDto>> ApplyDiscountForOrder(OrderDiscountCheckDto orderDiscountModel)
         {
             var orderDiscount = await orderService.ApplyDiscountCodeToOrderAsync(orderDiscountModel);
             return Ok(orderDiscount);

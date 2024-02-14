@@ -3,8 +3,8 @@ using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Addresses;
 using BookStoreData.Data;
 using BookStoreData.Models.Supplies.Dictionaries;
-using BookStoreViewModels.ViewModels.Customers.Address;
-using BookStoreViewModels.ViewModels.Supply;
+using BookStoreDto.Dtos.Customers.Address;
+using BookStoreDto.Dtos.Supply;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,62 +12,86 @@ namespace BookStoreAPI.Services.Supplies
 {
     public interface ISupplierService
     {
-        Task AddNewSupplierAsync(SupplierPostViewModel supplierData);
-        Task<SupplierViewModel> GetSuppliersDataAsync(int supplierId);
-        Task<IEnumerable<SupplierShortViewModel>> GetSuppliersShortDataAsync();
-        Task UpdateSupplierAsync(int supplierId, SupplierPostViewModel supplierData);
+        Task AddNewSupplierAsync(SupplierPostDto supplierData);
+        Task<SupplierDto> GetSuppliersDataAsync(int supplierId);
+        Task<IEnumerable<SupplierShortDto>> GetSuppliersShortDataAsync();
+        Task UpdateSupplierAsync(int supplierId, SupplierPostDto supplierData);
         Task DeactivateSupplierAsync(int supplierId);
     }
 
     public class SupplierService(BookStoreContext context, IAddressService addressService) : ISupplierService
     {
-        public async Task AddNewSupplierAsync(SupplierPostViewModel supplierData)
+        public async Task AddNewSupplierAsync(SupplierPostDto supplierData)
         {
-            var address = await addressService.AddAddressesAsync(new List<BaseAddressViewModel> { supplierData.Address });
-
-            if (address.IsNullOrEmpty())
+            using (var transaction = context.Database.BeginTransaction())
             {
-                throw new BadRequestException("Wystąpił błąd.");
+                try
+                {
+                    var address = await addressService.AddAddressesAsync(new List<BaseAddressDto> { supplierData.Address });
+
+                    if (address.IsNullOrEmpty())
+                    {
+                        throw new BadRequestException("Wystąpił błąd.");
+                    }
+
+                    Supplier supplier = new Supplier();
+                    supplier.CopyProperties(supplierData);
+
+                    supplier.AddressID = address.First().Id;
+
+                    await context.Supplier.AddAsync(supplier);
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
             }
-
-            Supplier supplier = new Supplier();
-            supplier.CopyProperties(supplierData);
-
-            supplier.AddressID = address.First().Id;
-
-            await context.Supplier.AddAsync(supplier);
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+            
         }
 
-        public async Task UpdateSupplierAsync(int supplierId, SupplierPostViewModel supplierData)
+        public async Task UpdateSupplierAsync(int supplierId, SupplierPostDto supplierData)
         {
-            var address = await context.Supplier.Where(x => x.IsActive && x.Id == supplierId).Select(x => x.Address).FirstOrDefaultAsync();
-
-            if (address != null && !supplierData.Address.IsEqual(address))
+            using (var transaction = context.Database.BeginTransaction())
             {
-                await addressService.UpdateAddressAsync(address.Id, supplierData.Address);
-            }
-            else if (address == null)
-            {
-                throw new NotFoundException("Wystąpił błąd podczas pobierania adresu do aktualizacji.");
-            }
+                try
+                {
+                    var address = await context.Supplier.Where(x => x.IsActive && x.Id == supplierId).Select(x => x.Address).FirstOrDefaultAsync();
 
-            var supplier = await context.Supplier.Where(x => x.IsActive && x.Id == supplierId).FirstOrDefaultAsync();
+                    if (address != null && !supplierData.Address.IsEqual(address))
+                    {
+                        await addressService.UpdateAddressAsync(address.Id, supplierData.Address);
+                    }
+                    else if (address == null)
+                    {
+                        throw new NotFoundException("Wystąpił błąd podczas pobierania adresu do aktualizacji.");
+                    }
 
-            if (supplier == null)
-            {
-                throw new NotFoundException("Wystąpił bład podczas pobierania dostawcy do aktualizacji");
+                    var supplier = await context.Supplier.Where(x => x.IsActive && x.Id == supplierId).FirstOrDefaultAsync();
+
+                    if (supplier == null)
+                    {
+                        throw new NotFoundException("Wystąpił bład podczas pobierania dostawcy do aktualizacji");
+                    }
+
+                    supplier.CopyProperties(supplierData);
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
             }
-
-            supplier.CopyProperties(supplierData);
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+            
         }
 
-        public async Task<IEnumerable<SupplierShortViewModel>> GetSuppliersShortDataAsync()
+        public async Task<IEnumerable<SupplierShortDto>> GetSuppliersShortDataAsync()
         {
             return await context.Supplier
                 .Where(x => x.IsActive)
-                .Select(x => new SupplierShortViewModel()
+                .Select(x => new SupplierShortDto()
                 {
                     Id = x.Id,
                     Name = x.Name
@@ -77,29 +101,41 @@ namespace BookStoreAPI.Services.Supplies
 
         public async Task DeactivateSupplierAsync(int supplierId)
         {
-            var supplier = await context.Supplier.Where(x => x.IsActive && x.Id == supplierId).FirstOrDefaultAsync();
-            if (supplier == null)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                throw new NotFoundException("Wystąpił błąd podczas pobierania dostawcy do usunięcia.");
-            }
-            await addressService.DeactivateAddressAsync((int)supplier.AddressID);
+                try
+                {
+                    var supplier = await context.Supplier.Where(x => x.IsActive && x.Id == supplierId).FirstOrDefaultAsync();
+                    if (supplier == null)
+                    {
+                        throw new NotFoundException("Wystąpił błąd podczas pobierania dostawcy do usunięcia.");
+                    }
+                    await addressService.DeactivateAddressAsync((int)supplier.AddressID);
 
-            supplier.IsActive = false;
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    supplier.IsActive = false;
+                    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }
+            
         }
 
-        public async Task<SupplierViewModel> GetSuppliersDataAsync(int supplierId)
+        public async Task<SupplierDto> GetSuppliersDataAsync(int supplierId)
         {
             var supplierDetails = await context.Supplier
                 .Where(x => x.IsActive && x.Id == supplierId)
-                .Select(x => new SupplierViewModel()
+                .Select(x => new SupplierDto()
                 {
                     Id = x.Id,
                     Name = x.Name,
                     Email = x.Email,
                     PhoneNumber = x.PhoneNumber,
                     AddressTypeName = x.Address.AddressType.Name,
-                    SupplierAddress = new AddressDetailsViewModel()
+                    SupplierAddress = new AddressDetailsDto()
                     {
                         Id = x.Address.Id,
                         AddressTypeID = x.Address.AddressTypeID,

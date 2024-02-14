@@ -4,9 +4,9 @@ using BookStoreAPI.Services.Email;
 using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
-using BookStoreViewModels.ViewModels.Accounts.Account;
-using BookStoreViewModels.ViewModels.Accounts.User;
-using BookStoreViewModels.ViewModels.Customers;
+using BookStoreDto.Dtos.Accounts.Account;
+using BookStoreDto.Dtos.Accounts.User;
+using BookStoreDto.Dtos.Customers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
@@ -20,11 +20,11 @@ namespace BookStoreAPI.Services.Auth
     {
         Task CheckTokenValidity(string token);
         string DecodeToken(string token);
-        Task<string> Login(AccountLoginViewModel loginData);
-        Task Register(AccountRegisterViewModel registerData);
+        Task<string> Login(AccountLoginDto loginData);
+        Task Register(AccountRegisterDto registerData);
         Task ConfirmEmail(string userId, string token);
-        Task ForgotPassword(AccountForgotPasswordViewModel forgotPasswordModel);
-        Task ResetPassword(AccountResetPasswordViewModel resetPasswordModel);
+        Task ForgotPassword(AccountForgotPasswordDto forgotPasswordModel);
+        Task ResetPassword(AccountResetPasswordDto resetPasswordModel);
     }
 
     public class AuthService
@@ -40,7 +40,7 @@ namespace BookStoreAPI.Services.Auth
         private readonly SymmetricSecurityKey authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTKey:Secret"]));
         private readonly long tokenExpiryTimeInHours = Convert.ToInt64(configuration["JWTKey:TokenExpiryTimeInHour"]);
 
-        public async Task<string> Login(AccountLoginViewModel loginData)
+        public async Task<string> Login(AccountLoginDto loginData)
         {
             if (loginData == null)
             {
@@ -71,7 +71,7 @@ namespace BookStoreAPI.Services.Auth
             string token = await GenerateTokenAsync(user, loginData.Audience);
             return token;
         }
-        public async Task Register(AccountRegisterViewModel registerData)
+        public async Task Register(AccountRegisterDto registerData)
         {
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -80,7 +80,7 @@ namespace BookStoreAPI.Services.Auth
                     await userService.ValidateUserFieldsAsync(registerData.Username, registerData.Email);
 
                     var customer = await customerService
-                        .CreateCustomerAsync(new CustomerPostViewModel()
+                        .CreateCustomerAsync(new CustomerPostDto()
                         {
                             Name = registerData.Name,
                             Surname = registerData.Surname,
@@ -90,7 +90,7 @@ namespace BookStoreAPI.Services.Auth
                         });
 
                     var user = await userService
-                        .CreateUserAsync(new UserPostViewModel()
+                        .CreateUserAsync(new UserPostDto()
                         {
                             CustomerId = customer.Id,
                             Email = registerData.Email,
@@ -148,7 +148,7 @@ namespace BookStoreAPI.Services.Auth
                 throw new BadRequestException("Wystąpił błąd z potwierdzaniem emaila.");
             }
         }
-        public async Task ForgotPassword(AccountForgotPasswordViewModel forgotPasswordModel)
+        public async Task ForgotPassword(AccountForgotPasswordDto forgotPasswordModel)
         {
             var user = await userContextService.GetUserByDataAsync(x => x.Email == forgotPasswordModel.Email);
             if (user != null)
@@ -158,7 +158,7 @@ namespace BookStoreAPI.Services.Auth
                 await emailSender.ResetPasswordEmail(token, user);
             }
         }
-        public async Task ResetPassword(AccountResetPasswordViewModel resetPasswordModel)
+        public async Task ResetPassword(AccountResetPasswordDto resetPasswordModel)
         {
             var user = await userContextService.GetUserByDataAsync(x => x.Id == resetPasswordModel.UserId);
             if (user == null)

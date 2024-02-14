@@ -1,7 +1,7 @@
 ﻿using BookStoreAPI.Services.Rentals;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
-using BookStoreViewModels.ViewModels.Rentals;
+using BookStoreDto.Dtos.Rentals;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +13,7 @@ namespace BookStoreAPI.Controllers.Rentals
     {
         [HttpPost]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<IActionResult> PostRentalAsync(RentalPostViewModel rentalModel)
+        public async Task<IActionResult> PostRentalAsync(RentalPostDto rentalModel)
         {
             await rentalService.CreateRentalAsync(rentalModel);
             return NoContent();
@@ -21,7 +21,7 @@ namespace BookStoreAPI.Controllers.Rentals
 
         [HttpGet]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<ActionResult<IEnumerable<RentalViewModel>>> GetUserRentalsAsync(int rentalStatusId = 0)
+        public async Task<ActionResult<IEnumerable<RentalDto>>> GetUserRentalsAsync(int rentalStatusId = 0)
         {
             var userRentals = await rentalService.GetUserRentalsByRentalStatusIdAsync(rentalStatusId);
             return Ok(userRentals);

@@ -3905,14 +3905,14 @@
           "bin/placeholder/BookStoreData.dll": {}
         }
       },
-      "BookStoreViewModels/1.0.0": {
+      "BookStoreDto/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "compile": {
-          "bin/placeholder/BookStoreViewModels.dll": {}
+          "bin/placeholder/BookStoreDto.dll": {}
         },
         "runtime": {
-          "bin/placeholder/BookStoreViewModels.dll": {}
+          "bin/placeholder/BookStoreDto.dll": {}
         }
       }
     }
@@ -10403,17 +10403,17 @@
       "path": "../BookStoreData/BookStoreData.csproj",
       "msbuildProject": "../BookStoreData/BookStoreData.csproj"
     },
-    "BookStoreViewModels/1.0.0": {
+    "BookStoreDto/1.0.0": {
       "type": "project",
-      "path": "../BookStoreModels/BookStoreViewModels.csproj",
-      "msbuildProject": "../BookStoreModels/BookStoreViewModels.csproj"
+      "path": "../BookStoreModels/BookStoreDto.csproj",
+      "msbuildProject": "../BookStoreModels/BookStoreDto.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
       "BookStoreBusinessLogic >= 1.0.0",
       "BookStoreData >= 1.0.0",
-      "BookStoreViewModels >= 1.0.0",
+      "BookStoreDto >= 1.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.0",
       "Microsoft.AspNetCore.Identity >= 2.2.0",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 8.0.0",
@@ -10466,8 +10466,8 @@
             "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreData\\BookStoreData.csproj": {
               "projectPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreData\\BookStoreData.csproj"
             },
-            "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreViewModels.csproj": {
-              "projectPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreViewModels.csproj"
+            "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreDto.csproj": {
+              "projectPath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreModels\\BookStoreDto.csproj"
             }
           }
         }

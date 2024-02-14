@@ -3,7 +3,6 @@ using BookStoreData.Data;
 using BookStoreData.Models.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace BookStoreAPI.Helpers.BaseController
 {

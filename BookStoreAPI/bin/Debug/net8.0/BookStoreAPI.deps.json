@@ -38,7 +38,7 @@
         "dependencies": {
           "BookStoreBusinessLogic": "1.0.0",
           "BookStoreData": "1.0.0",
-          "BookStoreViewModels": "1.0.0",
+          "BookStoreDto": "1.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.0",
           "Microsoft.AspNetCore.Identity": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "8.0.0",
@@ -2960,12 +2960,12 @@
           "BookStoreData.dll": {}
         }
       },
-      "BookStoreViewModels/1.0.0": {
+      "BookStoreDto/1.0.0": {
         "runtime": {
-          "BookStoreViewModels.dll": {}
+          "BookStoreDto.dll": {}
         },
         "compile": {
-          "BookStoreViewModels.dll": {}
+          "BookStoreDto.dll": {}
         }
       },
       "Microsoft.AspNetCore.Antiforgery/8.0.0.0": {
@@ -6304,7 +6304,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "BookStoreViewModels/1.0.0": {
+    "BookStoreDto/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

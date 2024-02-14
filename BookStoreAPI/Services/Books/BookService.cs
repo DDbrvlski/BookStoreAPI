@@ -4,9 +4,9 @@ using BookStoreAPI.Services.Books.Dictionaries;
 using BookStoreAPI.Services.Media;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.Books;
-using BookStoreViewModels.ViewModels.Media.Images;
-using BookStoreViewModels.ViewModels.Products.Books;
-using BookStoreViewModels.ViewModels.Products.Books.Dictionaries;
+using BookStoreDto.Dtos.Media.Images;
+using BookStoreDto.Dtos.Products.Books;
+using BookStoreDto.Dtos.Products.Books.Dictionaries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,11 +14,11 @@ namespace BookStoreAPI.Services.Books
 {
     public interface IBookService
     {
-        Task<BookDetailsCMSViewModel> GetBookDetailsForCMSByIdAsync(int id);
-        Task<IEnumerable<BooksCMSViewModel>> GetAllBooksForCMSAsync();
-        Task CreateBookAsync(BookPostViewModel bookPost);
+        Task<BookDetailsCMSDto> GetBookDetailsForCMSByIdAsync(int id);
+        Task<IEnumerable<BooksCMSDto>> GetAllBooksForCMSAsync();
+        Task CreateBookAsync(BookPostDto bookPost);
         Task DeactivateBookAsync(int bookId);
-        Task UpdateBookAsync(int bookId, BookPostViewModel bookPost);
+        Task UpdateBookAsync(int bookId, BookPostDto bookPost);
     }
     public class BookService
         (BookStoreContext context, 
@@ -28,11 +28,11 @@ namespace BookStoreAPI.Services.Books
         IImageService imageService)
         : IBookService
     {
-        public async Task<BookDetailsCMSViewModel> GetBookDetailsForCMSByIdAsync(int id)
+        public async Task<BookDetailsCMSDto> GetBookDetailsForCMSByIdAsync(int id)
         {
             return await context.Book
                 .Where(x => x.Id == id && x.IsActive)
-                .Select(element => new BookDetailsCMSViewModel
+                .Select(element => new BookDetailsCMSDto
                 {
                     Id = element.Id,
                     OriginalLanguageName = element.OriginalLanguage.Name,
@@ -43,14 +43,14 @@ namespace BookStoreAPI.Services.Books
                     Title = element.Title,
                     Categories = element.BookCategories
                             .Where(z => z.IsActive == true)
-                            .Select(y => new CategoryViewModel
+                            .Select(y => new CategoryDto
                             {
                                 Id = y.Category.Id,
                                 Name = y.Category.Name,
                             }).ToList(),
                     Authors = element.BookAuthors
                             .Where(z => z.IsActive == true)
-                            .Select(y => new AuthorViewModel
+                            .Select(y => new AuthorDto
                             {
                                 Id = y.Author.Id,
                                 Name = y.Author.Name,
@@ -58,7 +58,7 @@ namespace BookStoreAPI.Services.Books
                             }).ToList(),
                     Images = element.BookImages
                             .Where(y => y.IsActive == true)
-                            .Select(y => new ImageViewModel
+                            .Select(y => new ImageDto
                             {
                                 Id = y.Image.Id,
                                 Title = y.Image.Title,
@@ -67,18 +67,18 @@ namespace BookStoreAPI.Services.Books
                 })
                 .FirstAsync();
         }
-        public async Task<IEnumerable<BooksCMSViewModel>> GetAllBooksForCMSAsync()
+        public async Task<IEnumerable<BooksCMSDto>> GetAllBooksForCMSAsync()
         {
             return await context.Book
                 .Where(x => x.IsActive == true)
-                .Select(x => new BooksCMSViewModel
+                .Select(x => new BooksCMSDto
                 {
                     Id = x.Id,
                     PublisherName = x.Publisher.Name,
                     Title = x.Title,
                     Authors = x.BookAuthors
                             .Where(y => y.IsActive == true)
-                            .Select(y => new AuthorViewModel
+                            .Select(y => new AuthorDto
                             {
                                 Id = y.Author.Id,
                                 Name = y.Author.Name,
@@ -87,7 +87,7 @@ namespace BookStoreAPI.Services.Books
                 })
                 .ToListAsync();
         }
-        public async Task CreateBookAsync(BookPostViewModel bookPost)
+        public async Task CreateBookAsync(BookPostDto bookPost)
         {
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -124,19 +124,30 @@ namespace BookStoreAPI.Services.Books
         }
         public async Task DeactivateBookAsync(int id)
         {
-            var book = await context.Book.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (book != null)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                await authorService.DeactivateAllAuthorsForBookAsync(id);
-                await categoryService.DeactivateAllCategoriesForBookAsync(id);
-                await imageService.DeactivateAllImagesForBookAsync(id);
-                book.IsActive = false;
+                try
+                {
+                    var book = await context.Book.FirstOrDefaultAsync(x => x.Id == id);
 
-                await DatabaseOperationHandler.TryToSaveChangesAsync(context);
-            }
+                    if (book != null)
+                    {
+                        await authorService.DeactivateAllAuthorsForBookAsync(id);
+                        await categoryService.DeactivateAllCategoriesForBookAsync(id);
+                        await imageService.DeactivateAllImagesForBookAsync(id);
+                        book.IsActive = false;
+
+                        await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                    }
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                }
+            }            
         }
-        public async Task UpdateBookAsync(int bookId, BookPostViewModel bookPost)
+        public async Task UpdateBookAsync(int bookId, BookPostDto bookPost)
         {
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -164,12 +175,6 @@ namespace BookStoreAPI.Services.Books
 
                         transaction.Commit();
                     }
-                }
-                catch (InvalidOperationException ex)
-                {
-                    transaction.Rollback();
-                    logger.LogError($"{ex.Message}");
-                    throw new InvalidOperationException("Wystąpił błąd");
                 }
                 catch (Exception ex)
                 {

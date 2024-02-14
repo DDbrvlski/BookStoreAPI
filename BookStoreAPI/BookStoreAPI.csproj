@@ -28,14 +28,13 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Enums\" />
     <Folder Include="Files\Ebooks\PDFs\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BookStoreBusinessLogic\BookStoreBusinessLogic.csproj" />
     <ProjectReference Include="..\BookStoreData\BookStoreData.csproj" />
-    <ProjectReference Include="..\BookStoreModels\BookStoreViewModels.csproj" />
+    <ProjectReference Include="..\BookStoreModels\BookStoreDto.csproj" />
   </ItemGroup>
 
 </Project>

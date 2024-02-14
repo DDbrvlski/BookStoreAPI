@@ -33,11 +33,6 @@ namespace BookStoreAPI.Services.Email
             emailService.SendEmail(user.Email, "Potwierdź email", emailBody);
         }
 
-        public async Task NotifyUserProductIsAvailable(int bookItemId, int userId)
-        {
-            
-        }
-
         private IUrlHelper GetUrlHelper()
         {
             var actionContext = new ActionContext(httpContextAccessor.HttpContext, httpContextAccessor.HttpContext.GetRouteData(), new ActionDescriptor());

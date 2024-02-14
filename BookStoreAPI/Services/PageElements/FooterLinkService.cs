@@ -1,7 +1,7 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreData.Data;
 using BookStoreData.Models.PageContent;
-using BookStoreViewModels.ViewModels.PageContent.FooterLinks;
+using BookStoreDto.Dtos.PageContent.FooterLinks;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.PageElements
@@ -10,20 +10,20 @@ namespace BookStoreAPI.Services.PageElements
     {
         Task DeactivateFooterLinkAsync(int footerLinkId);
         Task EditFooterLinkAsync(int footerLinkId, FooterLinks footerLinkModel);
-        Task<IEnumerable<FooterLinkViewModel>> GetAllFooterLinksAsync();
-        Task<FooterLinkViewModel> GetFooterLinkByIdAsync(int id);
-        Task<FooterColumnDetailsViewModel> GetFooterLinksInColumnByColumnIdAsync(int columnId);
-        Task<IEnumerable<FooterColumnDetailsViewModel>> GetFooterLinksInColumnsAsync();
+        Task<IEnumerable<FooterLinkDto>> GetAllFooterLinksAsync();
+        Task<FooterLinkDto> GetFooterLinkByIdAsync(int id);
+        Task<FooterColumnDetailsDto> GetFooterLinksInColumnByColumnIdAsync(int columnId);
+        Task<IEnumerable<FooterColumnDetailsDto>> GetFooterLinksInColumnsAsync();
         Task CreateFooterLinkAsync(FooterLinks footerLinkModel);
     }
 
     public class FooterLinkService(BookStoreContext context) : IFooterLinkService
     {
-        public async Task<FooterLinkViewModel> GetFooterLinkByIdAsync(int id)
+        public async Task<FooterLinkDto> GetFooterLinkByIdAsync(int id)
         {
             return await context.FooterLinks
                .Where(x => x.Id == id && x.IsActive)
-               .Select(element => new FooterLinkViewModel()
+               .Select(element => new FooterLinkDto()
                {
                    Id = id,
                    ColumnId = element.FooterColumn.Id,
@@ -37,12 +37,12 @@ namespace BookStoreAPI.Services.PageElements
                })
                .FirstAsync();
         }
-        public async Task<IEnumerable<FooterLinkViewModel>> GetAllFooterLinksAsync()
+        public async Task<IEnumerable<FooterLinkDto>> GetAllFooterLinksAsync()
         {
             return await context.FooterLinks
                .Where(x => x.IsActive)
                .OrderBy(x => x.Position)
-               .Select(element => new FooterLinkViewModel()
+               .Select(element => new FooterLinkDto()
                {
                    Id = element.Id,
                    ColumnId = element.FooterColumn.Id,
@@ -56,12 +56,12 @@ namespace BookStoreAPI.Services.PageElements
                })
                .ToListAsync();
         }
-        public async Task<FooterColumnDetailsViewModel> GetFooterLinksInColumnByColumnIdAsync(int columnId)
+        public async Task<FooterColumnDetailsDto> GetFooterLinksInColumnByColumnIdAsync(int columnId)
         {
             var footerLinks = await context.FooterLinks
                 .Where(x => x.IsActive && x.FooterColumnID == columnId)
                 .OrderBy(x => x.Position)
-                .Select(x => new FooterLinkViewModel()
+                .Select(x => new FooterLinkDto()
                 {
                     Id = x.Id,
                     ColumnId = x.FooterColumn.Id,
@@ -78,7 +78,7 @@ namespace BookStoreAPI.Services.PageElements
             return footerLinks
             .GroupBy(x => x.ColumnPosition)
             .OrderBy(group => group.Key)
-            .Select(group => new FooterColumnDetailsViewModel
+            .Select(group => new FooterColumnDetailsDto
             {
                 ColumnId = group.First().ColumnId,
                 ColumnName = group.First().ColumnName,
@@ -86,7 +86,7 @@ namespace BookStoreAPI.Services.PageElements
                 HTMLObject = group.First().HTMLObject,
                 FooterLinksList = group
                     .OrderBy(item => item.Position)
-                    .Select(item => new FooterLinkListDetailsViewModel
+                    .Select(item => new FooterLinkListDetailsDto
                     {
                         Id = item.Id,
                         Name = item.Name,
@@ -98,12 +98,12 @@ namespace BookStoreAPI.Services.PageElements
             })
             .First();
         }
-        public async Task<IEnumerable<FooterColumnDetailsViewModel>> GetFooterLinksInColumnsAsync()
+        public async Task<IEnumerable<FooterColumnDetailsDto>> GetFooterLinksInColumnsAsync()
         {
             var footerLinks = await context.FooterLinks
                 .Include(x => x.FooterColumn)
                 .Where(x => x.IsActive == true)
-                .Select(x => new FooterLinkViewModel()
+                .Select(x => new FooterLinkDto()
                 {
                     Id = x.Id,
                     ColumnId = x.FooterColumn.Id,
@@ -120,7 +120,7 @@ namespace BookStoreAPI.Services.PageElements
             return footerLinks
             .GroupBy(x => x.ColumnPosition)
             .OrderBy(group => group.Key)
-            .Select(group => new FooterColumnDetailsViewModel
+            .Select(group => new FooterColumnDetailsDto
             {
                 ColumnId = group.First().ColumnId,
                 ColumnName = group.First().ColumnName,
@@ -128,7 +128,7 @@ namespace BookStoreAPI.Services.PageElements
                 HTMLObject = group.First().HTMLObject,
                 FooterLinksList = group
                     .OrderBy(item => item.Position)
-                    .Select(item => new FooterLinkListDetailsViewModel
+                    .Select(item => new FooterLinkListDetailsDto
                     {
                         Id = item.Id,
                         Name = item.Name,

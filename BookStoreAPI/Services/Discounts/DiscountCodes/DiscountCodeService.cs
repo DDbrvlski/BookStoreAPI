@@ -5,10 +5,10 @@ using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
 using BookStoreData.Models.Products.BookItems;
-using BookStoreViewModels.ViewModels.Orders;
-using BookStoreViewModels.ViewModels.Products.BookItems;
-using BookStoreViewModels.ViewModels.Products.DiscountCodes;
-using BookStoreViewModels.ViewModels.Products.Discounts;
+using BookStoreDto.Dtos.Orders;
+using BookStoreDto.Dtos.Products.BookItems;
+using BookStoreDto.Dtos.Products.DiscountCodes;
+using BookStoreDto.Dtos.Products.Discounts;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Expressions;
@@ -17,22 +17,22 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
 {
     public interface IDiscountCodeService
     {
-        Task CreateDiscountCodeAsync(DiscountCodePostCMSViewModel discountCodeModel);
+        Task CreateDiscountCodeAsync(DiscountCodePostCMSDto discountCodeModel);
         Task DeactivateDiscountCodeAsync(int discountCodeId);
-        Task<IEnumerable<DiscountCodeCMSViewModel>> GetAllDiscountCodesCMSAsync();
-        Task<DiscountCodeDetailsCMSViewModel> GetDiscountCodeByIdCMSAsync(int id);
-        Task UpdateDiscountCodeAsync(int discountCodeId, DiscountCodePostCMSViewModel discountCodeModel);
-        Task<List<OrderItemsListViewModel>> ApplyDiscountCodeToCartItemsAsync(List<OrderItemsListViewModel> cartItems, int discountCodeId);
+        Task<IEnumerable<DiscountCodeCMSDto>> GetAllDiscountCodesCMSAsync();
+        Task<DiscountCodeDetailsCMSDto> GetDiscountCodeByIdCMSAsync(int id);
+        Task UpdateDiscountCodeAsync(int discountCodeId, DiscountCodePostCMSDto discountCodeModel);
+        Task<List<OrderItemsListDto>> ApplyDiscountCodeToCartItemsAsync(List<OrderItemsListDto> cartItems, int discountCodeId);
         Task<DiscountCode> CheckIfDiscountCodeIsValidAsync(string discountName);
     }
 
     public class DiscountCodeService(BookStoreContext context, IDiscountLogic discountLogic) : IDiscountCodeService
     {
-        public async Task<DiscountCodeDetailsCMSViewModel> GetDiscountCodeByIdCMSAsync(int id)
+        public async Task<DiscountCodeDetailsCMSDto> GetDiscountCodeByIdCMSAsync(int id)
         {
             return await context.DiscountCode
                 .Where(x => x.Id == id && x.IsActive)
-                .Select(x => new DiscountCodeDetailsCMSViewModel()
+                .Select(x => new DiscountCodeDetailsCMSDto()
                 {
                     Id = x.Id,
                     IsAvailable = DateTime.Today >= x.StartingDate && DateTime.Today <= x.ExpiryDate.AddDays(1),
@@ -44,11 +44,11 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
                 }).FirstAsync();
         }
 
-        public async Task<IEnumerable<DiscountCodeCMSViewModel>> GetAllDiscountCodesCMSAsync()
+        public async Task<IEnumerable<DiscountCodeCMSDto>> GetAllDiscountCodesCMSAsync()
         {
             return await context.DiscountCode
                 .Where(x => x.IsActive == true)
-                .Select(x => new DiscountCodeCMSViewModel
+                .Select(x => new DiscountCodeCMSDto
                 {
                     Id = x.Id,
                     IsAvailable = DateTime.Today >= x.StartingDate && DateTime.Today <= x.ExpiryDate.AddDays(1),
@@ -59,7 +59,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
                 .ToListAsync();
         }
 
-        public async Task CreateDiscountCodeAsync(DiscountCodePostCMSViewModel discountCodeModel)
+        public async Task CreateDiscountCodeAsync(DiscountCodePostCMSDto discountCodeModel)
         {
             DiscountCode discountCode = new();
             discountCode.CopyProperties(discountCodeModel);
@@ -68,7 +68,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
 
-        public async Task UpdateDiscountCodeAsync(int discountCodeId, DiscountCodePostCMSViewModel discountCodeModel)
+        public async Task UpdateDiscountCodeAsync(int discountCodeId, DiscountCodePostCMSDto discountCodeModel)
         {
             var discountCode = await context.DiscountCode.FirstOrDefaultAsync(x => x.IsActive && x.Id == discountCodeId);
 
@@ -115,7 +115,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
             return await context.DiscountCode.Where(x => x.IsActive).FirstOrDefaultAsync(discountCodeFunction);
         }
 
-        public async Task<List<OrderItemsListViewModel>> ApplyDiscountCodeToCartItemsAsync(List<OrderItemsListViewModel> cartItems, int discountCodeId)
+        public async Task<List<OrderItemsListDto>> ApplyDiscountCodeToCartItemsAsync(List<OrderItemsListDto> cartItems, int discountCodeId)
         {
             var discount = await CheckIfDiscountCodeIsValidAsync(discountCodeId);
             foreach (var cartItem in cartItems)

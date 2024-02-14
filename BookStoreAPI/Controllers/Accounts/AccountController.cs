@@ -1,7 +1,7 @@
 ﻿using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Auth;
-using BookStoreViewModels.ViewModels.Accounts.Account;
-using BookStoreViewModels.ViewModels.Claims;
+using BookStoreDto.Dtos.Accounts.Account;
+using BookStoreDto.Dtos.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +16,7 @@ namespace BookStoreAPI.Controllers.Accounts
 
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> Login(AccountLoginViewModel loginData)
+        public async Task<IActionResult> Login(AccountLoginDto loginData)
         {
             var token = await authService.Login(loginData);
 
@@ -25,7 +25,7 @@ namespace BookStoreAPI.Controllers.Accounts
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register(AccountRegisterViewModel registerData)
+        public async Task<IActionResult> Register(AccountRegisterDto registerData)
         {
             if (!ModelState.IsValid)
             {
@@ -50,7 +50,7 @@ namespace BookStoreAPI.Controllers.Accounts
         [HttpPost]
         [AllowAnonymous]
         [Route("ForgotPassword")]
-        public async Task<IActionResult> ForgotPassword(AccountForgotPasswordViewModel forgotPasswordModel)
+        public async Task<IActionResult> ForgotPassword(AccountForgotPasswordDto forgotPasswordModel)
         {
             if (!ModelState.IsValid)
             {
@@ -64,7 +64,7 @@ namespace BookStoreAPI.Controllers.Accounts
         [HttpPost]
         [AllowAnonymous]
         [Route("ResetPassword")]
-        public async Task<IActionResult> ResetPassword(AccountResetPasswordViewModel resetPasswordModel)
+        public async Task<IActionResult> ResetPassword(AccountResetPasswordDto resetPasswordModel)
         {
             await authService.ResetPassword(resetPasswordModel);
             return Ok("Pomyślnie zresetowano hasło.");

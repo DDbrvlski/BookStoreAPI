@@ -1,8 +1,8 @@
 ﻿using BookStoreAPI.Services.PageElements;
 using BookStoreData.Data;
 using BookStoreData.Models.PageContent;
-using BookStoreViewModels.ViewModels.PageContent.Banners;
-using BookStoreViewModels.ViewModels.PageContent.CategoryElements;
+using BookStoreDto.Dtos.PageContent.Banners;
+using BookStoreDto.Dtos.PageContent.CategoryElements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +14,7 @@ namespace BookStoreAPI.Controllers.PageContent
     {
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<CategoryElementViewModel>> GetCategoryElementByIdAsync(int id)
+        public async Task<ActionResult<CategoryElementDto>> GetCategoryElementByIdAsync(int id)
         {
             var categoryElement = await categoryElementService.GetCategoryElementByIdAsync(id);
             return Ok(categoryElement);
@@ -22,7 +22,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<CategoryElementViewModel>>> GetAllCategoryElementsAsync()
+        public async Task<ActionResult<IEnumerable<CategoryElementDto>>> GetAllCategoryElementsAsync()
         {
             var categoryElement = await categoryElementService.GetAllCategoryElementsAsync();
             return Ok(categoryElement);
@@ -30,7 +30,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpPost]
         [Authorize("CategoryElementWrite")]
-        public async Task<IActionResult> CreateCategoryElementAsync(CategoryElementViewModel categoryElementModel)
+        public async Task<IActionResult> CreateCategoryElementAsync(CategoryElementDto categoryElementModel)
         {
             await categoryElementService.CreateCategoryElementAsync(categoryElementModel);
             return NoContent();
@@ -38,7 +38,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpPut("{id}")]
         [Authorize("CategoryElementEdit")]
-        public async Task<IActionResult> EditCategoryElementAsync(int id, CategoryElementViewModel categoryElementModel)
+        public async Task<IActionResult> EditCategoryElementAsync(int id, CategoryElementDto categoryElementModel)
         {
             await categoryElementService.EditCategoryElementAsync(id, categoryElementModel);
             return NoContent();

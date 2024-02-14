@@ -3,10 +3,10 @@ using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Availability;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
-using BookStoreViewModels.ViewModels.Availability;
-using BookStoreViewModels.ViewModels.Products.StockAmount;
-using BookStoreViewModels.ViewModels.Stock;
-using BookStoreViewModels.ViewModels.Supply;
+using BookStoreDto.Dtos.Availability;
+using BookStoreDto.Dtos.Products.StockAmount;
+using BookStoreDto.Dtos.Stock;
+using BookStoreDto.Dtos.Supply;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -17,11 +17,11 @@ namespace BookStoreAPI.Services.Stock
     {
         Task CreateStockAmountAsync(int bookItemId, int? amount);
         Task DeactivateStockAmountAsync(int bookItemId);
-        Task<ActionResult<IEnumerable<StockAmountViewModel>>> GetAllStockAmountAsync();
-        Task<ActionResult<StockAmountViewModel?>> GetStockAmountByIdAsync(int id);
+        Task<ActionResult<IEnumerable<StockAmountDto>>> GetAllStockAmountAsync();
+        Task<ActionResult<StockAmountDto?>> GetStockAmountByIdAsync(int id);
         Task UpdateStockAmountAsync(int bookItemId, int amount);
         Task<int> GetStockAmountForBookItemByIdAsync(int bookItemId);
-        Task UpdateStockAmountAsync(List<BookItemStockAmountUpdateViewModel> bookItems);
+        Task UpdateStockAmountAsync(List<BookItemStockAmountUpdateDto> bookItems);
         //Task AddNewReservationInStockAsync(int bookItemId);
         //Task CancelReservationInStockAsync(int bookItemId);
         //Task<bool> IsBookItemOnStock(int bookItemId);
@@ -29,11 +29,11 @@ namespace BookStoreAPI.Services.Stock
 
     public class StockAmountService(BookStoreContext context, IAvailabilityService availabilityService) : IStockAmountService
     {
-        public async Task<ActionResult<IEnumerable<StockAmountViewModel>>> GetAllStockAmountAsync()
+        public async Task<ActionResult<IEnumerable<StockAmountDto>>> GetAllStockAmountAsync()
         {
             return await context.StockAmount
                 .Where(x => x.IsActive == true)
-                .Select(x => new StockAmountViewModel
+                .Select(x => new StockAmountDto
                 {
                     Id = x.Id,
                     BookTitle = x.BookItem.Book.Title,
@@ -43,11 +43,11 @@ namespace BookStoreAPI.Services.Stock
                 .ToListAsync();
         }
 
-        public async Task<ActionResult<StockAmountViewModel?>> GetStockAmountByIdAsync(int id)
+        public async Task<ActionResult<StockAmountDto?>> GetStockAmountByIdAsync(int id)
         {
             return await context.StockAmount
                 .Where(x => x.Id == id && x.IsActive)
-                .Select(x => new StockAmountViewModel()
+                .Select(x => new StockAmountDto()
                 {
                     Id = x.Id,
                     BookTitle = x.BookItem.Book.Title,
@@ -103,7 +103,7 @@ namespace BookStoreAPI.Services.Stock
 
             await availabilityService.UpdateBookItemAvailabilityAsync(bookItemId, stockAmount.Amount);
         }
-        public async Task UpdateStockAmountAsync(List<BookItemStockAmountUpdateViewModel> bookItems)
+        public async Task UpdateStockAmountAsync(List<BookItemStockAmountUpdateDto> bookItems)
         {
             var bookItemIds = bookItems.Select(y => y.BookItemId).ToList();
 
@@ -128,10 +128,10 @@ namespace BookStoreAPI.Services.Stock
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
-            List<AvailabilityBookItemsCheckViewModel> stockBookItems = new();
+            List<AvailabilityBookItemsCheckDto> stockBookItems = new();
             foreach (var bookItem in bookItemsToUpdate)
             {
-                stockBookItems.Add(new AvailabilityBookItemsCheckViewModel() { BookItemId = (int)bookItem.BookItemID, StockAmount = bookItem.Amount });
+                stockBookItems.Add(new AvailabilityBookItemsCheckDto() { BookItemId = (int)bookItem.BookItemID, StockAmount = bookItem.Amount });
             }
 
             await availabilityService.UpdateBookItemsAvailabilityAsync(stockBookItems);

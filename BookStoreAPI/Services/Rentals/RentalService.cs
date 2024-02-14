@@ -3,20 +3,20 @@ using BookStoreAPI.Services.Customers;
 using BookStoreAPI.Services.Stock;
 using BookStoreData.Data;
 using BookStoreData.Models.Rental;
-using BookStoreViewModels.ViewModels.Rentals;
+using BookStoreDto.Dtos.Rentals;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.Rentals
 {
     public interface IRentalService
     {
-        Task CreateRentalAsync(RentalPostViewModel rentalModel);
-        Task<IEnumerable<RentalViewModel>> GetUserRentalsByRentalStatusIdAsync(int rentalTypeId);
+        Task CreateRentalAsync(RentalPostDto rentalModel);
+        Task<IEnumerable<RentalDto>> GetUserRentalsByRentalStatusIdAsync(int rentalTypeId);
     }
 
     public class RentalService(BookStoreContext context, ICustomerService customerService) : IRentalService
     {
-        public async Task<IEnumerable<RentalViewModel>> GetUserRentalsByRentalStatusIdAsync(int rentalStatusId)
+        public async Task<IEnumerable<RentalDto>> GetUserRentalsByRentalStatusIdAsync(int rentalStatusId)
         {
             var customer = await customerService.GetCustomerByTokenAsync();
 
@@ -31,7 +31,7 @@ namespace BookStoreAPI.Services.Rentals
                 rentals = rentals.Where(x => x.IsActive && x.CustomerID == customer.Id);
             }
 
-            return await rentals.Select(x => new RentalViewModel()
+            return await rentals.Select(x => new RentalDto()
             {
                 Id = x.Id,
                 BookItemId = x.BookItemID,
@@ -43,7 +43,7 @@ namespace BookStoreAPI.Services.Rentals
             }).ToListAsync();
 
         }
-        public async Task CreateRentalAsync(RentalPostViewModel rentalModel)
+        public async Task CreateRentalAsync(RentalPostDto rentalModel)
         {
             var customer = await customerService.GetCustomerByTokenAsync();
             var days = await context.RentalType

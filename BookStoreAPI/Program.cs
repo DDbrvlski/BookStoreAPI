@@ -33,7 +33,7 @@ using BookStoreBusinessLogic.BusinessLogic.CMS;
 using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
-using BookStoreViewModels.ViewModels.Accounts.Account;
+using BookStoreDto.Dtos.Accounts.Account;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -57,21 +57,11 @@ namespace BookStoreAPI
 
 
             QuestPDF.Settings.License = LicenseType.Community;
-            //var model = InvoiceService.CreateInvoice(43);
-            //var document = new InvoiceDocument();
-
-            //document.GeneratePdf("hello.pdf");
-
-            //use the following invocation
-            //document.ShowInPreviewer();
-
-            //optionally, you can specify an HTTP port to communicate with the previewer host(default is 12500)
-            //document.ShowInPreviewer(12345);
 
             builder.Configuration.AddJsonFile("appsettings.json");
 
             var audiences = builder.Configuration.GetSection("Audiences").Get<Dictionary<string, string>>();
-            var emailConfiguration = builder.Configuration.GetSection("EmailConfiguration").Get<AccountEmailConfigurationViewModel>();
+            var emailConfiguration = builder.Configuration.GetSection("EmailConfiguration").Get<AccountEmailConfigurationDto>();
             builder.Services.AddSingleton(emailConfiguration);
             builder.Services.AddScoped<PolicyService>();
             builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
@@ -173,7 +163,7 @@ namespace BookStoreAPI
             });
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-            //builder.Services.AddProblemDetails();
+            builder.Services.AddProblemDetails();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -231,9 +221,8 @@ namespace BookStoreAPI
 
 
             var app = builder.Build();
-            //app.UseExceptionHandler();
+            app.UseExceptionHandler();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

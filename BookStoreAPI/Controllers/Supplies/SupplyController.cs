@@ -1,5 +1,5 @@
 ﻿using BookStoreAPI.Services.Supplies;
-using BookStoreViewModels.ViewModels.Supply;
+using BookStoreDto.Dtos.Supply;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +12,7 @@ namespace BookStoreAPI.Controllers.Supplies
     {
         [HttpGet]
         [Authorize("SupplyRead")]
-        public async Task<ActionResult<IEnumerable<SupplyViewModel>>> GetAllSuppliesAsync()
+        public async Task<ActionResult<IEnumerable<SupplyDto>>> GetAllSuppliesAsync()
         {
             var supplies = await supplyService.GetAllSuppliesAsync();
             return Ok(supplies);
@@ -20,7 +20,7 @@ namespace BookStoreAPI.Controllers.Supplies
 
         [HttpGet("{supplyId}")]
         [Authorize("SupplyRead")]
-        public async Task<ActionResult<SupplyDetailsViewModel>> GetSupplyDetailsAsync(int supplyId)
+        public async Task<ActionResult<SupplyDetailsDto>> GetSupplyDetailsAsync(int supplyId)
         {
             var supply = await supplyService.GetSupplyAsync(supplyId);
             return Ok(supply);
@@ -28,7 +28,7 @@ namespace BookStoreAPI.Controllers.Supplies
 
         [HttpPost]
         [Authorize("SupplyWrite")]
-        public async Task<IActionResult> AddNewSupplyAsync(SupplyPostViewModel supplyData)
+        public async Task<IActionResult> AddNewSupplyAsync(SupplyPostDto supplyData)
         {
             await supplyService.AddNewSupplyAsync(supplyData);
             return NoContent();
@@ -36,7 +36,7 @@ namespace BookStoreAPI.Controllers.Supplies
 
         [HttpPut("{supplyId}")]
         [Authorize("SupplyEdit")]
-        public async Task<IActionResult> UpdateSupplyAsync(int supplyId, SupplyPutViewModel supplyData)
+        public async Task<IActionResult> UpdateSupplyAsync(int supplyId, SupplyPutDto supplyData)
         {
             await supplyService.UpdateSupplyAsync(supplyId, supplyData);
             return NoContent();

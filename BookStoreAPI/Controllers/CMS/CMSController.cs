@@ -1,7 +1,7 @@
 ﻿using BookStoreAPI.Services.CMS;
 using BookStoreAPI.Services.Statistic;
-using BookStoreViewModels.ViewModels.CMS;
-using BookStoreViewModels.ViewModels.Statistics;
+using BookStoreDto.Dtos.CMS;
+using BookStoreDto.Dtos.Statistics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +15,7 @@ namespace BookStoreAPI.Controllers.CMS
         [HttpGet]
         [Authorize("CMSRead")]
         [Route("WeeklySummary")]
-        public async Task<ActionResult<CMSWeeklySummaryViewModel>> GetCMSWeeklySummaryAsync()
+        public async Task<ActionResult<CMSWeeklySummaryDto>> GetCMSWeeklySummaryAsync()
         {
             var summary = await cmsService.GetWeeklySummaryOfOrdersRentalsReservationsAsync();
             return Ok(summary);
@@ -24,7 +24,7 @@ namespace BookStoreAPI.Controllers.CMS
         [HttpGet]
         [Authorize("CMSRead")]
         [Route("MonthlyRaport")]
-        public async Task<ActionResult<StatisticsMonthlyRaportViewModel>> GetMonthlyRaportAsync(int month, int year)
+        public async Task<ActionResult<StatisticsMonthlyRaportDto>> GetMonthlyRaportAsync(int month, int year)
         {
             var stats = await statisticsService.GetMonthlyRaportAsync(month, year);
             return Ok(stats);

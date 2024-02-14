@@ -2,8 +2,8 @@
 using BookStoreData.Data;
 using BookStoreData.Models.Media;
 using BookStoreData.Models.Products.Books;
-using BookStoreViewModels.ViewModels.Media.Images;
-using BookStoreViewModels.ViewModels.Products.Books;
+using BookStoreDto.Dtos.Media.Images;
+using BookStoreDto.Dtos.Products.Books;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.Media
@@ -12,8 +12,8 @@ namespace BookStoreAPI.Services.Media
     {
         Task<Images> AddNewImageAndReturnAsync(string title, string imageURL);
         Task DeactivateSingleImageByIdAsync(int? imageId);
-        Task AddNewImagesForBookAsync(BookPostViewModel book, List<ImageViewModel?>? imagesToAdd = null);
-        Task UpdateImagesForBookAsync(BookPostViewModel book);
+        Task AddNewImagesForBookAsync(BookPostDto book, List<ImageDto?>? imagesToAdd = null);
+        Task UpdateImagesForBookAsync(BookPostDto book);
         Task DeactivateAllImagesForBookAsync(int? bookId);
         Task DeactivateChosenImagesForBookAsync(int? bookId, List<int> imageIds);
     }
@@ -33,7 +33,7 @@ namespace BookStoreAPI.Services.Media
             return NewImage;
         }
 
-        public async Task AddNewImagesForBookAsync(BookPostViewModel book, List<ImageViewModel?>? imagesToAdd = null)
+        public async Task AddNewImagesForBookAsync(BookPostDto book, List<ImageDto?>? imagesToAdd = null)
         {
             //Reużywalność kodu
             if (imagesToAdd == null)
@@ -114,9 +114,9 @@ namespace BookStoreAPI.Services.Media
             }
         }
 
-        public async Task UpdateImagesForBookAsync(BookPostViewModel book)
+        public async Task UpdateImagesForBookAsync(BookPostDto book)
         {
-            List<ImageViewModel> images = book.ListOfBookImages.ToList();
+            List<ImageDto> images = book.ListOfBookImages.ToList();
 
             var existingImageIds = await context.BookImages
                 .Where(x => x.BookID == book.Id && x.IsActive == true)
