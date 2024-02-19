@@ -15,6 +15,10 @@ namespace BookStoreAPI.Controllers.Rentals
         [Authorize(Roles = UserRoles.User)]
         public async Task<IActionResult> PostRentalAsync(RentalPostDto rentalModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await rentalService.CreateRentalAsync(rentalModel);
             return NoContent();
         }

@@ -17,6 +17,10 @@ namespace BookStoreAPI.Controllers.Notifications
         [Authorize("ContactWrite")]
         public async Task<IActionResult> CreateContact(Contact contact)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await contactService.CreateContactMessage(contact);
             return Ok();
         }
@@ -30,7 +34,7 @@ namespace BookStoreAPI.Controllers.Notifications
         }
 
         [HttpPost("{id}")]
-        [Authorize("ContactEdit")]
+        [Authorize("ContactWrite")]
         public async Task<IActionResult> AnswerToContact(int id, string content)
         {
             await contactService.AnswerToContact(id, content);

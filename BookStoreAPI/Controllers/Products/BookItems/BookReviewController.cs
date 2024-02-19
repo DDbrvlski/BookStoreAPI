@@ -29,6 +29,10 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         [Authorize(Roles = UserRoles.User)]
         public async Task<IActionResult> PostBookReview(BookReviewPostDto bookReviewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await bookReviewService.CreateBookReview(bookReviewModel);
             return NoContent();
         }

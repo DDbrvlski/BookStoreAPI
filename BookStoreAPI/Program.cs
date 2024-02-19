@@ -34,6 +34,7 @@ using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
 using BookStoreDto.Dtos.Accounts.Account;
+using BookStoreDto.Dtos.Invoices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +63,9 @@ namespace BookStoreAPI
 
             var audiences = builder.Configuration.GetSection("Audiences").Get<Dictionary<string, string>>();
             var emailConfiguration = builder.Configuration.GetSection("EmailConfiguration").Get<AccountEmailConfigurationDto>();
+            var sellerData = builder.Configuration.GetSection("SellerData").Get<SellerInvoiceDto>();
             builder.Services.AddSingleton(emailConfiguration);
+            builder.Services.AddSingleton(sellerData);
             builder.Services.AddScoped<PolicyService>();
             builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
             builder.Services.AddTransient<IAdminPanelService, AdminPanelService>();

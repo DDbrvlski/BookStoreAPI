@@ -576,3 +576,4 @@ C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\D
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\obj\Debug\net8.0\ref\BookStoreAPI.dll
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreDto.dll
 C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\BookStoreDto.pdb
+C:\Users\Damian\Desktop\Zadania studia\SEMESTR 7\PRACA2.0\API\BookStoreAPI\bin\Debug\net8.0\Spire.Doc.dll

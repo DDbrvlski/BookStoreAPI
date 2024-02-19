@@ -30,6 +30,10 @@ namespace BookStoreAPI.Controllers.Supplies
         [Authorize("SupplyWrite")]
         public async Task<IActionResult> AddNewSupplyAsync(SupplyPostDto supplyData)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await supplyService.AddNewSupplyAsync(supplyData);
             return NoContent();
         }
@@ -38,6 +42,10 @@ namespace BookStoreAPI.Controllers.Supplies
         [Authorize("SupplyEdit")]
         public async Task<IActionResult> UpdateSupplyAsync(int supplyId, SupplyPutDto supplyData)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await supplyService.UpdateSupplyAsync(supplyId, supplyData);
             return NoContent();
         }

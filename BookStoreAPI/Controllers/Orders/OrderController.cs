@@ -39,5 +39,15 @@ namespace BookStoreAPI.Controllers.Orders
 
             return File(pdfBytes, "application/pdf", "invoice.pdf");
         }
+
+        [HttpGet]
+        [Route("Invoice/Template")]
+        //[Authorize(Roles = UserRoles.User)]
+        public async Task<IActionResult> GenerateInvoiceByTemplate(int orderId)
+        {
+            byte[] pdfBytes = await invoiceService.CreateInvoiceByDocxTemplate(orderId);
+
+            return File(pdfBytes, "application/pdf", "invoice.pdf");
+        }
     }
 }

@@ -15,7 +15,11 @@ namespace BookStoreAPI.Services.Library
         Task<byte[]> GetEbookPdfFileAsync(int bookItemId);
     }
 
-    public class LibraryService(BookStoreContext context, IUserContextService userContextService, IWebHostEnvironment hostEnvironment) : ILibraryService
+    public class LibraryService
+        (BookStoreContext context, 
+        IUserContextService userContextService, 
+        IWebHostEnvironment hostEnvironment)
+        : ILibraryService
     {
         public async Task<IEnumerable<LibraryItemsDto>> GetAllEbooksAvailableForUserAsync(int libraryStatusId)
         {

@@ -29,6 +29,10 @@ namespace BookStoreAPI.Controllers.PageContent
         [Authorize("BannerWrite")]
         public async Task<IActionResult> CreateBannerAsync(BanerDto bannerModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await bannerService.CreateBannerAsync(bannerModel);
             return NoContent();
         }
@@ -37,6 +41,10 @@ namespace BookStoreAPI.Controllers.PageContent
         [Authorize("BannerEdit")]
         public async Task<IActionResult> EditBannerAsync(int id, BanerDto bannerModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await bannerService.EditBannerAsync(id, bannerModel);
             return NoContent();
         }

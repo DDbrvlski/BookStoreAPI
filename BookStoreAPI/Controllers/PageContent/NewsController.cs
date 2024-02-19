@@ -40,6 +40,10 @@ namespace BookStoreAPI.Controllers.PageContent
         [Authorize("NewsWrite")]
         public async Task<IActionResult> CreateNewsAsync(NewsPostCMSDto newsModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await newsService.CreateNewsAsync(newsModel);
             return NoContent();
         }
@@ -48,6 +52,10 @@ namespace BookStoreAPI.Controllers.PageContent
         [Authorize("NewsEdit")]
         public async Task<IActionResult> EditNewsAsync(int id, NewsPostCMSDto newsModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await newsService.EditNewsAsync(id, newsModel);
             return NoContent();
         }

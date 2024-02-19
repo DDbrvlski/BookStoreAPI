@@ -7,8 +7,11 @@ namespace BookStoreDto.Dtos.Accounts.Account
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+
         [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
+
         [Required]
         public string Audience { get; set; }
     }

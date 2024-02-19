@@ -37,6 +37,10 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
         [Authorize("SupplierWrite")]
         public async Task<IActionResult> AddNewSupplierAsync(SupplierPostDto supplierData)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await supplierService.AddNewSupplierAsync(supplierData);
             return NoContent();
         }
@@ -45,6 +49,10 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
         [Authorize("SupplierEdit")]
         public async Task<IActionResult> UpdateSupplierAsync(int supplierId, SupplierPostDto supplierData)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await supplierService.UpdateSupplierAsync(supplierId, supplierData);
             return NoContent();
         }

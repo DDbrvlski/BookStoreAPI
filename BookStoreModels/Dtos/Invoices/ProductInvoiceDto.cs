@@ -9,6 +9,8 @@
         public float Tax { get; set; }
         public decimal TaxValue { get; set; }
         public decimal NettoPrice { get; set; }
+        public decimal NettoValue { get; set; }
         public decimal BruttoPrice { get; set; }
+        public decimal BruttoValue { get; set; }
     }
 }

@@ -14,7 +14,11 @@ namespace BookStoreAPI.Controllers.Media
     [ApiController]
     public class ImagesController : CRUDController<Images>
     {
-        public ImagesController(BookStoreContext context, IBaseService<Images> baseService, ILogger<Images> logger) : base(context, baseService, logger)
+        public ImagesController
+            (BookStoreContext context, 
+            IBaseService<Images> baseService, 
+            ILogger<Images> logger)
+            : base(context, baseService, logger)
         {
         }
     }

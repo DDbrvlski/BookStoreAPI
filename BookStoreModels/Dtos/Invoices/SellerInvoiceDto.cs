@@ -14,8 +14,8 @@ namespace BookStoreDto.Dtos.Invoices
         public string StreetNumber { get; set; }
         public string? HouseNumber { get; set; }
         public string Postcode { get; set; }
-        public string CityName { get; set; }
-        public string CountryName { get; set; }
+        public string City { get; set; }
+        public string Country { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
     }

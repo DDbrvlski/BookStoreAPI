@@ -32,6 +32,10 @@ namespace BookStoreAPI.Controllers.PageContent
         [Authorize("CategoryElementWrite")]
         public async Task<IActionResult> CreateCategoryElementAsync(CategoryElementDto categoryElementModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await categoryElementService.CreateCategoryElementAsync(categoryElementModel);
             return NoContent();
         }
@@ -40,6 +44,10 @@ namespace BookStoreAPI.Controllers.PageContent
         [Authorize("CategoryElementEdit")]
         public async Task<IActionResult> EditCategoryElementAsync(int id, CategoryElementDto categoryElementModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await categoryElementService.EditCategoryElementAsync(id, categoryElementModel);
             return NoContent();
         }

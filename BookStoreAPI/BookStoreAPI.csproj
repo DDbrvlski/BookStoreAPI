@@ -20,6 +20,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
     <PackageReference Include="QuestPDF" Version="2023.12.2" />
+    <PackageReference Include="Spire.Doc" Version="12.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
@@ -29,6 +30,7 @@
 
   <ItemGroup>
     <Folder Include="Files\Ebooks\PDFs\" />
+    <Folder Include="Files\Documents\" />
   </ItemGroup>
 
   <ItemGroup>

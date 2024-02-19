@@ -22,6 +22,7 @@ namespace BookStoreAPI.Infrastructure.Exceptions
                 AccountException accountException => (400, accountException.Message),
                 WishlistException wishlistException => (400, wishlistException.Message),
                 OrderException orderException => (400, orderException.Message),
+                ValidationException validationException => (400, validationException.Message),
                 _ => (500, "Something went wrong...")
             };
 

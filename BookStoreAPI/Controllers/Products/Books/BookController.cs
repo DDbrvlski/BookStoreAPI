@@ -11,7 +11,7 @@ namespace BookStoreAPI.Controllers.Products.Books
     public class BookController(IBookService bookService) : ControllerBase
     {
         [HttpDelete("{id}")]
-        [Authorize("BooksDelete")]
+        [Authorize("BookDelete")]
         public async Task<IActionResult> DeleteBookAsync(int id)
         {
             await bookService.DeactivateBookAsync(id);
@@ -33,12 +33,12 @@ namespace BookStoreAPI.Controllers.Products.Books
         }
 
         [HttpPost]
-        [Authorize("BooksWrite")]
+        [Authorize("BookWrite")]
         public async Task<IActionResult> PostBookAsync(BookPostDto bookPost)
         {
-            if (bookPost == null)
+            if (!ModelState.IsValid)
             {
-                throw new BadRequestException("Nie można wykonać operacji dodawania, ponieważ przesłany obiekt jest pusty.");
+                return ValidationProblem(ModelState);
             }
             await bookService.CreateBookAsync(bookPost);
 
@@ -46,12 +46,12 @@ namespace BookStoreAPI.Controllers.Products.Books
         }
 
         [HttpPut("{id}")]
-        [Authorize("BooksEdit")]
+        [Authorize("BookEdit")]
         public async Task<IActionResult> PutBookAsync(int id, BookPostDto bookPut)
         {
-            if (bookPut == null)
+            if (!ModelState.IsValid)
             {
-                throw new BadRequestException("Nie można wykonać operacji aktualizacji, ponieważ przesłany obiekt jest pusty.");
+                return ValidationProblem(ModelState);
             }
             await bookService.UpdateBookAsync(id, bookPut);
 

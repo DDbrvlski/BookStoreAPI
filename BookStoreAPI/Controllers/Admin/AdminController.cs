@@ -6,6 +6,7 @@ using BookStoreDto.Dtos.Admin;
 using BookStoreDto.Dtos.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BookStoreAPI.Controllers.Admin
 {
@@ -39,7 +40,7 @@ namespace BookStoreAPI.Controllers.Admin
         {
             if (!ModelState.IsValid)
             {
-                throw new AccountException("Wprowadzono błędne dane.");
+                return ValidationProblem(ModelState);
             }
 
             registerData.RoleName ??= "Employee";
@@ -100,6 +101,10 @@ namespace BookStoreAPI.Controllers.Admin
         [Route("Roles/Claims")]
         public async Task<IActionResult> AddClaimsToRole(RoleClaimsPostDto roleClaims)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await adminPanelService.AddClaimsToRole(roleClaims);
             return NoContent();
         }

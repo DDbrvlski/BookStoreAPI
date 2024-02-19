@@ -49,14 +49,24 @@ namespace BookStoreAPI.Services.Admin
                 {
                     if (user.IsActive)
                     {
-                        employees.Add(new EmployeeDataDto
+                        var employee = employees.FirstOrDefault(e => e.Id == user.Id);
+
+                        if (employee == null)
                         {
-                            Id = user.Id,
-                            Username = user.UserName,
-                            Email = user.Email,
-                            PhoneNumber = user.PhoneNumber,
-                            RoleName = role.Name,
-                        });
+                            employee = new EmployeeDataDto
+                            {
+                                Id = user.Id,
+                                Username = user.UserName,
+                                Email = user.Email,
+                                PhoneNumber = user.PhoneNumber,
+                                RoleName = new List<string>() { role.Name }
+                            };
+                            employees.Add(employee);
+                        }
+                        else
+                        {
+                            employee.RoleName.Add(role.Name);
+                        }
                     }
                 }
             }

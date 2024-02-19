@@ -52,6 +52,10 @@ namespace BookStoreAPI.Helpers.BaseController
                 return Forbid();
             }
 
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             return await AddNewEntityAsync(entity);
         }
 
@@ -64,6 +68,10 @@ namespace BookStoreAPI.Helpers.BaseController
                 return Forbid();
             }
 
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             return await UpdateEntityAsync(id, entity);
         }
 

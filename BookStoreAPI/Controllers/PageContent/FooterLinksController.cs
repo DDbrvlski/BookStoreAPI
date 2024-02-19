@@ -46,6 +46,10 @@ namespace BookStoreAPI.Controllers.PageContent
         [Authorize("FooterLinksWrite")]
         public async Task<IActionResult> CreateFooterLinkAsync(FooterLinks footerLinkModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await footerLinkService.CreateFooterLinkAsync(footerLinkModel);
             return NoContent();
         }
@@ -54,6 +58,10 @@ namespace BookStoreAPI.Controllers.PageContent
         [Authorize("FooterLinksEdit")]
         public async Task<IActionResult> EditFooterLinkAsync(int id, FooterLinks footerLinkModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await footerLinkService.EditFooterLinkAsync(id, footerLinkModel);
             return NoContent();
         }

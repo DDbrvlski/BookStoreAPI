@@ -1,4 +1,5 @@
 ﻿using BookStoreAPI.Helpers;
+using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Addresses;
 using BookStoreAPI.Services.BookItems;
 using BookStoreAPI.Services.Customers;
@@ -44,7 +45,8 @@ namespace BookStoreAPI.Services.Orders
                 IDiscountCodeService discountCodeService,
                 IBookItemService bookItemService,
                 IBookDiscountService bookDiscountService,
-                IStockAmountService stockAmountService)
+                IStockAmountService stockAmountService,
+                SellerInvoiceDto sellerInvoiceData)
                 : IOrderService
     {
         public async Task<OrderDetailsDto> GetOrderByIdAsync(int orderId)
@@ -384,6 +386,7 @@ namespace BookStoreAPI.Services.Orders
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
+                    throw new BadRequestException("1");
                 }
             }            
         }
@@ -397,15 +400,15 @@ namespace BookStoreAPI.Services.Orders
                     DueDate = x.OrderDate,
                     SellerInvoice = new SellerInvoiceDto()
                     {
-                        Name = "Spellarium",
-                        TaxIdentificationNumber = "2814871289823",
-                        CityName = "Warszawa",
-                        CountryName = "Polska",
-                        Postcode = "01-001",
-                        Street = "Książkowa",
-                        StreetNumber = "47",
-                        Email = "spellarium@gmail.com",
-                        Phone = "123123123"
+                        Name = sellerInvoiceData.Name,
+                        TaxIdentificationNumber = sellerInvoiceData.TaxIdentificationNumber,
+                        City = sellerInvoiceData.City,
+                        Country = sellerInvoiceData.Country,
+                        Postcode = sellerInvoiceData.Postcode,
+                        Street = sellerInvoiceData.Street,
+                        StreetNumber = sellerInvoiceData.StreetNumber,
+                        Email = sellerInvoiceData.Email,
+                        Phone = sellerInvoiceData.Phone
                     },
                     CustomerInvoice = new CustomerInvoiceDto()
                     {
@@ -450,7 +453,9 @@ namespace BookStoreAPI.Services.Orders
             foreach(var item in invoice.InvoiceProducts)
             {
                 item.NettoPrice = item.BruttoPrice / (decimal)((float)1 + (item.Tax/100));
-                item.TaxValue = item.BruttoPrice - item.NettoPrice;
+                item.TaxValue = (item.BruttoPrice - item.NettoPrice) * item.Quantity;
+                item.NettoValue = item.NettoPrice * item.Quantity;
+                item.BruttoValue = item.BruttoPrice * item.Quantity;
             }
 
             return invoice;

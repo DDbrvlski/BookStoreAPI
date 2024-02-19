@@ -21,6 +21,10 @@ namespace BookStoreAPI.Controllers.Notifications
         [Authorize("NewsletterEdit")]
         public async Task<IActionResult> EditNewsletter(int id, Newsletter newNewsletter)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await newsletterService.EditNewsletterAsync(id, newNewsletter);
             return NoContent();
         }
@@ -38,6 +42,10 @@ namespace BookStoreAPI.Controllers.Notifications
         [Authorize("NewsletterWrite")]
         public async Task<IActionResult> CreateNewsletter(Newsletter newsletter)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await newsletterService.CreateNewsletterAsync(newsletter);
             return Ok();
         }

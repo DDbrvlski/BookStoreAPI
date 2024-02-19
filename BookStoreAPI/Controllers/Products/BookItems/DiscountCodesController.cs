@@ -30,6 +30,10 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         [Authorize("DiscountCodesWrite")]
         public async Task<IActionResult> PostDiscountCodeAsync(DiscountCodePostCMSDto discountCodeModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await discountCodeService.CreateDiscountCodeAsync(discountCodeModel);
             return NoContent();
         }
@@ -38,6 +42,10 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         [Authorize("DiscountCodesEdit")]
         public async Task<IActionResult> PutDiscountCodeAsync(int id, DiscountCodePostCMSDto discountCodeModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await discountCodeService.UpdateDiscountCodeAsync(id, discountCodeModel);
             return NoContent();
         }

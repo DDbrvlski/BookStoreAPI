@@ -56,6 +56,10 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         [Authorize("BookItemsWrite")]
         public async Task<IActionResult> PostBookItemAsync(BookItemPostCMSDto bookItemModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await bookItemService.CreateBookItemAsync(bookItemModel);
             return NoContent();
         }
@@ -64,6 +68,10 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         [Authorize("BookItemsEdit")]
         public async Task<IActionResult> PutBookItemAsync(int id, BookItemPostCMSDto bookItemModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await bookItemService.UpdateBookItemAsync(id, bookItemModel);
             return NoContent();
         }

@@ -5,6 +5,7 @@ using BookStoreDto.Dtos.Accounts.User;
 using BookStoreDto.Dtos.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookStoreAPI.Controllers.Accounts
 {
@@ -44,6 +45,10 @@ namespace BookStoreAPI.Controllers.Accounts
         [Authorize(Roles = UserRoles.User)]
         public async Task<IActionResult> EditUserData(UserDataDto userData)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await userService.EditUserDataAsync(userData);
             return NoContent();
         }
@@ -52,6 +57,10 @@ namespace BookStoreAPI.Controllers.Accounts
         [Authorize(Roles = UserRoles.User)]
         public async Task<IActionResult> EditUserPassword(UserChangePasswordDto userData)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await userService.EditUserPasswordAsync(userData);
             return NoContent();
         }
@@ -69,6 +78,10 @@ namespace BookStoreAPI.Controllers.Accounts
         [Route("Order")]
         public async Task<IActionResult> CreateNewOrder(OrderPostDto orderModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await orderService.CreateNewOrderAsync(orderModel);
             return Created();
         }
@@ -96,6 +109,10 @@ namespace BookStoreAPI.Controllers.Accounts
         [Route("Order/DiscountCode")]
         public async Task<ActionResult<OrderDiscountCheckDto>> ApplyDiscountForOrder(OrderDiscountCheckDto orderDiscountModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             var orderDiscount = await orderService.ApplyDiscountCodeToOrderAsync(orderDiscountModel);
             return Ok(orderDiscount);
         }

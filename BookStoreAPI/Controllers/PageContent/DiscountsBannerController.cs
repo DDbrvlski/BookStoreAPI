@@ -29,6 +29,10 @@ namespace BookStoreAPI.Controllers.PageContent
         [Authorize("DiscountBannerWrite")]
         public async Task<IActionResult> CreateDiscountBannerAsync(DiscountBannerDto discountBannerDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await discountBannerService.CreateDiscountBannerAsync(discountBannerDto);
             return NoContent();
         }
@@ -37,6 +41,10 @@ namespace BookStoreAPI.Controllers.PageContent
         [Authorize("DiscountBannerEdit")]
         public async Task<IActionResult> EditDiscountBannerAsync(int id, DiscountBannerDto discountBannerDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
             await discountBannerService.EditDiscountBannerAsync(id, discountBannerDto);
             return NoContent();
         }
