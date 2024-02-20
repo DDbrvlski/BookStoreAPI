@@ -10,15 +10,15 @@ namespace BookStoreAPI.Services.PageElements
 {
     public interface ICategoryElementService
     {
-        Task CreateCategoryElementAsync(CategoryElementDto categoryElementModel);
+        Task CreateCategoryElementAsync(CategoryElementPostDto categoryElementModel);
         Task DeactivateCategoryElementAsync(int categoryElementId);
-        Task EditCategoryElementAsync(int categoryElementId, CategoryElementDto categoryElementModel);
+        Task EditCategoryElementAsync(int categoryElementId, CategoryElementPostDto categoryElementModel);
         Task<IEnumerable<CategoryElementDto>> GetAllCategoryElementsAsync();
         Task<CategoryElementDto> GetCategoryElementByIdAsync(int categoryElementId);
     }
     public class CategoryElementService(BookStoreContext context, IImageService imageService) : ICategoryElementService
     {
-        public async Task CreateCategoryElementAsync(CategoryElementDto categoryElementModel)
+        public async Task CreateCategoryElementAsync(CategoryElementPostDto categoryElementModel)
         {
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -27,6 +27,7 @@ namespace BookStoreAPI.Services.PageElements
                     var newImage = await imageService.AddNewImageAndReturnAsync(categoryElementModel.ImageTitle, categoryElementModel.ImageURL);
 
                     CategoryElement newCategoryElement = new();
+                    newCategoryElement.Name = categoryElementModel.Path;
                     newCategoryElement.CopyProperties(categoryElementModel);
                     newCategoryElement.ImageID = newImage.Id;
 
@@ -66,7 +67,7 @@ namespace BookStoreAPI.Services.PageElements
             
         }
 
-        public async Task EditCategoryElementAsync(int categoryElementId, CategoryElementDto categoryElementModel)
+        public async Task EditCategoryElementAsync(int categoryElementId, CategoryElementPostDto categoryElementModel)
         {
             using (var transaction = context.Database.BeginTransaction())
             {

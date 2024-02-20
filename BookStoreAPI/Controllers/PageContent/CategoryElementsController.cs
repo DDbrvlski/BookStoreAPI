@@ -30,7 +30,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpPost]
         [Authorize("CategoryElementWrite")]
-        public async Task<IActionResult> CreateCategoryElementAsync(CategoryElementDto categoryElementModel)
+        public async Task<IActionResult> CreateCategoryElementAsync(CategoryElementPostDto categoryElementModel)
         {
             if (!ModelState.IsValid)
             {
@@ -42,7 +42,7 @@ namespace BookStoreAPI.Controllers.PageContent
 
         [HttpPut("{id}")]
         [Authorize("CategoryElementEdit")]
-        public async Task<IActionResult> EditCategoryElementAsync(int id, CategoryElementDto categoryElementModel)
+        public async Task<IActionResult> EditCategoryElementAsync(int id, CategoryElementPostDto categoryElementModel)
         {
             if (!ModelState.IsValid)
             {

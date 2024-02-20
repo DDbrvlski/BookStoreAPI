@@ -8,24 +8,31 @@ namespace BookStoreAPI.Services.Policies
     {
         public async Task<List<PolicyClaimsDto>> CreateAuthorizationPoliciesAsync()
         {
-            var policyClaims = new List<PolicyClaimsDto>();
-            var claims = await context.Claims.ToListAsync();
-            var claimValues = await context.ClaimValues.ToListAsync();
-
-            foreach (var claim in claims)
+            try
             {
-                foreach (var claimValue in claimValues)
-                {
-                    policyClaims.Add(new PolicyClaimsDto()
-                    {
-                        PolicyName = $"{claim.Name}{claimValue.Name}",
-                        ClaimName = claim.Name,
-                        ClaimValue = claimValue.Value
-                    });
-                }
-            }
+                var policyClaims = new List<PolicyClaimsDto>();
+                var claims = await context.Claims.ToListAsync();
+                var claimValues = await context.ClaimValues.ToListAsync();
 
-            return policyClaims;
+                foreach (var claim in claims)
+                {
+                    foreach (var claimValue in claimValues)
+                    {
+                        policyClaims.Add(new PolicyClaimsDto()
+                        {
+                            PolicyName = $"{claim.Name}{claimValue.Name}",
+                            ClaimName = claim.Name,
+                            ClaimValue = claimValue.Value
+                        });
+                    }
+                }
+
+                return policyClaims;
+            }
+            catch (Exception ex)
+            {
+                return new List<PolicyClaimsDto>();
+            }
         }
     }
 }

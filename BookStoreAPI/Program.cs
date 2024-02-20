@@ -119,8 +119,8 @@ namespace BookStoreAPI
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
-                options.SignIn.RequireConfirmedEmail = true;
-                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+                options.SignIn.RequireConfirmedEmail = false;
+                //options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
             })
                 .AddEntityFrameworkStores<BookStoreContext>()
                 .AddDefaultTokenProviders();
@@ -166,7 +166,7 @@ namespace BookStoreAPI
             });
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-            builder.Services.AddProblemDetails();
+            //builder.Services.AddProblemDetails();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -224,7 +224,7 @@ namespace BookStoreAPI
 
 
             var app = builder.Build();
-            app.UseExceptionHandler();
+            //app.UseExceptionHandler();
 
             if (app.Environment.IsDevelopment())
             {

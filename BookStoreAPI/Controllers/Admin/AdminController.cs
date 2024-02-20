@@ -12,7 +12,7 @@ namespace BookStoreAPI.Controllers.Admin
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = UserRoles.Admin)]
+    [Authorize(Roles = "Admin")]
     public class AdminController
         (IAuthService authService,
         IAdminPanelService adminPanelService) 

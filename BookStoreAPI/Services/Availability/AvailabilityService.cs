@@ -1,4 +1,5 @@
-﻿using BookStoreAPI.Helpers;
+﻿using BookStoreAPI.Enums;
+using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreData.Data;
 using BookStoreData.Models.Products.BookItems;
@@ -23,15 +24,15 @@ namespace BookStoreAPI.Services.Availability
             {
                 throw new NotFoundException("Wystąpił błąd podczas pobierania książki do aktualizacji dostępności");
             }
-            if (bookItem.FormID == 1)
+            if (bookItem.FormID == (int)BookFormEnum.Book)
             {
                 if (stockAmount <= 0)
                 {
-                    bookItem.AvailabilityID = 2;
+                    bookItem.AvailabilityID = (int)AvailabilityEnum.Niedostepna;
                 }
                 else if (stockAmount > 0)
                 {
-                    bookItem.AvailabilityID = 1;
+                    bookItem.AvailabilityID = (int)AvailabilityEnum.Dostepna;
                 }
                 else
                 {
@@ -55,11 +56,11 @@ namespace BookStoreAPI.Services.Availability
                 {
                     if (bookItemAmount <= 0)
                     {
-                        bookItem.AvailabilityID = 2;
+                        bookItem.AvailabilityID = (int)AvailabilityEnum.Niedostepna;
                     }
                     else if (bookItemAmount > 0)
                     {
-                        bookItem.AvailabilityID = 1;
+                        bookItem.AvailabilityID = (int)AvailabilityEnum.Dostepna;
                     }
                     else
                     {
@@ -83,7 +84,7 @@ namespace BookStoreAPI.Services.Availability
                 throw new NotFoundException("Wystąpił błąd podczas edycji dostępności dla książki.");
             }
 
-            bookItem.AvailabilityID = 2;
+            bookItem.AvailabilityID = (int)AvailabilityEnum.Niedostepna;
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }

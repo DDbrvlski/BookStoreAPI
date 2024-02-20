@@ -1,4 +1,5 @@
-﻿using BookStoreAPI.Helpers;
+﻿using BookStoreAPI.Enums;
+using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreData.Data;
 using BookStoreData.Models.Transactions;
@@ -22,13 +23,13 @@ namespace BookStoreAPI.Services.Payments
             int transactionStatusId;
             DateTime? paymentDate = null;
 
-            if (paymentMethodId == 4)
+            if (paymentMethodId == (int)PaymentMethodEnum.PlatnoscPrzyOdbiorze)
             {
-                transactionStatusId = 1;
+                transactionStatusId = (int)TransactionStatusEnum.WTrakcie;
             }
             else
             {
-                transactionStatusId = 2;
+                transactionStatusId = (int)TransactionStatusEnum.Zakonczona;
                 paymentDate = DateTime.UtcNow;
             }
             //Do zmiany po dodaniu prawdziwej płatności

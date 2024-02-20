@@ -1,4 +1,5 @@
-﻿using BookStoreAPI.Helpers;
+﻿using BookStoreAPI.Enums;
+using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Addresses;
 using BookStoreAPI.Services.BookItems;
@@ -305,12 +306,12 @@ namespace BookStoreAPI.Services.Orders
                             });
                     }
 
-                    orderModel.InvoiceAddress.AddressTypeID = 3;
+                    orderModel.InvoiceAddress.AddressTypeID = (int)AddressTypeEnum.AdresFaktury;
 
                     List<BaseAddressDto> orderAddresses = [orderModel.InvoiceAddress];
                     if (orderModel.DeliveryAddress != null)
                     {
-                        orderModel.DeliveryAddress.AddressTypeID = 4;
+                        orderModel.DeliveryAddress.AddressTypeID = (int)AddressTypeEnum.AdresDostawy;
                         orderAddresses.Add(orderModel.DeliveryAddress);
                     }
 
@@ -348,7 +349,7 @@ namespace BookStoreAPI.Services.Orders
                     {
                         DeliveryMethodID = orderModel.DeliveryMethodID,
                         CustomerID = customer.Id,
-                        OrderStatusID = 1,
+                        OrderStatusID = (int)OrderStatusEnum.Aktywne,
                         PaymentID = payment.Id,
                         DiscountCodeID = orderModel.DiscountCodeID,
                         OrderDate = DateTime.Now,
