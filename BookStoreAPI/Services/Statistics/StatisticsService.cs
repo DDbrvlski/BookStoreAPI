@@ -79,7 +79,9 @@ namespace BookStoreAPI.Services.Statistic
                 try
                 {
                     bool isUpdate = false;
-                    var statisticsDB = await context.Statistics.Where(x => x.IsActive && x.Month == month && x.Year == year).FirstOrDefaultAsync();
+                    var statisticsDB = await context.Statistics
+                        .Where(x => x.IsActive && x.Month == month && x.Year == year)
+                        .FirstOrDefaultAsync();
                     Statistics statistics = new();
                     if (statisticsDB != null)
                     {

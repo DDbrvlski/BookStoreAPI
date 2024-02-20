@@ -30,33 +30,45 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
     {
         public async Task<DiscountCodeDetailsCMSDto> GetDiscountCodeByIdCMSAsync(int id)
         {
-            return await context.DiscountCode
+            var code = await context.DiscountCode
                 .Where(x => x.Id == id && x.IsActive)
                 .Select(x => new DiscountCodeDetailsCMSDto()
                 {
                     Id = x.Id,
-                    IsAvailable = DateTime.Today >= x.StartingDate && DateTime.Today <= x.ExpiryDate.AddDays(1),
+                    IsAvailable = false,
                     Code = x.Code,
                     Description = x.Description,
                     ExpiryDate = x.ExpiryDate,
                     PercentOfDiscount = x.PercentOfDiscount,
                     StartingDate = x.StartingDate,
                 }).FirstAsync();
+
+            var todaysDate = DateTime.Now.Date;
+            code.IsAvailable = (todaysDate >= code.StartingDate.Date && todaysDate <= code.ExpiryDate.AddDays(1).Date);
+
+            return code;
         }
 
         public async Task<IEnumerable<DiscountCodeCMSDto>> GetAllDiscountCodesCMSAsync()
         {
-            return await context.DiscountCode
+            var todaysDate = DateTime.Now.Date;
+            var codes = await context.DiscountCode
                 .Where(x => x.IsActive == true)
                 .Select(x => new DiscountCodeCMSDto
                 {
                     Id = x.Id,
-                    IsAvailable = DateTime.Today >= x.StartingDate && DateTime.Today <= x.ExpiryDate.AddDays(1),
+                    IsAvailable = false,
                     Description = x.Description,
                     PercentOfDiscount = x.PercentOfDiscount,
+                    StartingDate = x.StartingDate,
+                    ExpiryDate = x.ExpiryDate,
                     Code = x.Code
                 })
                 .ToListAsync();
+
+            codes.ForEach(x => x.IsAvailable = todaysDate >= x.StartingDate.Date && todaysDate <= x.ExpiryDate.AddDays(1).Date);
+
+            return codes;
         }
 
         public async Task CreateDiscountCodeAsync(DiscountCodePostCMSDto discountCodeModel)

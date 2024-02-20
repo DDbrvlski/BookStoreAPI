@@ -27,7 +27,7 @@ namespace BookStoreAPI.Controllers.CMS
         public async Task<ActionResult<StatisticsMonthlyRaportDto>> GetMonthlyRaportAsync(int month, int year)
         {
             var todaysDate = DateTime.UtcNow;
-            if (month > todaysDate.Month || year > todaysDate.Year)
+            if (month > todaysDate.Month && year >= todaysDate.Year)
             {
                 throw new ValidationException($"Nie można wygenerować raportu z przyszłości, aktualna data {todaysDate.Month}.{todaysDate.Year}, wprowadzono date {month}.{year}.");
             }

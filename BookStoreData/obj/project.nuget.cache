@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "jXJMbNU57/XVcCIOtVzkql/vxGlL/hVEzd6M82RDVTu4f3TwSC5l5PAfIJmkIZTktWU92vwAaVCYNQ8c8zDy8w==",
+  "dgSpecHash": "7xQ3OtInurYXWmkogr/5hb9eRfy48Dp4kh6ZcaGIckHpDL2wKS7Ml344Y0I8lN2EAJUyQ2urFbU+w3GewMqDiQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\SEMESTR 7\\PRACA2.0\\API\\BookStoreData\\BookStoreData.csproj",
+  "projectFilePath": "C:\\Users\\Damian\\Desktop\\Zadania studia\\Projekt\\API-Lib\\BookStoreData\\BookStoreData.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Damian\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\Damian\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

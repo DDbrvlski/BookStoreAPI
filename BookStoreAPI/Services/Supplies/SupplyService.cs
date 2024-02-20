@@ -150,7 +150,7 @@ namespace BookStoreAPI.Services.Supplies
 
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     transaction.Rollback();
                     throw new BadRequestException("Wystąpił błąd podczas dodawania nowej dostawy.");
