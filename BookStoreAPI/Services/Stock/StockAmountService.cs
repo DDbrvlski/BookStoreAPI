@@ -120,8 +120,7 @@ namespace BookStoreAPI.Services.Stock
                     bookItem.Amount += updateData.Quantity;
                     if (bookItem.Amount < 0)
                     {
-                        throw new BadRequestException($"Wystąpił błąd z aktualizacją stanu magazynowego dla książki {bookItem.BookItemID}, ilość nie może zejść poniżej 0.");
-                        //bookItem.Amount = 0;
+                        throw new BadRequestException($"Brak wystarczającej ilości produktu na magazynie.");
                     }
                 }
             }

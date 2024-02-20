@@ -144,6 +144,7 @@ namespace BookStoreAPI.Services.Books
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
+                    throw;
                 }
             }            
         }

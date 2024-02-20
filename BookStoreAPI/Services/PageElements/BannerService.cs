@@ -81,6 +81,7 @@ namespace BookStoreAPI.Services.PageElements
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
+                    throw;
                 }
             }            
         }
@@ -101,6 +102,7 @@ namespace BookStoreAPI.Services.PageElements
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
+                    throw;
                 }
             }            
         }

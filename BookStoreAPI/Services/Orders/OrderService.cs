@@ -366,11 +366,11 @@ namespace BookStoreAPI.Services.Orders
                         orderItems.Add(new OrderItems()
                         {
                             BookItemID = item.BookItemID,
-                            Quantity = (int)item.Quantity,
-                            BruttoPrice = (decimal)item.SingleItemBruttoPrice,
+                            Quantity = item.Quantity,
+                            BruttoPrice = item.SingleItemBruttoPrice,
                             TotalBruttoPrice = (decimal)(item.SingleItemBruttoPrice * (decimal)item.Quantity),
                             OrderID = order.Id,
-                            OriginalBruttoPrice = (decimal)item.OriginalItemBruttoPrice,
+                            OriginalBruttoPrice = item.OriginalItemBruttoPrice,
                             IsDiscounted = item.IsDiscounted
                         });
                         bookItemsForStockUpdate.Add(new BookItemStockAmountUpdateDto() { BookItemId = item.BookItemID, Quantity = -(int)item.Quantity });
@@ -386,7 +386,7 @@ namespace BookStoreAPI.Services.Orders
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    throw new BadRequestException("1");
+                    throw;
                 }
             }            
         }

@@ -114,7 +114,7 @@ namespace BookStoreAPI.Services.Statistic
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    throw new BadRequestException("Wystąpił błąd podczas generowania miesięcznego raportu.");
+                    throw;
                 }
             }
         }

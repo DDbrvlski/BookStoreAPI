@@ -81,6 +81,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
+                    throw;
                 }
             }            
         }
@@ -107,6 +108,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
+                    throw;
                 }
             }            
         }
@@ -133,6 +135,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
+                    throw;
                 }
             }            
         }

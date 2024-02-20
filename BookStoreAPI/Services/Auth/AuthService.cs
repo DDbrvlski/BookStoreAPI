@@ -109,7 +109,7 @@ namespace BookStoreAPI.Services.Auth
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    throw new BadRequestException("Wystąpił błąd podczas tworzenia konta.");
+                    throw;
                 }
             }
         }

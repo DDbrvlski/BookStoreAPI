@@ -224,6 +224,7 @@ namespace BookStoreAPI.Services.BookItems
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
+                    throw;
                 }
             }            
         }
@@ -260,6 +261,7 @@ namespace BookStoreAPI.Services.BookItems
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
+                    throw;
                 }
             }            
         }
