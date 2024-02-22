@@ -77,6 +77,7 @@ namespace BookStoreAPI.Services.Supplies
                     }
 
                     supplier.CopyProperties(supplierData);
+                    supplier.ModifiedDate = DateTime.UtcNow;
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
                     await transaction.CommitAsync();
                 }
@@ -115,6 +116,7 @@ namespace BookStoreAPI.Services.Supplies
                     await addressService.DeactivateAddressAsync((int)supplier.AddressID);
 
                     supplier.IsActive = false;
+                    supplier.ModifiedDate = DateTime.UtcNow;
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
                     await transaction.CommitAsync();
                 }

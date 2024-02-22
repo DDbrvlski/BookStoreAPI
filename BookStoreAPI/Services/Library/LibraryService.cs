@@ -39,7 +39,7 @@ namespace BookStoreAPI.Services.Library
                 .Where(x => x.CustomerID == user.CustomerID)
                 .Select(x => new LibraryItemsDto()
                 {
-                    Id = (int)x.BookItemID,
+                    Id = x.BookItemID,
                     BookTitle = x.BookItem.Book.Title,
                     ExpiryDate = x.EndDate,
                     FileFormatName = x.BookItem.FileFormat.Name,
@@ -50,7 +50,7 @@ namespace BookStoreAPI.Services.Library
                             .Where(y => y.IsActive)
                             .Select(y => new AuthorDto()
                             {
-                                Id = (int)y.AuthorID,
+                                Id = y.AuthorID,
                                 Name = y.Author.Name,
                                 Surname = y.Author.Surname,
                             }).ToList()

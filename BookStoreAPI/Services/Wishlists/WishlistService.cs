@@ -133,6 +133,7 @@ namespace BookStoreAPI.Services.Wishlists
                 if (userWishlistItem != null)
                 {
                     userWishlistItem.IsActive = false;
+                    userWishlistItem.ModifiedDate = DateTime.UtcNow;
                 }
             }
 
@@ -164,6 +165,7 @@ namespace BookStoreAPI.Services.Wishlists
             }
 
             wishlist.IsActive = false;
+            wishlist.ModifiedDate = DateTime.UtcNow;
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }

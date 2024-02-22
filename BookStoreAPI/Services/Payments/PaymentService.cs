@@ -59,7 +59,7 @@ namespace BookStoreAPI.Services.Payments
                 throw new PaymentException("Wystąpił błąd z przetwarzaniem płatności.");
             }
 
-            payment.TransactionStatusID = 2;
+            payment.TransactionStatusID = (int)TransactionStatusEnum.Zakonczona;
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }

@@ -16,11 +16,11 @@ public class AccountRegisterDto
     public string Password { get; set; }
 
     [Required(ErrorMessage = "Pole 'Name' jest wymagane.")]
-    [RegularExpression("^[a-zA-Z]{2,30}$", ErrorMessage = "Pole 'Name' musi zawierać tylko litery, od 2 do 30 znaków.")]
+    [RegularExpression("^[\\p{L}]{2,30}$", ErrorMessage = "Pole 'Name' musi zawierać tylko litery, od 2 do 30 znaków.")]
     public string Name { get; set; }
 
     [Required(ErrorMessage = "Pole 'Surname' jest wymagane.")]
-    [RegularExpression("^[a-zA-Z]{2,30}$", ErrorMessage = "Pole 'Surname' musi zawierać tylko litery, od 2 do 30 znaków.")]
+    [RegularExpression("^[\\p{L}]{2,30}$", ErrorMessage = "Pole 'Surname' musi zawierać tylko litery, od 2 do 30 znaków.")]
     public string Surname { get; set; }
 
     [Phone(ErrorMessage = "Wprowadź prawidłowy numer telefonu.")]

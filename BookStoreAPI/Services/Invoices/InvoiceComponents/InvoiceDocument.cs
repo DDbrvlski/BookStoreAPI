@@ -162,9 +162,9 @@ namespace BookStoreAPI.Services.Invoices.InvoiceComponents
 
                 column.Item().Row(row =>
                 {
-                    row.RelativeItem().Component(new PaymentDetailsComponent(Model.AdditionalInfoInvoice.PaymentMethodName, Model.AdditionalInfoInvoice.PaymentDate, Model.AdditionalInfoInvoice.DeliveryName, Model.AdditionalInfoInvoice.CurrencyName));
+                    row.RelativeItem().Component(new PaymentDetailsComponent(Model.AdditionalInfoInvoice.PaymentMethodName, Model.AdditionalInfoInvoice.PaymentDate, Model.AdditionalInfoInvoice.DeliveryName, Model.AdditionalInfoInvoice.CurrencyName, Model.AdditionalInfoInvoice.DeliveryPrice));
                     row.ConstantItem(80);
-                    row.RelativeItem().Component(new PaymentComponent(Model.InvoiceProducts));
+                    row.RelativeItem().Component(new PaymentComponent(Model.InvoiceProducts, Model.AdditionalInfoInvoice.DeliveryPrice));
                 });
 
                 column.Item().Height(70).Element(ComposeComments);

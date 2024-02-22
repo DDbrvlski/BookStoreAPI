@@ -63,10 +63,10 @@ namespace BookStoreAPI.Services.Auth
                 }
             }
 
-            if (!user.EmailConfirmed)
-            {
-                throw new UnauthorizedException("Adres email nie został potwierdzony.");
-            }
+            //if (!user.EmailConfirmed)
+            //{
+            //    throw new UnauthorizedException("Adres email nie został potwierdzony.");
+            //}
 
             string token = await GenerateTokenAsync(user, loginData.Audience);
             return token;

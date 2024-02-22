@@ -12,7 +12,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
     {
         [HttpGet("{bookItemId}")]
         [Authorize(Roles = UserRoles.User)]
-        public async Task<ActionResult<BookReviewPostDto>> GetUserBookReviewByBookItemIdAsync(int bookItemId)
+        public async Task<ActionResult<BookReviewPostDto?>> GetUserBookReviewByBookItemIdAsync(int bookItemId)
         {
             var bookReview = await bookReviewService.GetExistingUserBookReviewByBookItemIdAsync(bookItemId);
             return Ok(bookReview);

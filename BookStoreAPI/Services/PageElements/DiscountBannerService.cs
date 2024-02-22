@@ -78,6 +78,7 @@ namespace BookStoreAPI.Services.PageElements
                 {
                     var discountBanner = await context.DiscountsBanner.Include(x => x.Image).FirstAsync(x => x.IsActive && x.Id == discountBannerId);
                     discountBanner.CopyProperties(discountBannerModel);
+                    discountBanner.ModifiedDate = DateTime.UtcNow;
 
                     if (discountBannerModel.ImageURL != discountBanner.Image.ImageURL)
                     {
@@ -106,6 +107,7 @@ namespace BookStoreAPI.Services.PageElements
                 {
                     var discountBanner = await context.DiscountsBanner.FirstAsync(x => x.IsActive && x.Id == discountBannerId);
                     discountBanner.IsActive = false;
+                    discountBanner.ModifiedDate = DateTime.UtcNow;
 
                     await imageService.DeactivateSingleImageByIdAsync(discountBanner.ImageID);
 

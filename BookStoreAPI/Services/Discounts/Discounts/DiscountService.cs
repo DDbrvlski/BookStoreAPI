@@ -99,6 +99,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                         throw new BadRequestException("Nie znaleziono elementu discount do aktualizacji.");
                     }
 
+                    discount.ModifiedDate = DateTime.UtcNow;
                     discount.CopyProperties(discountModel);
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
@@ -126,6 +127,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
                         throw new BadRequestException("Nie znaleziono elementu discount do deaktywacji.");
                     }
 
+                    discount.ModifiedDate = DateTime.UtcNow;
                     discount.IsActive = false;
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 

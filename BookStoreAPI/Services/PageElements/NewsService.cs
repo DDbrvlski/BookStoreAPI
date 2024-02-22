@@ -100,7 +100,7 @@ namespace BookStoreAPI.Services.PageElements
                     var news = await context.News.Include(x => x.Image).FirstAsync(x => x.IsActive && x.Id == newsId);
                     news.CopyProperties(newsModel);
                     news.AuthorName = $"{employee.Name} {employee.Surname}";
-                    news.ModifiedDate = DateTime.Now;
+                    news.ModifiedDate = DateTime.UtcNow;
 
                     if (newsModel.ImageURL != news.Image.ImageURL)
                     {
@@ -129,7 +129,7 @@ namespace BookStoreAPI.Services.PageElements
                 {
                     var news = await context.News.FirstAsync(x => x.Id == newsId);
                     news.IsActive = false;
-                    news.ModifiedDate = DateTime.Now;
+                    news.ModifiedDate = DateTime.UtcNow;
                     await imageService.DeactivateSingleImageByIdAsync(news.ImageID);
 
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);

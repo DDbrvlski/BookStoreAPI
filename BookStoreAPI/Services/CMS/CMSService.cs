@@ -14,14 +14,14 @@ namespace BookStoreAPI.Services.CMS
 {
     public interface ICMSService
     {
-        Task<CMSWeeklySummaryDto> GetWeeklySummaryOfOrdersRentalsReservationsAsync();
+        Task<CMSWeeklySummaryDto> GetWeeklySummaryOfOrdersRentalsAsync();
     }
 
     public class CMSService
         (BookStoreContext context) 
         : ICMSService
     {
-        public async Task<CMSWeeklySummaryDto> GetWeeklySummaryOfOrdersRentalsReservationsAsync()
+        public async Task<CMSWeeklySummaryDto> GetWeeklySummaryOfOrdersRentalsAsync()
         {
             return new CMSWeeklySummaryDto()
             {

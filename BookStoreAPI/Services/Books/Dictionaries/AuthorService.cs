@@ -75,6 +75,7 @@ namespace BookStoreAPI.Services.Books.Dictionaries
                 foreach (var author in authors)
                 {
                     author.IsActive = false;
+                    author.ModifiedDate = DateTime.UtcNow;
                 }
 
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
@@ -92,6 +93,7 @@ namespace BookStoreAPI.Services.Books.Dictionaries
                 foreach (var author in authorsToDeactivate)
                 {
                     author.IsActive = false;
+                    author.ModifiedDate = DateTime.UtcNow;
                 }
 
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);

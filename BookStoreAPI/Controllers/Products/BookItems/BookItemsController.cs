@@ -40,7 +40,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         [Authorize("BookItemsRead")]
         public async Task<ActionResult<IEnumerable<BookItemCMSDto>>> GetBookItemsForCMSAync()
         {
-            var bookItems = await bookItemService.GetBookItemsForCMSAync();
+            var bookItems = await bookItemService.GetBookItemsForCMSAsync();
             return Ok(bookItems);
         }
 

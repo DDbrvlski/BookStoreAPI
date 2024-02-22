@@ -13,7 +13,7 @@ namespace BookStoreData.Models.Helpers
         public bool IsActive { get; set; } = true;
 
         [JsonIgnore]
-        public DateTime CreationDate { get; set; } = DateTime.Now;
+        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
         [JsonIgnore]
         public DateTime? ModifiedDate { get; set; }
     }

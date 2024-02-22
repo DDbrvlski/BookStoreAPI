@@ -8,6 +8,8 @@ namespace BookStoreDto.Dtos.Orders
         public CustomerShortDetailsDto CustomerDetails { get; set; }
         public decimal TotalBruttoPrice { get; set; }
         public DateTime OrderDate { get; set; } 
+        public int OrderStatusId { get; set; }
+        public string OrderStatusName { get; set; }
         public List<OrderItemDetailsDto> OrderItems { get; set; }
     }
 }

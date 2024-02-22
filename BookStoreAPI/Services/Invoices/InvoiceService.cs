@@ -3,7 +3,9 @@ using BookStoreAPI.Services.Invoices.InvoiceComponents;
 using BookStoreAPI.Services.Orders;
 using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
+using BookStoreData.Models.Orders;
 using BookStoreDto.Dtos.Invoices;
+using Microsoft.EntityFrameworkCore;
 using Spire.Doc;
 using Spire.Doc.Documents;
 
@@ -74,10 +76,11 @@ namespace BookStoreAPI.Services.Invoices
                 FindAndBindDataToDocument(document, "{Currency}", invoiceData.AdditionalInfoInvoice.CurrencyName);
                 FindAndBindDataToDocument(document, "{PaymentDate}", paymentDate.ToShortDateString());
                 FindAndBindDataToDocument(document, "{DeliveryMethod}", invoiceData.AdditionalInfoInvoice.DeliveryName);
+                FindAndBindDataToDocument(document, "{DeliveryPrice}", $"{invoiceData.AdditionalInfoInvoice.DeliveryPrice:F2}");
 
-                decimal totalNetto = invoiceData.InvoiceProducts.Sum(x => x.NettoValue);
+                decimal totalNetto = invoiceData.InvoiceProducts.Sum(x => x.NettoValue) + invoiceData.AdditionalInfoInvoice.DeliveryPrice;
                 decimal taxValue = invoiceData.InvoiceProducts.Sum(x => x.TaxValue);
-                decimal totalBrutto = invoiceData.InvoiceProducts.Sum(x => x.BruttoValue);
+                decimal totalBrutto = invoiceData.InvoiceProducts.Sum(x => x.BruttoValue) + invoiceData.AdditionalInfoInvoice.DeliveryPrice;
 
                 FindAndBindDataToDocument(document, "{TotalNetto}", $"{totalNetto:F2}");
                 FindAndBindDataToDocument(document, "{TaxValue}", $"{taxValue:F2}");
@@ -187,12 +190,21 @@ namespace BookStoreAPI.Services.Invoices
         }
         private async Task<InvoiceDataDto> GetCustomerInvoiceDataAsync(int orderId)
         {
-            //var customer = await userContextService.GetCustomerByTokenAsync();
-            //var isOrderBelongsToUser = await orderService.CheckIfOrderBelongsToCustomer(customer.Id, orderId);
-            //if (!isOrderBelongsToUser)
-            //{
-            //    throw new BadRequestException("Nie można pobrać faktury zamówienia, które nie należy do zalogowanego użytkownika.");
-            //}
+            var customer = await userContextService.GetCustomerByTokenAsync();
+            var isOrderBelongsToUser = await orderService.CheckIfOrderBelongsToCustomer(customer.Id, orderId);
+            if (!isOrderBelongsToUser)
+            {
+                throw new BadRequestException("Nie można pobrać faktury zamówienia, które nie należy do zalogowanego użytkownika.");
+            }
+
+            var paymentDate = await context.Order
+                .Where(x => x.Id == orderId && x.IsActive)
+                .Select(x => x.Payment.PaymentDate)
+                .FirstAsync();
+            if(paymentDate == null)
+            {
+                throw new BadRequestException("Nie zapłacono za zamówienie, brak możliwości pobrania faktury.");
+            }
 
             return await orderService.GetUserOrderForInvoiceByOrderIdAsync(orderId);
         }

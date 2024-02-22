@@ -43,6 +43,7 @@ namespace BookStoreAPI.Services.Availability
             {
                 bookItem.AvailabilityID = 1;
             }
+            bookItem.ModifiedDate = DateTime.UtcNow;
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
         public async Task UpdateBookItemsAvailabilityAsync(List<AvailabilityBookItemsCheckDto> stockBookItems)
@@ -69,8 +70,9 @@ namespace BookStoreAPI.Services.Availability
                 }
                 else
                 {
-                    bookItem.AvailabilityID = 1;
+                    bookItem.AvailabilityID = (int)AvailabilityEnum.Dostepna;
                 }
+                bookItem.ModifiedDate = DateTime.UtcNow;
             }
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
@@ -85,6 +87,7 @@ namespace BookStoreAPI.Services.Availability
             }
 
             bookItem.AvailabilityID = (int)AvailabilityEnum.Niedostepna;
+            bookItem.ModifiedDate = DateTime.UtcNow;
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }

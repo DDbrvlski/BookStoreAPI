@@ -66,6 +66,7 @@ namespace BookStoreAPI.Services.PageElements
                 {
                     var banner = await context.Banner.Include(x => x.Image).FirstAsync(x => x.IsActive && x.Id == bannerId);
                     banner.CopyProperties(banerModel);
+                    banner.ModifiedDate = DateTime.UtcNow;
 
                     if (banerModel.ImageURL != banner.Image.ImageURL)
                     {
@@ -93,6 +94,7 @@ namespace BookStoreAPI.Services.PageElements
                 {
                     var banner = await context.Banner.FirstAsync(x => x.IsActive && x.Id == bannerId);
                     banner.IsActive = false;
+                    banner.ModifiedDate = DateTime.UtcNow;
 
                     await imageService.DeactivateSingleImageByIdAsync(banner.ImageID);
 

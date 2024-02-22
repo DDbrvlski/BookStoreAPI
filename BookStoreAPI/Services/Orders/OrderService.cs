@@ -60,28 +60,28 @@ namespace BookStoreAPI.Services.Orders
                     OrderDate = element.OrderDate,
                     DeliveryMethod = new DeliveryMethodDto
                     {
-                        Id = (int)element.DeliveryMethodID,
+                        Id = element.DeliveryMethodID,
                         Name = element.DeliveryMethod.Name,
                         Price = element.DeliveryMethod.Price
                     },
                     OrderStatus = new OrderStatusDto
                     {
-                        Id = (int)element.OrderStatusID,
+                        Id = element.OrderStatusID,
                         Name = element.OrderStatus.Name
                     },
                     Payment = new PaymentDetailsDto
                     {
-                        Id = (int)element.PaymentID,
+                        Id = element.PaymentID,
                         Amount = element.Payment.Amount,
                         PaymentDate = element.Payment.PaymentDate,
                         PaymentMethod = new PaymentMethodDto
                         {
-                            Id = (int)element.Payment.PaymentMethodID,
+                            Id = element.Payment.PaymentMethodID,
                             Name = element.Payment.PaymentMethod.Name
                         },
                         TransactionStatus = new TransactionStatusDto
                         {
-                            Id = (int)element.Payment.TransactionStatusID,
+                            Id = element.Payment.TransactionStatusID,
                             Name = element.Payment.TransactionStatus.Name
                         }
                     },
@@ -118,7 +118,7 @@ namespace BookStoreAPI.Services.Orders
                 })
                 .FirstAsync();
 
-            order.TotalBruttoPrice = (decimal)order.OrderItems.Sum(x => x.TotalBruttoPrice);
+            order.TotalBruttoPrice = (decimal)order.OrderItems.Sum(x => x.TotalBruttoPrice) + order.DeliveryMethod.Price;
             return order;
         }
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
@@ -131,7 +131,7 @@ namespace BookStoreAPI.Services.Orders
                     OrderDate = x.OrderDate,
                     TotalBruttoPrice = x.OrderItems
                     .Where(y => y.IsActive && y.OrderID == x.Id)
-                    .Sum(y => y.Quantity * y.BruttoPrice),
+                    .Sum(y => y.Quantity * y.BruttoPrice) + x.DeliveryMethod.Price,
                     OrderItems = x.OrderItems
                     .Where(y => y.IsActive && y.OrderID == x.Id)
                     .Select(y => new OrderItemDetailsDto
@@ -149,7 +149,7 @@ namespace BookStoreAPI.Services.Orders
                             .Where(z => z.IsActive)
                             .Select(z => new AuthorDto()
                             {
-                                Id = (int)z.AuthorID,
+                                Id = z.AuthorID,
                                 Name = z.Author.Name,
                                 Surname = z.Author.Surname,
                             }).ToList()
@@ -196,13 +196,13 @@ namespace BookStoreAPI.Services.Orders
                         },
                         TransactionStatus = new TransactionStatusDto
                         {
-                            Id = (int)element.Payment.TransactionStatusID,
+                            Id = element.Payment.TransactionStatusID,
                             Name = element.Payment.TransactionStatus.Name
                         }
                     },
                     Customer = new CustomerShortDetailsDto
                     {
-                        Id = (int)element.CustomerID,
+                        Id = element.CustomerID,
                         Name = element.Customer.Name,
                         Surname = element.Customer.Surname,
                         Email = element.Customer.Email,
@@ -211,7 +211,7 @@ namespace BookStoreAPI.Services.Orders
                     .Where(x => x.IsActive && x.OrderID == element.Id)
                     .Select(x => new OrderItemDetailsDto
                     {
-                        Id = (int)x.BookItemID,
+                        Id = x.BookItemID,
                         Quantity = x.Quantity,
                         TotalBruttoPrice = x.Quantity * x.BruttoPrice,
                         BruttoPrice = x.BruttoPrice,
@@ -224,7 +224,7 @@ namespace BookStoreAPI.Services.Orders
                             .Where(y => y.IsActive)
                             .Select(y => new AuthorDto()
                             {
-                                Id = (int)y.AuthorID,
+                                Id = y.AuthorID,
                                 Name = y.Author.Name,
                                 Surname = y.Author.Surname,
                             }).ToList()
@@ -232,7 +232,7 @@ namespace BookStoreAPI.Services.Orders
                 })
                 .FirstAsync();
 
-            order.TotalBruttoPrice = order.OrderItems.Select(x => x.TotalBruttoPrice).Sum();
+            order.TotalBruttoPrice = order.OrderItems.Select(x => x.TotalBruttoPrice).Sum() + order.DeliveryMethod.Price;
 
             return order;
         }
@@ -248,6 +248,8 @@ namespace BookStoreAPI.Services.Orders
             {
                 Id = x.Id,
                 OrderDate = x.OrderDate,
+                OrderStatusId = x.OrderStatusID,
+                OrderStatusName = x.OrderStatus.Name,
                 CustomerDetails = new CustomerShortDetailsDto()
                 {
                     Id = x.CustomerID,
@@ -257,12 +259,12 @@ namespace BookStoreAPI.Services.Orders
                 },
                 TotalBruttoPrice = x.OrderItems
                     .Where(y => y.IsActive && y.OrderID == x.Id)
-                    .Sum(y => y.Quantity * y.BruttoPrice),
+                    .Sum(y => y.Quantity * y.BruttoPrice) + x.DeliveryMethod.Price,
                 OrderItems = x.OrderItems
                     .Where(y => y.IsActive && y.OrderID == x.Id)
                     .Select(y => new OrderItemDetailsDto
                     {
-                        Id = (int)y.BookItemID,
+                        Id = y.BookItemID,
                         Quantity = y.Quantity,
                         TotalBruttoPrice = y.Quantity * y.BruttoPrice,
                         FileFormatName = y.BookItem.FileFormat.Name,
@@ -276,7 +278,7 @@ namespace BookStoreAPI.Services.Orders
                             .Where(z => z.IsActive)
                             .Select(z => new AuthorDto()
                             {
-                                Id = (int)z.AuthorID,
+                                Id = z.AuthorID,
                                 Name = z.Author.Name,
                                 Surname = z.Author.Surname,
                             }).ToList()
@@ -349,12 +351,21 @@ namespace BookStoreAPI.Services.Orders
                     {
                         DeliveryMethodID = orderModel.DeliveryMethodID,
                         CustomerID = customer.Id,
-                        OrderStatusID = (int)OrderStatusEnum.Aktywne,
+                        OrderStatusID = 0,
                         PaymentID = payment.Id,
                         DiscountCodeID = orderModel.DiscountCodeID,
                         OrderDate = DateTime.Now,
                         CustomerHistoryID = customerHistoryId,
                     };
+
+                    if (payment.TransactionStatusID == (int)TransactionStatusEnum.WTrakcie)
+                    {
+                        order.OrderStatusID = (int)OrderStatusEnum.Aktywne;
+                    }
+                    else
+                    {
+                        order.OrderStatusID = (int)OrderStatusEnum.Zakonczone;
+                    }
 
                     await context.Order.AddAsync(order);
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
@@ -374,7 +385,12 @@ namespace BookStoreAPI.Services.Orders
                             OriginalBruttoPrice = item.OriginalItemBruttoPrice,
                             IsDiscounted = item.IsDiscounted
                         });
-                        bookItemsForStockUpdate.Add(new BookItemStockAmountUpdateDto() { BookItemId = item.BookItemID, Quantity = -(int)item.Quantity });
+                        if (item.BookFormID != (int)BookFormEnum.Ebook)
+                        {
+                            bookItemsForStockUpdate
+                            .Add(new BookItemStockAmountUpdateDto()
+                            { BookItemId = item.BookItemID, Quantity = -(int)item.Quantity });
+                        }
                     }
 
                     await context.OrderItems.AddRangeAsync(orderItems);
@@ -434,6 +450,7 @@ namespace BookStoreAPI.Services.Orders
                         PaymentDate = x.Payment.PaymentDate,
                         CurrencyName = "PLN",
                         DeliveryName = x.DeliveryMethod.Name,
+                        DeliveryPrice = x.DeliveryMethod.Price,
                         PaymentMethodName = x.Payment.PaymentMethod.Name,
                     },
                     InvoiceProducts = x.OrderItems
@@ -442,7 +459,7 @@ namespace BookStoreAPI.Services.Orders
                     {
                         UnitOfMeasure = "szt.",
                         Tax = y.BookItem.Tax,
-                        Code = (int)y.BookItemID,
+                        Code = y.BookItemID,
                         Name = y.BookItem.Book.Title,
                         Quantity = y.Quantity,
                         NettoPrice = 0,
@@ -450,6 +467,7 @@ namespace BookStoreAPI.Services.Orders
                         BruttoPrice = y.BruttoPrice
                     }).ToList(),
                 }).FirstOrDefaultAsync();
+
 
             foreach(var item in invoice.InvoiceProducts)
             {
@@ -506,7 +524,7 @@ namespace BookStoreAPI.Services.Orders
                 .OrderByDescending(g => g.Count())
                 .Select(g => new StatisticsCategoriesDto()
                 {
-                    CategoryId = (int)g.Key,
+                    CategoryId = g.Key,
                     NumberOfAppearances = g.Count()
                 })
                 .ToList();

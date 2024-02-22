@@ -74,6 +74,7 @@ namespace BookStoreAPI.Services.Books.Dictionaries
                 foreach (var category in categories)
                 {
                     category.IsActive = false;
+                    category.ModifiedDate = DateTime.UtcNow;
                 }
 
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
@@ -91,6 +92,7 @@ namespace BookStoreAPI.Services.Books.Dictionaries
                 foreach (var category in categoriesToDeactivate)
                 {
                     category.IsActive = false;
+                    category.ModifiedDate = DateTime.UtcNow;
                 }
 
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);

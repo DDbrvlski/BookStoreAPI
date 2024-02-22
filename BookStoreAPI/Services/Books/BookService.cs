@@ -136,6 +136,7 @@ namespace BookStoreAPI.Services.Books
                         await categoryService.DeactivateAllCategoriesForBookAsync(id);
                         await imageService.DeactivateAllImagesForBookAsync(id);
                         book.IsActive = false;
+                        book.ModifiedDate = DateTime.UtcNow;
 
                         await DatabaseOperationHandler.TryToSaveChangesAsync(context);
                     }
@@ -156,8 +157,9 @@ namespace BookStoreAPI.Services.Books
                 {
                     var bookToUpdate = await context.Book.FirstOrDefaultAsync(x => x.Id == bookId);
                     bookToUpdate.CopyProperties(bookPost);
+                    bookToUpdate.ModifiedDate = DateTime.UtcNow;
 
-                    if(bookToUpdate != null)
+                    if (bookToUpdate != null)
                     {
                         if (!bookPost.ListOfBookAuthors.IsNullOrEmpty())
                         {

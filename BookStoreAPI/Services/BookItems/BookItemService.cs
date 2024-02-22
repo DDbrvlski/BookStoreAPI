@@ -1,4 +1,5 @@
-﻿using BookStoreAPI.Helpers;
+﻿using BookStoreAPI.Enums;
+using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Availability;
 using BookStoreAPI.Services.Discounts.Discounts;
@@ -23,7 +24,7 @@ namespace BookStoreAPI.Services.BookItems
         Task<BookItemDetailsDto> GetBookItemDetailsAsync(int bookItemId);
         Task<IEnumerable<BookItemDto>> GetBookItemsAsync(BookItemFiltersDto bookItemFilters);
         Task<IEnumerable<BookItemCarouselDto>> GetBookItemsByFormIdForCarouselAsync(int formId);
-        Task<IEnumerable<BookItemCMSDto>> GetBookItemsForCMSAync();
+        Task<IEnumerable<BookItemCMSDto>> GetBookItemsForCMSAsync();
         Task CreateBookItemAsync(BookItemPostCMSDto bookItemModel);
         Task UpdateBookItemAsync(int bookItemId, BookItemPostCMSDto bookItemModel);
         Task DeactivateBookItemAsync(int bookItemId);
@@ -69,7 +70,7 @@ namespace BookStoreAPI.Services.BookItems
                 })
                 .FirstAsync();
         }
-        public async Task<IEnumerable<BookItemCMSDto>> GetBookItemsForCMSAync()
+        public async Task<IEnumerable<BookItemCMSDto>> GetBookItemsForCMSAsync()
         {
             return await context.BookItem
                 .Include(x => x.Book)
@@ -171,18 +172,18 @@ namespace BookStoreAPI.Services.BookItems
                     ReleaseDate = x.PublishingDate,
                     Authors = x.Book.BookAuthors.Select(y => new AuthorDto
                     {
-                        Id = (int)y.AuthorID,
+                        Id = y.AuthorID,
                         Name = y.Author.Name,
                         Surname = y.Author.Surname,
                     }).ToList(),
                     Categories = x.Book.BookCategories.Select(y => new CategoryDto
                     {
-                        Id = (int)y.CategoryID,
+                        Id = y.CategoryID,
                         Name = y.Category.Name
                     }).ToList(),
                     Images = x.Book.BookImages.Select(y => new ImageDto
                     {
-                        Id = (int)y.ImageID,
+                        Id = y.ImageID,
                         ImageURL = y.Image.ImageURL,
                         Title = y.Image.Title
                     }).ToList(),
@@ -211,13 +212,13 @@ namespace BookStoreAPI.Services.BookItems
 
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
-                    if (bookItem.FormID == 1)
+                    if (bookItem.FormID == (int)BookFormEnum.Book)
                     {
                         await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
                     }
-                    else if (bookItem.FormID == 2)
+                    else if (bookItem.FormID == (int)BookFormEnum.Ebook)
                     {
-                        await stockAmountService.CreateStockAmountAsync(bookItem.Id, 0);
+                        await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
                     }
                     await transaction.CommitAsync();
                 }
@@ -237,6 +238,7 @@ namespace BookStoreAPI.Services.BookItems
             }
 
             bookItem.CopyProperties(bookItemModel);
+            bookItem.ModifiedDate = DateTime.UtcNow;
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
         public async Task DeactivateBookItemAsync(int bookItemId)
@@ -254,6 +256,7 @@ namespace BookStoreAPI.Services.BookItems
                     await bookDiscountService.DeactivateAllBookDiscountsByBookItemAsync(bookItemId);
                     await stockAmountService.DeactivateStockAmountAsync(bookItemId);
 
+                    bookItem.ModifiedDate = DateTime.UtcNow;
                     bookItem.IsActive = false;
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
                     await transaction.CommitAsync();

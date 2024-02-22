@@ -52,6 +52,7 @@ namespace BookStoreAPI.Services.PageElements
                 {
                     var categoryElement = await context.CategoryElement.FirstAsync(x => x.IsActive && x.Id == categoryElementId);
                     categoryElement.IsActive = false;
+                    categoryElement.ModifiedDate = DateTime.UtcNow;
 
                     await imageService.DeactivateSingleImageByIdAsync(categoryElement.ImageID);
 
@@ -75,6 +76,7 @@ namespace BookStoreAPI.Services.PageElements
                 {
                     var categoryElement = await context.CategoryElement.Include(x => x.Image).FirstAsync(x => x.IsActive && x.Id == categoryElementId);
                     categoryElement.CopyProperties(categoryElementModel);
+                    categoryElement.ModifiedDate = DateTime.UtcNow;
 
                     if (categoryElementModel.ImageURL != categoryElement.Image.ImageURL)
                     {

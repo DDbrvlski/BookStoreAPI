@@ -35,7 +35,7 @@ namespace BookStoreAPI.Services.Media
 
         public async Task AddNewImagesForBookAsync(BookPostDto book, List<ImageDto?>? imagesToAdd = null)
         {
-            //Reużywalność kodu
+            //Reużywalność kodu dla update
             if (imagesToAdd == null)
             {
                 imagesToAdd = book.ListOfBookImages.ToList();
@@ -79,7 +79,9 @@ namespace BookStoreAPI.Services.Media
             foreach (var bookImage in bookImages)
             {
                 bookImage.IsActive = false;
+                bookImage.ModifiedDate = DateTime.UtcNow;
                 bookImage.Image.IsActive = false; 
+                bookImage.Image.ModifiedDate = DateTime.UtcNow; 
             }
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
@@ -96,7 +98,9 @@ namespace BookStoreAPI.Services.Media
             foreach (var bookImage in bookImages)
             {
                 bookImage.IsActive = false;
+                bookImage.ModifiedDate = DateTime.UtcNow;
                 bookImage.Image.IsActive = false;
+                bookImage.Image.ModifiedDate = DateTime.UtcNow;
             }
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
@@ -109,7 +113,7 @@ namespace BookStoreAPI.Services.Media
             if (image != null)
             {
                 image.IsActive = false;
-
+                image.ModifiedDate = DateTime.UtcNow;
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }
         }

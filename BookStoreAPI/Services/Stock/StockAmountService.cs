@@ -86,6 +86,7 @@ namespace BookStoreAPI.Services.Stock
 
             await availabilityService.DisableAvailabilityForBookItemAsync(bookItemId);
             stockAmount.IsActive = false;
+            stockAmount.ModifiedDate = DateTime.UtcNow;
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
 
@@ -99,6 +100,7 @@ namespace BookStoreAPI.Services.Stock
             }
 
             stockAmount.Amount = amount;
+            stockAmount.ModifiedDate = DateTime.UtcNow;
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
             await availabilityService.UpdateBookItemAvailabilityAsync(bookItemId, stockAmount.Amount);
@@ -148,46 +150,5 @@ namespace BookStoreAPI.Services.Stock
             return stockAmount.Amount;
         }
 
-        //public async Task AddNewReservationInStockAsync(int bookItemId)
-        //{
-        //    var stock = await context.StockAmount.Where(x => x.IsActive && x.BookItemID == bookItemId).FirstOrDefaultAsync();
-        //    if (stock == null)
-        //    {
-        //        throw new NotFoundException("Nie znaleziono książki w magazynie");
-        //    }
-
-        //    stock.ReservedAmount++;
-        //    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
-        //    await availabilityService.UpdateBookItemAvailabilityAsync(bookItemId, stock.Amount);
-        //}
-        //public async Task CancelReservationInStockAsync(int bookItemId)
-        //{
-        //    var stock = await context.StockAmount.Where(x => x.IsActive && x.BookItemID == bookItemId).FirstOrDefaultAsync();
-        //    if (stock == null)
-        //    {
-        //        throw new NotFoundException("Nie znaleziono książki w magazynie");
-        //    }
-
-        //    stock.ReservedAmount--;
-        //    if(stock.ReservedAmount < 0)
-        //    {
-        //        throw new BadRequestException("Wystąpił błąd z anulowaniem rezerwacji.");
-        //    }
-
-        //    await DatabaseOperationHandler.TryToSaveChangesAsync(context);
-        //    await availabilityService.UpdateBookItemAvailabilityAsync(bookItemId, stock.Amount, stock.ReservedAmount);
-        //}
-
-        //public async Task<bool> IsBookItemOnStock(int bookItemId)
-        //{
-        //    var stockAmount = await context.StockAmount.FirstOrDefaultAsync(x => x.IsActive && x.BookItemID == bookItemId);
-
-        //    if (stockAmount == null)
-        //    {
-        //        throw new NotFoundException("Nie znaleziono obiektu stock amount dla produktu.");
-        //    }
-
-        //    return stockAmount.Amount > 0;
-        //}
     }
 }

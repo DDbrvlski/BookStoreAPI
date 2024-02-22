@@ -110,6 +110,7 @@ namespace BookStoreAPI.Services.Supplies
                     foreach (var supplyGood in supplyGoods)
                     {
                         supplyGood.IsActive = false;
+                        supplyGood.ModifiedDate = DateTime.UtcNow;
                         bookItems.Add(new BookItemStockAmountUpdateDto() { BookItemId = (int)supplyGood.BookItemID, Quantity = -supplyGood.Quantity });
                     }
 

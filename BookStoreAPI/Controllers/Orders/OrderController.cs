@@ -36,7 +36,6 @@ namespace BookStoreAPI.Controllers.Orders
             var document = await invoiceService.CreateInvoice(orderId);
 
             byte[] pdfBytes = document.GeneratePdf();
-
             return File(pdfBytes, "application/pdf", "invoice.pdf");
         }
 

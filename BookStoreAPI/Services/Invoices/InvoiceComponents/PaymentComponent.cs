@@ -11,11 +11,11 @@ namespace BookStoreAPI.Services.Invoices.InvoiceComponents
         private decimal TaxValue { get; }
         private decimal TotalBrutto { get; }
 
-        public PaymentComponent(List<ProductInvoiceDto> orderItems)
+        public PaymentComponent(List<ProductInvoiceDto> orderItems, decimal deliveryPrice)
         {
-            TotalNetto = orderItems.Sum(x => x.NettoValue);
+            TotalNetto = orderItems.Sum(x => x.NettoValue) + deliveryPrice;
             TaxValue = orderItems.Sum(x => x.TaxValue);
-            TotalBrutto = orderItems.Sum(x => x.BruttoValue);
+            TotalBrutto = orderItems.Sum(x => x.BruttoValue) + deliveryPrice;
         }
 
         public void Compose(IContainer container)

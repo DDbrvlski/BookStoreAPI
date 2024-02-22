@@ -64,6 +64,7 @@ namespace BookStoreAPI.Services.Customers
             {
                 throw new BadRequestException("Nie znaleziono danych użytkownika.");
             }
+            customer.ModifiedDate = DateTime.UtcNow;
 
             await wishlistService.DeactivateWishlistAsync(customerId);
             await newsletterService.RemoveFromNewsletterSubscribersAsync(customer.Email);

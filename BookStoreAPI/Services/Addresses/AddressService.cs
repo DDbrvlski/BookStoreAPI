@@ -1,4 +1,5 @@
-﻿using BookStoreAPI.Helpers;
+﻿using BookStoreAPI.Enums;
+using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
@@ -28,7 +29,9 @@ namespace BookStoreAPI.Services.Addresses
         public async Task<IEnumerable<BaseAddressDto>> GetCustomerAddressDataAsync(int customerId)
         {
             return await context.CustomerAddress
-                .Where(x => x.CustomerID == customerId && x.IsActive && (x.Address.AddressTypeID == 1 || x.Address.AddressTypeID == 2))
+                .Where(x => x.CustomerID == customerId && x.IsActive && 
+                        (x.Address.AddressTypeID == (int)AddressTypeEnum.AdresZamieszkania 
+                        || x.Address.AddressTypeID == (int)AddressTypeEnum.AdresKorespondencji))
                 .OrderBy(x => x.Address.AddressTypeID)
                 .Select(x => new BaseAddressDto()
                 {
@@ -113,6 +116,7 @@ namespace BookStoreAPI.Services.Addresses
                 throw new BadRequestException("Wystąpił błąd podczas aktualizacji adresu.");
             }
 
+            oldAddress.ModifiedDate = DateTime.UtcNow;
             oldAddress.CopyProperties(newAddress);
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
@@ -123,7 +127,9 @@ namespace BookStoreAPI.Services.Addresses
             {
                 var oldAddresses = await context.CustomerAddress
                     .Include(x => x.Address)
-                    .Where(x => x.IsActive && x.CustomerID == customerId && (x.Address.AddressTypeID == 1 || x.Address.AddressTypeID == 2))
+                    .Where(x => x.IsActive && x.CustomerID == customerId && 
+                        (x.Address.AddressTypeID == (int)AddressTypeEnum.AdresZamieszkania 
+                        || x.Address.AddressTypeID == (int)AddressTypeEnum.AdresKorespondencji))
                     .ToListAsync();
 
                 if (oldAddresses.IsNullOrEmpty())
@@ -131,11 +137,11 @@ namespace BookStoreAPI.Services.Addresses
                     throw new BadRequestException("Wystąpił błąd z aktualizacją adresu.");
                 }
 
-                var address = oldAddresses.FirstOrDefault(x => x.Address.AddressTypeID == 1);
-                var maillingAddress = oldAddresses.FirstOrDefault(x => x.Address.AddressTypeID == 2);
+                var address = oldAddresses.FirstOrDefault(x => x.Address.AddressTypeID == (int)AddressTypeEnum.AdresZamieszkania);
+                var maillingAddress = oldAddresses.FirstOrDefault(x => x.Address.AddressTypeID == (int)AddressTypeEnum.AdresKorespondencji);
 
-                var newAddress = newAddresses.FirstOrDefault(x => x.AddressTypeID == 1);
-                var newMaillingAddress = newAddresses.FirstOrDefault(x => x.AddressTypeID == 2);
+                var newAddress = newAddresses.FirstOrDefault(x => x.AddressTypeID == (int)AddressTypeEnum.AdresZamieszkania);
+                var newMaillingAddress = newAddresses.FirstOrDefault(x => x.AddressTypeID == (int)AddressTypeEnum.AdresKorespondencji);
 
                 List<BaseAddressDto> addressesToAdd = new();
 
@@ -171,7 +177,9 @@ namespace BookStoreAPI.Services.Addresses
             foreach (var address in addresses)
             {
                 address.IsActive = false;
+                address.ModifiedDate = DateTime.UtcNow;
                 address.Address.IsActive = false;
+                address.Address.ModifiedDate = DateTime.UtcNow;
             }
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
@@ -188,7 +196,9 @@ namespace BookStoreAPI.Services.Addresses
             }
 
             address.IsActive = false;
+            address.ModifiedDate = DateTime.UtcNow;
             address.Address.IsActive = false;
+            address.Address.ModifiedDate = DateTime.UtcNow;
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
@@ -200,6 +210,7 @@ namespace BookStoreAPI.Services.Addresses
                 throw new NotFoundException("Wystąpił błąd podczas pobierania adresu do usunięcia.");
             }
 
+            address.ModifiedDate = DateTime.UtcNow;
             address.IsActive = false;
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }

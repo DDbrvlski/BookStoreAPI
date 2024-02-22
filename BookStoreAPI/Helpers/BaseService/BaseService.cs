@@ -47,6 +47,7 @@ namespace BookStoreAPI.Helpers.BaseService
         {
             var entityById = await GetEntityByIdAsync(id);
             entityById.CopyProperties(entity);
+            entityById.ModifiedDate = DateTime.UtcNow;
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
@@ -55,7 +56,7 @@ namespace BookStoreAPI.Helpers.BaseService
             var entity = await GetEntityByIdAsync(id);
             
             entity.IsActive = false;
-            entity.ModifiedDate = DateTime.Now;
+            entity.ModifiedDate = DateTime.UtcNow;
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }

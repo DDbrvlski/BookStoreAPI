@@ -52,7 +52,7 @@ namespace BookStoreAPI.Services.Supplies
                 {
                     Id = x.Id,
                     DeliveryDate = x.DeliveryDate,
-                    DeliveryStatusId = (int)x.DeliveryStatusID,
+                    DeliveryStatusId = x.DeliveryStatusID,
                     DeliveryStatusName = x.DeliveryStatus.Name,
                     SupplierData = new SupplierDto()
                     {
@@ -172,6 +172,7 @@ namespace BookStoreAPI.Services.Supplies
                     supply.DeliveryDate = supplyData.DeliveryDate;
                     supply.DeliveryStatusID = supplyData.DeliveryStatusId;
                     supply.SupplierID = supplyData.SupplierId;
+                    supply.ModifiedDate = DateTime.UtcNow;
 
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
@@ -198,6 +199,7 @@ namespace BookStoreAPI.Services.Supplies
                     }
 
                     supply.IsActive = false;
+                    supply.ModifiedDate = DateTime.UtcNow;
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
                     await supplyGoodsService.DeactivateAllSupplyGoodsAsync(supplyId);

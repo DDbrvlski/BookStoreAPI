@@ -89,6 +89,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
                 throw new BadRequestException("Nie znaleziono elementu discountCode do aktualizacji.");
             }
 
+            discountCode.ModifiedDate = DateTime.UtcNow;
             discountCode.CopyProperties(discountCodeModel);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
@@ -102,6 +103,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
                 throw new BadRequestException("Nie znaleziono elementu discountCode do aktualizacji.");
             }
 
+            discountCode.ModifiedDate = DateTime.UtcNow;
             discountCode.IsActive = false;
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
@@ -117,6 +119,13 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
             if (discount == null)
             {
                 throw new BadRequestException("Podany kod jest niepoprawny.");
+            }
+
+            var todaysDate = DateTime.UtcNow.Date;
+
+            if (discount.StartingDate.Date > todaysDate || discount.ExpiryDate.Date < todaysDate)
+            {
+                throw new BadRequestException("Podany kod nie jest ważny.");
             }
 
             return discount;

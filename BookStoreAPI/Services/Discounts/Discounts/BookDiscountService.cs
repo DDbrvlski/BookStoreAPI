@@ -68,6 +68,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
             foreach (var discountItem in discountsToDeactivate)
             {
                 discountItem.IsActive = false;
+                discountItem.ModifiedDate = DateTime.UtcNow;
             }
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
@@ -90,6 +91,7 @@ namespace BookStoreAPI.Services.Discounts.Discounts
             foreach (var discount in bookDiscounts)
             {
                 discount.IsActive = false;
+                discount.ModifiedDate = DateTime.UtcNow;
             }
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);

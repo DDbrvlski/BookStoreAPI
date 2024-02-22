@@ -17,7 +17,7 @@ namespace BookStoreAPI.Controllers.CMS
         [Route("WeeklySummary")]
         public async Task<ActionResult<CMSWeeklySummaryDto>> GetCMSWeeklySummaryAsync()
         {
-            var summary = await cmsService.GetWeeklySummaryOfOrdersRentalsReservationsAsync();
+            var summary = await cmsService.GetWeeklySummaryOfOrdersRentalsAsync();
             return Ok(summary);
         }
 

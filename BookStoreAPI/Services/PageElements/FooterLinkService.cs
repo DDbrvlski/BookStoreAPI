@@ -149,6 +149,7 @@ namespace BookStoreAPI.Services.PageElements
         {
             var footerLink = await context.FooterLinks.FirstAsync(x => x.IsActive && x.Id == footerLinkId);
             footerLink.CopyProperties(footerLinkModel);
+            footerLink.ModifiedDate = DateTime.UtcNow;
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
@@ -156,6 +157,7 @@ namespace BookStoreAPI.Services.PageElements
         {
             var footerLink = await context.FooterLinks.FirstAsync(x => x.IsActive && x.Id == footerLinkId);
             footerLink.IsActive = false;
+            footerLink.ModifiedDate = DateTime.UtcNow;
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }

@@ -11,8 +11,9 @@ namespace BookStoreAPI.Services.Invoices.InvoiceComponents
         private string PaymentCurrencyTitle { get; }
         private DateTime PaymentDate { get; }
         private string DeliveryMethodTitle { get; }
+        private decimal DeliveryPrice { get; }
 
-        public PaymentDetailsComponent(string paymentMethodTitle, DateTime? paymentDate, string deliveryMethodTitle, string currencyName)
+        public PaymentDetailsComponent(string paymentMethodTitle, DateTime? paymentDate, string deliveryMethodTitle, string currencyName, decimal deliveryPrice)
         {
             if (paymentDate == null)
             {
@@ -22,6 +23,7 @@ namespace BookStoreAPI.Services.Invoices.InvoiceComponents
             DeliveryMethodTitle = deliveryMethodTitle;
             PaymentDate = (DateTime)paymentDate;
             PaymentCurrencyTitle = currencyName;
+            DeliveryPrice = deliveryPrice;
         }
 
         public void Compose(IContainer container)
@@ -54,6 +56,12 @@ namespace BookStoreAPI.Services.Invoices.InvoiceComponents
                     row.RelativeItem().AlignRight().Text("Sposób dostawy:").Style(textStyle);
                     row.ConstantItem(5);
                     row.RelativeItem().Text($"{DeliveryMethodTitle}").Style(textStyle);
+                });
+                column.Item().Row(row =>
+                {
+                    row.RelativeItem().AlignRight().Text("Koszt dostawy:").Style(textStyle);
+                    row.ConstantItem(5);
+                    row.RelativeItem().Text($"{DeliveryPrice}").Style(textStyle);
                 });
             });
         }

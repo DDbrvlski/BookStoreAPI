@@ -13,7 +13,7 @@ namespace BookStoreAPI.Services.Reviews
         Task CreateBookReview(BookReviewPostDto bookReviewModel);
         Task<IEnumerable<BookReviewDto>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int numberOfElements);
         Task<Dictionary<int, int>> GetBookItemReviewScoresAsync(int bookItemId);
-        Task<BookReviewPostDto> GetExistingUserBookReviewByBookItemIdAsync(int bookItemId);
+        Task<BookReviewPostDto>? GetExistingUserBookReviewByBookItemIdAsync(int bookItemId);
     }
 
     public class BookReviewService(BookStoreContext context, IBookReviewLogic bookReviewLogic, ICustomerService customerService) : IBookReviewService
@@ -33,12 +33,16 @@ namespace BookStoreAPI.Services.Reviews
                             ScoreValue = x.Score.Value
                         }).Take(numberOfElements).ToListAsync();
         }
-        public async Task<BookReviewPostDto> GetExistingUserBookReviewByBookItemIdAsync(int bookItemId)
+        public async Task<BookReviewPostDto>? GetExistingUserBookReviewByBookItemIdAsync(int bookItemId)
         {
             var customer = await customerService.GetCustomerByTokenAsync();
             var bookReview = await context.BookItemReview
                 .FirstOrDefaultAsync(x => x.IsActive && x.CustomerID == customer.Id && x.BookItemID == bookItemId);
 
+            if (bookReview == null)
+            {
+                return null;
+            }
             return new BookReviewPostDto()
             {
                 Content = bookReview.Content,
