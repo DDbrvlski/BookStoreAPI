@@ -19,7 +19,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookReviewDto>>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int numberOfElements = 4)
+        public async Task<ActionResult<IEnumerable<BookReviewDto>>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int? numberOfElements)
         {
             var bookReviews = await bookReviewService.GetAllBookReviewsByBookItemIdAsync(bookItemId, numberOfElements);
             return Ok(bookReviews);

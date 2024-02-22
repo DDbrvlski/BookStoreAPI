@@ -11,16 +11,16 @@ namespace BookStoreAPI.Services.Reviews
     public interface IBookReviewService
     {
         Task CreateBookReview(BookReviewPostDto bookReviewModel);
-        Task<IEnumerable<BookReviewDto>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int numberOfElements);
+        Task<IEnumerable<BookReviewDto>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int? numberOfElements);
         Task<Dictionary<int, int>> GetBookItemReviewScoresAsync(int bookItemId);
         Task<BookReviewPostDto>? GetExistingUserBookReviewByBookItemIdAsync(int bookItemId);
     }
 
     public class BookReviewService(BookStoreContext context, IBookReviewLogic bookReviewLogic, ICustomerService customerService) : IBookReviewService
     {
-        public async Task<IEnumerable<BookReviewDto>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int numberOfElements)
+        public async Task<IEnumerable<BookReviewDto>> GetAllBookReviewsByBookItemIdAsync(int bookItemId, int? numberOfElements)
         {
-            return await context.BookItemReview
+            var reviews = context.BookItemReview
                         .Include(x => x.Customer)
                         .Include(x => x.Score)
                         .Where(x => x.IsActive && x.BookItemID == bookItemId)
@@ -31,7 +31,14 @@ namespace BookStoreAPI.Services.Reviews
                             CreationDate = x.CreationDate,
                             CustomerName = x.Customer.Name + " " + x.Customer.Surname,
                             ScoreValue = x.Score.Value
-                        }).Take(numberOfElements).ToListAsync();
+                        });
+
+            if (numberOfElements != null)
+            {
+                reviews = reviews.Take((int)numberOfElements);
+            }
+
+            return await reviews.ToListAsync();
         }
         public async Task<BookReviewPostDto>? GetExistingUserBookReviewByBookItemIdAsync(int bookItemId)
         {

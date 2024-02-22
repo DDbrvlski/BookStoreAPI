@@ -49,11 +49,11 @@ namespace BookStoreAPI.Helpers
             if (filters.IsOnSale != null)
                 query = query.WhereIsOnSale(filters.IsOnSale);
 
-            if (filters.NumberOfElements != null)
-                query = query.WhereNumberOfElements(filters.NumberOfElements);
-
             if (!string.IsNullOrEmpty(filters.SortBy) && !string.IsNullOrEmpty(filters.SortOrder))
                 query = query.OrderBy(filters.SortBy, filters.SortOrder);
+
+            if (filters.NumberOfElements != null)
+                query = query.WhereNumberOfElements(filters.NumberOfElements);
 
             return query;
         }
@@ -122,7 +122,8 @@ namespace BookStoreAPI.Helpers
                 "popular" => sortOrder.ToLower() == "asc" ? query.OrderBy(x => x.SoldUnits) : query.OrderByDescending(x => x.SoldUnits),
                 "price" => sortOrder.ToLower() == "asc" ? query.OrderBy(x => x.NettoPrice * (1 + (decimal)x.Tax / 100)) : query.OrderByDescending(x => x.NettoPrice * (1 + (decimal)x.Tax / 100)),
                 "alphabetical" => sortOrder.ToLower() == "asc" ? query.OrderBy(x => x.Book.Title) : query.OrderByDescending(x => x.Book.Title),
-                "recentlyAdded" => sortOrder.ToLower() == "asc" ? query.OrderBy(x => x.Id) : query.OrderByDescending(x => x.Id),
+                "recentlyadded" => sortOrder.ToLower() == "asc" ? query.OrderBy(x => x.Id) : query.OrderByDescending(x => x.Id),
+                "score" => sortOrder.ToLower() == "asc" ? query.OrderBy(x => x.Score) : query.OrderByDescending(x => x.Score),
                 _ => query
             };
         }
