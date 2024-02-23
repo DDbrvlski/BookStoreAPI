@@ -3,7 +3,6 @@ using BookStoreAPI.Services.Invoices.InvoiceComponents;
 using BookStoreAPI.Services.Orders;
 using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
-using BookStoreData.Models.Orders;
 using BookStoreDto.Dtos.Invoices;
 using Microsoft.EntityFrameworkCore;
 using Spire.Doc;
@@ -13,8 +12,10 @@ namespace BookStoreAPI.Services.Invoices
 {
     public interface IInvoiceService
     {
+        Task UploadInvoiceDocxTemplate(IFormFile file);
         Task<InvoiceDocument> CreateInvoice(int orderId);
         Task<byte[]> CreateInvoiceByDocxTemplate(int orderId);
+        List<PossibleTemplateFieldsDto> GetPossibleFieldsInInvoiceTemplate();
     }
 
     public class InvoiceService
@@ -24,6 +25,69 @@ namespace BookStoreAPI.Services.Invoices
         IWebHostEnvironment hostEnvironment)
         : IInvoiceService
     {
+        public async Task UploadInvoiceDocxTemplate(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                throw new BadRequestException("Nie wysłano pliku.");
+            }
+
+            var fileExtension = Path.GetExtension(file.FileName);
+            if (fileExtension != ".docx")
+            {
+                throw new BadRequestException("Wysłano niepoprawny format pliku - przyjmowane formaty [.docx].");
+            }
+                
+            var invoiceTemplatePath = GetDocumentTemplateFilePath("FakturaTemplate.docx");
+
+            if (File.Exists(invoiceTemplatePath))
+            {
+                var guid = Guid.NewGuid();
+                var oldInvoiceTemplatePath = GetDocumentTemplateFilePath($"FakturaTemplate_{guid}.docx");
+                File.Move(invoiceTemplatePath, oldInvoiceTemplatePath);
+            }
+
+            using (var stream = new FileStream(invoiceTemplatePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            if (!File.Exists(invoiceTemplatePath))
+            {
+                throw new BadRequestException("Wystąpił błąd podczas zapisu pliku.");
+            }
+        }
+        public List<PossibleTemplateFieldsDto> GetPossibleFieldsInInvoiceTemplate()
+        {
+            List<PossibleTemplateFieldsDto> fields = new List<PossibleTemplateFieldsDto>()
+            {
+                new PossibleTemplateFieldsDto("{InvoiceNumber}","Numer faktury"),
+                new PossibleTemplateFieldsDto("{IssueDate}","Data wystawienia"),
+                new PossibleTemplateFieldsDto("{DueDate}","Data sprzedaży"),
+                new PossibleTemplateFieldsDto("{SellerName}","Nazwa sprzedawcy"),
+                new PossibleTemplateFieldsDto("{SellerAddress}","Ulica i dom sprzedawcy"),
+                new PossibleTemplateFieldsDto("{SellerCity}","Miasto sprzedawcy"),
+                new PossibleTemplateFieldsDto("{SellerCountry}","Kraj sprzedawcy"),
+                new PossibleTemplateFieldsDto("{SellerTaxIdentificationNumber}","Numer identyfikacji podatkowej sprzedawcy"),
+                new PossibleTemplateFieldsDto("{SellerPhone}","Numer telefonu sprzedawcy"),
+                new PossibleTemplateFieldsDto("{SellerEmail}","Email sprzedawcy"),
+                new PossibleTemplateFieldsDto("{CustomerName}","Nazwa nabywcy"),
+                new PossibleTemplateFieldsDto("{CustomerAddress}","Ulica i dom nabywcy"),
+                new PossibleTemplateFieldsDto("{CustomerCity}","Miasto nabywcy"),
+                new PossibleTemplateFieldsDto("{CustomerCountry}","Kraj nabywcy"),
+                new PossibleTemplateFieldsDto("{CustomerEmail}","Email nabywcy"),
+                new PossibleTemplateFieldsDto("{CustomerPhone}","Numer telefonu nabywcy"),
+                new PossibleTemplateFieldsDto("{PaymentMethod}","Metoda płatności"),
+                new PossibleTemplateFieldsDto("{Currency}","Waluta"),
+                new PossibleTemplateFieldsDto("{PaymentDate}","Data płatności"),
+                new PossibleTemplateFieldsDto("{DeliveryMethod}","Sposób dostawy"),
+                new PossibleTemplateFieldsDto("{DeliveryPrice}","Koszt dostawy"),
+                new PossibleTemplateFieldsDto("{TotalNetto}","Suma ceny netto"),
+                new PossibleTemplateFieldsDto("{TaxValue}","Suma podatku"),
+                new PossibleTemplateFieldsDto("{TotalBrutto}","Suma ceny brutto"),
+            };
+            return fields;
+        }
         public async Task<InvoiceDocument> CreateInvoice(int orderId)
         {
             var invoiceData = await GetCustomerInvoiceDataAsync(orderId);
@@ -37,7 +101,7 @@ namespace BookStoreAPI.Services.Invoices
 
             var pdfFilePath = BindInvoiceDataToDocumentTemplate(invoiceData, invoiceTemplatePath);
 
-            if (pdfFilePath == null || !System.IO.File.Exists(pdfFilePath))
+            if (pdfFilePath == null || !File.Exists(pdfFilePath))
             {
                 throw new NotFoundException("Nie znaleziono podanego pliku");
             }

@@ -29,7 +29,7 @@ namespace BookStoreAPI.Controllers.Orders
         }
 
         [HttpGet]
-        [Route("Invoice")]
+        [Route("Invoice/Template")]
         [Authorize(Roles = UserRoles.User)]
         public async Task<IActionResult> GenerateInvoice(int orderId)
         {
@@ -40,13 +40,14 @@ namespace BookStoreAPI.Controllers.Orders
         }
 
         [HttpGet]
-        [Route("Invoice/Template")]
-        //[Authorize(Roles = UserRoles.User)]
+        [Route("Invoice")]
+        [Authorize(Roles = UserRoles.User)]
         public async Task<IActionResult> GenerateInvoiceByTemplate(int orderId)
         {
             byte[] pdfBytes = await invoiceService.CreateInvoiceByDocxTemplate(orderId);
 
             return File(pdfBytes, "application/pdf", "invoice.pdf");
         }
+
     }
 }

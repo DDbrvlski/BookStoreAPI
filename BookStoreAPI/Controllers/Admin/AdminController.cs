@@ -1,9 +1,11 @@
 ﻿using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Admin;
 using BookStoreAPI.Services.Auth;
+using BookStoreAPI.Services.Invoices;
 using BookStoreData.Models.Accounts;
 using BookStoreDto.Dtos.Admin;
 using BookStoreDto.Dtos.Claims;
+using BookStoreDto.Dtos.Invoices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -15,7 +17,8 @@ namespace BookStoreAPI.Controllers.Admin
     [Authorize(Roles = "Admin")]
     public class AdminController
         (IAuthService authService,
-        IAdminPanelService adminPanelService) 
+        IAdminPanelService adminPanelService,
+        IInvoiceService invoiceService) 
         : ControllerBase
     {
         [HttpGet]
@@ -139,6 +142,22 @@ namespace BookStoreAPI.Controllers.Admin
         {
             var claimValues = await adminPanelService.GetAllClaimValuesAsync();
             return Ok(claimValues);
+        }
+
+        [HttpPost]
+        [Route("Invoice/Upload")]
+        public async Task<IActionResult> UploadNewDocxInvoiceTemplate(IFormFile file)
+        {
+            await invoiceService.UploadInvoiceDocxTemplate(file);
+            return NoContent();
+        }
+
+        [HttpGet]
+        [Route("Invoice/Fields")]
+        public async Task<ActionResult<IEnumerable<PossibleTemplateFieldsDto>>> GetPossibleFieldsInInvoiceTemplate()
+        {
+            var fields = invoiceService.GetPossibleFieldsInInvoiceTemplate();
+            return Ok(fields);
         }
     }
 }
