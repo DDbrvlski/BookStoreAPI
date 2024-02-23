@@ -12,7 +12,8 @@ namespace BookStoreAPI.Services.Invoices
 {
     public interface IInvoiceService
     {
-        Task UploadInvoiceDocxTemplate(IFormFile file);
+        Task<byte[]> GetCurrentInvoiceTemplateFile();
+        Task UploadInvoiceDocxTemplateFile(IFormFile file);
         Task<InvoiceDocument> CreateInvoice(int orderId);
         Task<byte[]> CreateInvoiceByDocxTemplate(int orderId);
         List<PossibleTemplateFieldsDto> GetPossibleFieldsInInvoiceTemplate();
@@ -25,7 +26,18 @@ namespace BookStoreAPI.Services.Invoices
         IWebHostEnvironment hostEnvironment)
         : IInvoiceService
     {
-        public async Task UploadInvoiceDocxTemplate(IFormFile file)
+        public async Task<byte[]> GetCurrentInvoiceTemplateFile()
+        {
+            var invoiceTemplatePath = GetDocumentTemplateFilePath("FakturaTemplate.docx");
+
+            if (!File.Exists(invoiceTemplatePath))
+            {
+                throw new NotFoundException("Nie znaleziono żadnego pliku");
+            }
+
+            return File.ReadAllBytes(invoiceTemplatePath);
+        }
+        public async Task UploadInvoiceDocxTemplateFile(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
@@ -106,7 +118,7 @@ namespace BookStoreAPI.Services.Invoices
                 throw new NotFoundException("Nie znaleziono podanego pliku");
             }
 
-            return System.IO.File.ReadAllBytes(pdfFilePath);
+            return File.ReadAllBytes(pdfFilePath);
         }
 
         private string BindInvoiceDataToDocumentTemplate(InvoiceDataDto invoiceData, string templateFilePath)

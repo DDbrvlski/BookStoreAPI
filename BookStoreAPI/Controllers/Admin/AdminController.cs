@@ -3,6 +3,7 @@ using BookStoreAPI.Services.Admin;
 using BookStoreAPI.Services.Auth;
 using BookStoreAPI.Services.Invoices;
 using BookStoreData.Models.Accounts;
+using BookStoreData.Models.Orders;
 using BookStoreDto.Dtos.Admin;
 using BookStoreDto.Dtos.Claims;
 using BookStoreDto.Dtos.Invoices;
@@ -148,8 +149,17 @@ namespace BookStoreAPI.Controllers.Admin
         [Route("Invoice/Upload")]
         public async Task<IActionResult> UploadNewDocxInvoiceTemplate(IFormFile file)
         {
-            await invoiceService.UploadInvoiceDocxTemplate(file);
+            await invoiceService.UploadInvoiceDocxTemplateFile(file);
             return NoContent();
+        }
+
+        [HttpGet]
+        [Route("Invoice/Download")]
+        public async Task<IActionResult> GetCurrentInvoiceTemplate()
+        {
+            byte[] invoiceBytes = await invoiceService.GetCurrentInvoiceTemplateFile();
+
+            return File(invoiceBytes, "application/docx", "FakturaTemplate.docx");
         }
 
         [HttpGet]
