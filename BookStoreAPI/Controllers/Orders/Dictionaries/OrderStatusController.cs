@@ -4,6 +4,7 @@ using BookStoreData.Models.Orders.Dictionaries;
 using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Helpers.BaseService;
 using BookStoreAPI.Helpers;
+using BookStoreData.Models.Transactions.Dictionaries;
 
 namespace BookStoreAPI.Controllers.Orders.Dictionaries
 {
@@ -14,7 +15,7 @@ namespace BookStoreAPI.Controllers.Orders.Dictionaries
     [ApiController]
     public class OrderStatusController : CRUDController<OrderStatus>
     {
-        public OrderStatusController(BookStoreContext context, IBaseService<OrderStatus> baseService, ILogger<OrderStatus> logger) : base(context, baseService, logger)
+        public OrderStatusController(IBaseService<OrderStatus> baseService) : base(baseService)
         {
         }
     }

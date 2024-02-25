@@ -16,8 +16,7 @@ namespace BookStoreAPI.Helpers.BaseService
     }
     public class BaseService
         <TEntity>
-        (BookStoreContext context,
-        ILogger<TEntity> logger)
+        (BookStoreContext context)
         : IBaseService<TEntity>
         where TEntity : BaseEntity
     {
@@ -27,7 +26,6 @@ namespace BookStoreAPI.Helpers.BaseService
 
             if (entity == null)
             {
-                logger.LogWarning($"Nie znaleziono encji o identyfikatorze {id} dla typu {typeof(TEntity).Name}.");
                 throw new NotFoundException("Nie znaleziono");
             }
 

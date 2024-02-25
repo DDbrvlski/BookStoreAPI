@@ -7,35 +7,10 @@ namespace BookStoreAPI.Controllers.Products.BookItems
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BookItemsController(IBookItemService bookItemService) : ControllerBase
+    public class BookItemsController
+        (IBookItemService bookItemService) 
+        : ControllerBase
     {
-        [HttpGet]
-        [Route("Carousel/{id}")]
-        [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<BookItemCarouselDto>>> GetBookItemsByFormIdForCarouselAsync(int id)
-        {
-            var bookItems = await bookItemService.GetBookItemsByFormIdForCarouselAsync(id);
-            return Ok(bookItems);
-        }
-
-        [HttpGet]
-        [Route("Store")]
-        [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<BookItemDto>>> GetBookItemsAsync([FromQuery]BookItemFiltersDto bookItemFilters)
-        {
-            var bookItems = await bookItemService.GetBookItemsAsync(bookItemFilters);
-            return Ok(bookItems);
-        }
-
-        [HttpGet]
-        [Route("Store/{id}")]
-        [AllowAnonymous]
-        public async Task<ActionResult<BookItemDetailsDto>> GetBookItemDetailsAsync(int id)
-        {
-            var bookItem = await bookItemService.GetBookItemDetailsAsync(id);
-            return Ok(bookItem);
-        }
-
         [HttpGet]
         [Authorize("BookItemsRead")]
         public async Task<ActionResult<IEnumerable<BookItemCMSDto>>> GetBookItemsForCMSAync()
@@ -82,6 +57,33 @@ namespace BookStoreAPI.Controllers.Products.BookItems
         {
             await bookItemService.DeactivateBookItemAsync(id);
             return NoContent();
+        }
+
+        [HttpGet]
+        [Route("Carousel/{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<BookItemCarouselDto>>> GetBookItemsByFormIdForCarouselAsync(int id)
+        {
+            var bookItems = await bookItemService.GetBookItemsByFormIdForCarouselAsync(id);
+            return Ok(bookItems);
+        }
+
+        [HttpGet]
+        [Route("Store")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<BookItemDto>>> GetBookItemsAsync([FromQuery]BookItemFiltersDto bookItemFilters)
+        {
+            var bookItems = await bookItemService.GetBookItemsAsync(bookItemFilters);
+            return Ok(bookItems);
+        }
+
+        [HttpGet]
+        [Route("Store/{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<BookItemDetailsDto>> GetBookItemDetailsAsync(int id)
+        {
+            var bookItem = await bookItemService.GetBookItemDetailsAsync(id);
+            return Ok(bookItem);
         }
     }
 }

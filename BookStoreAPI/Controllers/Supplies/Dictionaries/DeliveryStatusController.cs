@@ -4,6 +4,7 @@ using BookStoreData.Models.Supplies.Dictionaries;
 using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Helpers.BaseService;
 using BookStoreAPI.Helpers;
+using BookStoreData.Models.Transactions.Dictionaries;
 
 namespace BookStoreAPI.Controllers.Supplies.Dictionaries
 {
@@ -14,7 +15,7 @@ namespace BookStoreAPI.Controllers.Supplies.Dictionaries
     [ApiController]
     public class DeliveryStatusController : CRUDController<DeliveryStatus>
     {
-        public DeliveryStatusController(BookStoreContext context, IBaseService<DeliveryStatus> baseService, ILogger<DeliveryStatus> logger) : base(context, baseService, logger)
+        public DeliveryStatusController(IBaseService<DeliveryStatus> baseService) : base(baseService)
         {
         }
     }

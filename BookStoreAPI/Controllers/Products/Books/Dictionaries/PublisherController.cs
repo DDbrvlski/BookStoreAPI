@@ -14,7 +14,7 @@ namespace BookStoreAPI.Controllers.Products.Books.Dictionaries
     [ApiController]
     public class PublisherController : CRUDController<Publisher>
     {
-        public PublisherController(BookStoreContext context, IBaseService<Publisher> baseService, ILogger<Publisher> logger) : base(context, baseService, logger)
+        public PublisherController(IBaseService<Publisher> baseService) : base(baseService)
         {
         }
     }

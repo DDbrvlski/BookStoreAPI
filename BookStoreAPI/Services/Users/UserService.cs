@@ -142,7 +142,7 @@ namespace BookStoreAPI.Services.Users
                     var user = await userContextService.GetUserAndCustomerDataByTokenAsync();
                     string userId = user.Id;
 
-                    if (userData.UserId != null || user.Id != userData.UserId)
+                    if (userData.UserId != null && user.Id != userData.UserId)
                     {
                         userId = userData.UserId;
                         user = await userContextService.GetUserByDataAsync(x => x.Id == userData.UserId);

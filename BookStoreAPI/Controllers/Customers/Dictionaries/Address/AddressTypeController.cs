@@ -11,10 +11,8 @@ namespace BookStoreAPI.Controllers.Customers.Dictionaries.Address
     public class AddressTypeController : CRUDController<AddressType>
     {
         public AddressTypeController
-            (BookStoreContext context, 
-            IBaseService<AddressType> baseService, 
-            ILogger<AddressType> logger)
-            : base(context, baseService, logger)
+            (IBaseService<AddressType> baseService)
+            : base(baseService)
         {
         }
     }

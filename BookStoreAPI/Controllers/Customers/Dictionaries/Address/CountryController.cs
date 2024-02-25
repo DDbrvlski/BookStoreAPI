@@ -14,10 +14,8 @@ namespace BookStoreAPI.Controllers.Customers.Dictionaries.Address
     public class CountryController : CRUDController<Country>
     {
         public CountryController
-            (BookStoreContext context, 
-            IBaseService<Country> baseService,            
-            ILogger<Country> logger)
-            : base(context, baseService, logger)
+            (IBaseService<Country> baseService)
+            : base(baseService)
         {
         }
     }

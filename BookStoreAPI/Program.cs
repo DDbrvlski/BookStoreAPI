@@ -120,7 +120,7 @@ namespace BookStoreAPI
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = false;
-                //options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
             })
                 .AddEntityFrameworkStores<BookStoreContext>()
                 .AddDefaultTokenProviders();
@@ -157,7 +157,8 @@ namespace BookStoreAPI
                     options.AddPolicy(claim.PolicyName, policy => {
                         policy.RequireAssertion(context =>
                         {
-                            bool isApiUserHaveAccess = context.User.HasClaim(c => c.Type == claim.ClaimName && c.Value == claim.ClaimValue);
+                            bool isApiUserHaveAccess = context.User
+                                .HasClaim(c => c.Type == claim.ClaimName && c.Value == claim.ClaimValue);
                             bool isAdmin = context.User.IsInRole(UserRoles.Admin);
                             return isAdmin || isApiUserHaveAccess;
                         });

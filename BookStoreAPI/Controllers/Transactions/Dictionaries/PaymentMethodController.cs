@@ -14,7 +14,7 @@ namespace BookStoreAPI.Controllers.Transactions.Dictionaries
     [ApiController]
     public class PaymentMethodController : CRUDController<PaymentMethod>
     {
-        public PaymentMethodController(BookStoreContext context, IBaseService<PaymentMethod> baseService, ILogger<PaymentMethod> logger) : base(context, baseService, logger)
+        public PaymentMethodController(IBaseService<PaymentMethod> baseService) : base(baseService)
         {
         }
     }

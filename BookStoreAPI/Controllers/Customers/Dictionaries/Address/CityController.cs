@@ -14,10 +14,8 @@ namespace BookStoreAPI.Controllers.Customers.Dictionaries.Address
     public class CityController : CRUDController<City>
     {
         public CityController
-            (BookStoreContext context, 
-            IBaseService<City> baseService,
-            ILogger<City> logger)
-            : base(context, baseService, logger)
+            (IBaseService<City> baseService)
+            : base(baseService)
         {
         }
     }

@@ -19,18 +19,21 @@ namespace BookStoreAPI.Services.Email
     {
         public async Task ResetPasswordEmail(string token, User user)
         {
-            var resetLink = $"http://localhost:3000/dostep/odzyskaj-konto/resetuj-haslo?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
-            //var resetLink = urlHelper.Action("ResetPassword", "Account", new { userId = user.Id, token }, "https", "localhost:7247");
-            var emailBody = $"Aby zresetować hasło, kliknij <a href='{resetLink}'>tutaj</a>.";
-            emailService.SendEmail(user.Email, "Zresetuj hasło", emailBody);
+            if (emailService.IsEmailConfigurationSet())
+            {
+                var resetLink = $"http://localhost:3000/dostep/odzyskaj-konto/resetuj-haslo?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
+                var emailBody = $"Aby zresetować hasło, kliknij <a href='{resetLink}'>tutaj</a>.";
+                emailService.SendEmail(user.Email, "Zresetuj hasło", emailBody);
+            }
         }
-
         public async Task ConfirmEmailEmail(string token, User user)
         {
-            var confirmationLink = $"http://localhost:3000/dostep/rejestracja/potwierdzenie?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
-            //var confirmationLink = urlHelper.Action("ConfirmEmail", "Account", new { userId = user.Id, token }, "https", "localhost:7247");
-            var emailBody = $"Aby potwierdzić adres email, klinij <a href='{confirmationLink}'>tutaj</a>.";
-            emailService.SendEmail(user.Email, "Potwierdź email", emailBody);
+            if (emailService.IsEmailConfigurationSet())
+            {
+                var confirmationLink = $"http://localhost:3000/dostep/rejestracja/potwierdzenie?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
+                var emailBody = $"Aby potwierdzić adres email, klinij <a href='{confirmationLink}'>tutaj</a>.";
+                emailService.SendEmail(user.Email, "Potwierdź email", emailBody);
+            }
         }
 
         private IUrlHelper GetUrlHelper()

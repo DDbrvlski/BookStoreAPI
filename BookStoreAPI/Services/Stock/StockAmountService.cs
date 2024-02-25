@@ -6,28 +6,27 @@ using BookStoreData.Models.Products.BookItems;
 using BookStoreDto.Dtos.Availability;
 using BookStoreDto.Dtos.Products.StockAmount;
 using BookStoreDto.Dtos.Stock;
-using BookStoreDto.Dtos.Supply;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace BookStoreAPI.Services.Stock
 {
     public interface IStockAmountService
     {
-        Task CreateStockAmountAsync(int bookItemId, int? amount);
-        Task DeactivateStockAmountAsync(int bookItemId);
         Task<ActionResult<IEnumerable<StockAmountDto>>> GetAllStockAmountAsync();
         Task<ActionResult<StockAmountDto?>> GetStockAmountByIdAsync(int id);
-        Task UpdateStockAmountAsync(int bookItemId, int amount);
         Task<int> GetStockAmountForBookItemByIdAsync(int bookItemId);
+
+        Task CreateStockAmountAsync(int bookItemId, int? amount);
+        Task UpdateStockAmountAsync(int bookItemId, int amount);
         Task UpdateStockAmountAsync(List<BookItemStockAmountUpdateDto> bookItems);
-        //Task AddNewReservationInStockAsync(int bookItemId);
-        //Task CancelReservationInStockAsync(int bookItemId);
-        //Task<bool> IsBookItemOnStock(int bookItemId);
+        Task DeactivateStockAmountAsync(int bookItemId);
     }
 
-    public class StockAmountService(BookStoreContext context, IAvailabilityService availabilityService) : IStockAmountService
+    public class StockAmountService
+        (BookStoreContext context, 
+        IAvailabilityService availabilityService)
+        : IStockAmountService
     {
         public async Task<ActionResult<IEnumerable<StockAmountDto>>> GetAllStockAmountAsync()
         {
@@ -42,7 +41,6 @@ namespace BookStoreAPI.Services.Stock
                 })
                 .ToListAsync();
         }
-
         public async Task<ActionResult<StockAmountDto?>> GetStockAmountByIdAsync(int id)
         {
             return await context.StockAmount
@@ -55,7 +53,6 @@ namespace BookStoreAPI.Services.Stock
                     BookItemID = x.BookItemID
                 }).FirstAsync();
         }
-
         public async Task CreateStockAmountAsync(int bookItemId, int? amount)
         {
             if (amount == null)
@@ -74,7 +71,6 @@ namespace BookStoreAPI.Services.Stock
 
             await availabilityService.UpdateBookItemAvailabilityAsync(bookItemId, stockAmount.Amount);
         }
-
         public async Task DeactivateStockAmountAsync(int bookItemId)
         {
             var stockAmount = await context.StockAmount.FirstOrDefaultAsync(x => x.IsActive && x.BookItemID == bookItemId);
@@ -89,7 +85,6 @@ namespace BookStoreAPI.Services.Stock
             stockAmount.ModifiedDate = DateTime.UtcNow;
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-
         public async Task UpdateStockAmountAsync(int bookItemId, int amount)
         {
             var stockAmount = await context.StockAmount.FirstOrDefaultAsync(x => x.IsActive && x.BookItemID == bookItemId);

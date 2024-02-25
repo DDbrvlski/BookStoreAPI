@@ -48,18 +48,24 @@ namespace BookStoreAPI.Services.Auth
             }
 
             var user = await userContextService.GetUserByDataAsync(x => x.Email == loginData.Email);
-
             if (user == null || !await userManager.CheckPasswordAsync(user, loginData.Password))
             {
                 throw new UnauthorizedException("Wprowadzono błędne dane logowania.");
             }
 
+            var isUserInUserRole = await userManager.IsInRoleAsync(user, "User");
             if (loginData.Audience == "CMS")
-            {
-                var isUserInUserRole = await userManager.IsInRoleAsync(user, "User");
+            {                
                 if (isUserInUserRole)
                 {
                     throw new BadRequestException("Brak możliwości zalogowania się do systemu pracowników.");
+                }
+            }
+            else
+            {
+                if (!isUserInUserRole)
+                {
+                    throw new BadRequestException("Brak możliwości zalogowania się.");
                 }
             }
 
@@ -100,9 +106,9 @@ namespace BookStoreAPI.Services.Auth
                             RoleName = registerData.RoleName
                         });
 
-                    //var emailConfirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var urlCodedEmailConfirmationToken = CodeTokenToURL(emailConfirmationToken);
-                    //await emailSender.ConfirmEmailEmail(urlCodedEmailConfirmationToken, user);
+                    var emailConfirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var urlCodedEmailConfirmationToken = CodeTokenToURL(emailConfirmationToken);
+                    await emailSender.ConfirmEmailEmail(urlCodedEmailConfirmationToken, user);
 
                     await transaction.CommitAsync();
                 }
@@ -181,7 +187,6 @@ namespace BookStoreAPI.Services.Auth
         private async Task<string> GenerateTokenAsync(User user, string audience)
         {
             var userRoles = await userManager.GetRolesAsync(user);
-
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
@@ -195,8 +200,6 @@ namespace BookStoreAPI.Services.Auth
                 var roleClaims = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(roleName));
                 authClaims.AddRange(roleClaims);
             }
-
-            //authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

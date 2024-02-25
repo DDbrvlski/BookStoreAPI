@@ -6,18 +6,16 @@ namespace BookStoreDto.Dtos.Products.Books
 {
     public class BookPostDto : BaseDto
     {
-        [Required(ErrorMessage = "Tytuł jest wymagany.")]
+        [Required]
         [MaxLength(255)]
         public string Title { get; set; }
 
         public string? Description { get; set; }
 
-        [Required(ErrorMessage = "Oryginalny język jest wymagany.")]
-        [Display(Name = "Oryginalny język")]
+        [Required]
         public int OriginalLanguageID { get; set; }
 
-        [Required(ErrorMessage = "Wydawca jest wymagany.")]
-        [Display(Name = "Wydawca")]
+        [Required]
         public int PublisherID { get; set; }
 
 

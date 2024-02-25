@@ -18,7 +18,6 @@ namespace BookStoreData.Models.Products.Books
         #endregion
         #region Foreign Keys
 
-        //OriginalLanguage
         [Required(ErrorMessage = "Oryginalny język jest wymagany.")]
         [Display(Name = "Oryginalny język")]
         public int OriginalLanguageID { get; set; }
@@ -27,7 +26,6 @@ namespace BookStoreData.Models.Products.Books
         [JsonIgnore]
         public virtual Language OriginalLanguage { get; set; }
 
-        //Publisher
         [Required(ErrorMessage = "Wydawca jest wymagany.")]
         [Display(Name = "Wydawca")]
         public int PublisherID { get; set; }

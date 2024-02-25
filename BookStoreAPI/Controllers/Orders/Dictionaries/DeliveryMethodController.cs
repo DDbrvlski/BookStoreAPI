@@ -4,6 +4,7 @@ using BookStoreData.Models.Orders.Dictionaries;
 using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Helpers.BaseService;
 using BookStoreAPI.Helpers;
+using BookStoreData.Models.Transactions.Dictionaries;
 
 namespace BookStoreAPI.Controllers.Orders.Dictionaries
 {
@@ -14,7 +15,7 @@ namespace BookStoreAPI.Controllers.Orders.Dictionaries
     [ApiController]
     public class DeliveryMethodController : CRUDController<DeliveryMethod>
     {
-        public DeliveryMethodController(BookStoreContext context, IBaseService<DeliveryMethod> baseService, ILogger<DeliveryMethod> logger) : base(context, baseService, logger)
+        public DeliveryMethodController(IBaseService<DeliveryMethod> baseService) : base(baseService)
         {
         }
     }

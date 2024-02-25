@@ -4,6 +4,7 @@ using BookStoreData.Models.Products.Books.BookDictionaries;
 using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Helpers.BaseService;
 using BookStoreAPI.Helpers;
+using BookStoreData.Models.Transactions.Dictionaries;
 
 namespace BookStoreAPI.Controllers.Products.Books.Dictionaries
 {
@@ -14,7 +15,7 @@ namespace BookStoreAPI.Controllers.Products.Books.Dictionaries
     [ApiController]
     public class AuthorController : CRUDController<Author>
     {
-        public AuthorController(BookStoreContext context, IBaseService<Author> baseService, ILogger<Author> logger) : base(context, baseService, logger)
+        public AuthorController(IBaseService<Author> baseService) : base(baseService)
         {
         }
     }

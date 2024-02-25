@@ -14,7 +14,7 @@ namespace BookStoreAPI.Controllers.Products.Books.Dictionaries
     [ApiController]
     public class TranslatorController : CRUDController<Translator>
     {
-        public TranslatorController(BookStoreContext context, IBaseService<Translator> baseService, ILogger<Translator> logger) : base(context, baseService, logger)
+        public TranslatorController(IBaseService<Translator> baseService) : base(baseService)
         {
         }
     }

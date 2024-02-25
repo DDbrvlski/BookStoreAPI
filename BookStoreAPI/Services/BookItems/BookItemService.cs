@@ -25,11 +25,11 @@ namespace BookStoreAPI.Services.BookItems
         Task<IEnumerable<BookItemDto>> GetBookItemsAsync(BookItemFiltersDto bookItemFilters);
         Task<IEnumerable<BookItemCarouselDto>> GetBookItemsByFormIdForCarouselAsync(int formId);
         Task<IEnumerable<BookItemCMSDto>> GetBookItemsForCMSAsync();
+        Task<List<BookItemDiscountDto>> GetBookItemsFromOrderAsync(List<OrderItemsListDto> cartItems);
         Task CreateBookItemAsync(BookItemPostCMSDto bookItemModel);
         Task UpdateBookItemAsync(int bookItemId, BookItemPostCMSDto bookItemModel);
         Task DeactivateBookItemAsync(int bookItemId);
         Task ManageSoldUnitsAsync(List<OrderItems> orderItems);
-        Task<List<BookItemDiscountDto>> GetBookItemsFromOrderAsync(List<OrderItemsListDto> cartItems);
     }
 
     public class BookItemService
@@ -40,6 +40,22 @@ namespace BookStoreAPI.Services.BookItems
         IStockAmountService stockAmountService)
         : IBookItemService
     {
+        public async Task<IEnumerable<BookItemCarouselDto>> GetBookItemsByFormIdForCarouselAsync(int formId)
+        {
+            return await context.BookItem
+                .Where(x => x.IsActive && x.FormID == formId)
+                .Select(x => new BookItemCarouselDto
+                {
+                    Id = x.Id,
+                    Title = x.Book.Title,
+                    ImageURL = x.Book.BookImages
+                        .OrderBy(x => x.Image.Position)
+                        .First(y => y.BookID == x.BookID).Image.ImageURL,
+                    FormId = x.FormID,
+                    FormName = x.Form.Name
+                }).Take(25)
+                .ToListAsync();
+        }
         public async Task<BookItemDetailsCMSDto> GetBookItemByIdForCMSAsync(int bookItemId)
         {
             return await context.BookItem
@@ -73,8 +89,6 @@ namespace BookStoreAPI.Services.BookItems
         public async Task<IEnumerable<BookItemCMSDto>> GetBookItemsForCMSAsync()
         {
             return await context.BookItem
-                .Include(x => x.Book)
-                .Include(x => x.Form)
                 .Where(x => x.IsActive == true)
                 .Select(x => new BookItemCMSDto
                 {
@@ -86,24 +100,7 @@ namespace BookStoreAPI.Services.BookItems
                     NettoPrice = x.NettoPrice
                 })
                 .ToListAsync();
-        }
-        public async Task<IEnumerable<BookItemCarouselDto>> GetBookItemsByFormIdForCarouselAsync(int formId)
-        {
-            return await context.BookItem
-                .Include(x => x.Form)
-                .Where(x => x.IsActive == true && x.FormID == formId)
-                .Select(x => new BookItemCarouselDto
-                {
-                    Id = x.Id,
-                    Title = x.Book.Title,
-                    ImageURL = x.Book.BookImages
-                        .OrderBy(x => x.Image.Position)
-                        .First(y => y.BookID == x.BookID).Image.ImageURL,
-                    FormId = x.FormID,
-                    FormName = x.Form.Name
-                }).Take(25)
-                .ToListAsync();
-        }
+        }        
         public async Task<IEnumerable<BookItemDto>> GetBookItemsAsync(BookItemFiltersDto bookItemFilters)
         {
             var items = context.BookItem
@@ -212,15 +209,7 @@ namespace BookStoreAPI.Services.BookItems
 
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
-                    if (bookItem.FormID == (int)BookFormEnum.Book)
-                    {
-                        await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
-                    }
-                    else if (bookItem.FormID == (int)BookFormEnum.Ebook)
-                    {
-                        await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
-                    }
-                    await transaction.CommitAsync();
+                    await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
                 }
                 catch (Exception ex)
                 {

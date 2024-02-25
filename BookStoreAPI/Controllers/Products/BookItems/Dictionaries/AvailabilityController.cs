@@ -4,6 +4,7 @@ using BookStoreData.Models.Products.BookItems.BookItemDictionaries;
 using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Helpers.BaseService;
 using BookStoreAPI.Helpers;
+using BookStoreData.Models.Transactions.Dictionaries;
 
 namespace BookStoreAPI.Controllers.Products.BookItems.Dictionaries
 {
@@ -14,7 +15,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems.Dictionaries
     [ApiController]
     public class AvailabilityController : CRUDController<Availability>
     {
-        public AvailabilityController(BookStoreContext context, IBaseService<Availability> baseService, ILogger<Availability> logger) : base(context, baseService, logger)
+        public AvailabilityController(IBaseService<Availability> baseService) : base(baseService)
         {
         }
     }

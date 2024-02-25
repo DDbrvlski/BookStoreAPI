@@ -4,6 +4,7 @@ using BookStoreData.Models.PageContent;
 using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Helpers.BaseService;
 using BookStoreAPI.Helpers;
+using BookStoreData.Models.Transactions.Dictionaries;
 
 namespace BookStoreAPI.Controllers.PageContent
 {
@@ -11,7 +12,7 @@ namespace BookStoreAPI.Controllers.PageContent
     [ApiController]
     public class FooterColumnsController : CRUDController<FooterColumns>
     {
-        public FooterColumnsController(BookStoreContext context, IBaseService<FooterColumns> baseService, ILogger<FooterColumns> logger) : base(context, baseService, logger)
+        public FooterColumnsController(IBaseService<FooterColumns> baseService) : base(baseService)
         {
         }
     }

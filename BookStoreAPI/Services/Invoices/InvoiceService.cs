@@ -276,7 +276,7 @@ namespace BookStoreAPI.Services.Invoices
             var paymentDate = await context.Order
                 .Where(x => x.Id == orderId && x.IsActive)
                 .Select(x => x.Payment.PaymentDate)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
             if(paymentDate == null)
             {
                 throw new BadRequestException("Nie zapłacono za zamówienie, brak możliwości pobrania faktury.");

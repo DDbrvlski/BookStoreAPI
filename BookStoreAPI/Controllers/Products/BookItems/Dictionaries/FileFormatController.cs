@@ -4,6 +4,7 @@ using BookStoreData.Models.Products.BookItems.BookItemDictionaries;
 using Microsoft.AspNetCore.Mvc;
 using BookStoreAPI.Helpers.BaseService;
 using BookStoreAPI.Helpers;
+using BookStoreData.Models.Transactions.Dictionaries;
 
 namespace BookStoreAPI.Controllers.Products.BookItems.Dictionaries
 {
@@ -14,7 +15,7 @@ namespace BookStoreAPI.Controllers.Products.BookItems.Dictionaries
     [ApiController]
     public class FileFormatController : CRUDController<FileFormat>
     {
-        public FileFormatController(BookStoreContext context, IBaseService<FileFormat> baseService, ILogger<FileFormat> logger) : base(context, baseService, logger)
+        public FileFormatController(IBaseService<FileFormat> baseService) : base(baseService)
         {
         }
     }

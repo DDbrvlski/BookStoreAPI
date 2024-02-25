@@ -1,6 +1,4 @@
 ﻿using BookStoreAPI.Helpers.BaseService;
-using BookStoreAPI.Infrastructure;
-using BookStoreData.Data;
 using BookStoreData.Models.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,9 +6,7 @@ namespace BookStoreAPI.Helpers.BaseController
 {
     public class BaseController
         <TEntity>
-        (BookStoreContext context, 
-        IBaseService<TEntity> baseService,
-        ILogger<TEntity> logger) 
+        (IBaseService<TEntity> baseService) 
         : ControllerBase 
         where TEntity : BaseEntity
     {

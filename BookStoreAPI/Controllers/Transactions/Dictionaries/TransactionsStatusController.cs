@@ -14,7 +14,7 @@ namespace BookStoreAPI.Controllers.Transactions.Dictionaries
     [ApiController]
     public class TransactionsStatusController : CRUDController<TransactionsStatus>
     {
-        public TransactionsStatusController(BookStoreContext context, IBaseService<TransactionsStatus> baseService, ILogger<TransactionsStatus> logger) : base(context, baseService, logger)
+        public TransactionsStatusController(IBaseService<TransactionsStatus> baseService) : base(baseService)
         {
         }
     }

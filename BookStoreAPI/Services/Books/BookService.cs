@@ -17,12 +17,11 @@ namespace BookStoreAPI.Services.Books
         Task<BookDetailsCMSDto> GetBookDetailsForCMSByIdAsync(int id);
         Task<IEnumerable<BooksCMSDto>> GetAllBooksForCMSAsync();
         Task CreateBookAsync(BookPostDto bookPost);
-        Task DeactivateBookAsync(int bookId);
         Task UpdateBookAsync(int bookId, BookPostDto bookPost);
+        Task DeactivateBookAsync(int bookId);
     }
     public class BookService
-        (BookStoreContext context, 
-        ILogger<BookService> logger, 
+        (BookStoreContext context,
         IAuthorService authorService,
         ICategoryService categoryService,
         IImageService imageService)
@@ -111,13 +110,11 @@ namespace BookStoreAPI.Services.Books
                 catch (InvalidOperationException ex)
                 {
                     transaction.Rollback();
-                    logger.LogError($"{ex.Message}");
                     throw new InvalidOperationException("Wystąpił błąd");
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    logger.LogError($"{ex.Message}");
                     throw new BadRequestException("Wystąpił błąd podczas aktualizacji bazy danych");
                 }
             }
@@ -182,7 +179,6 @@ namespace BookStoreAPI.Services.Books
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    logger.LogError($"{ex.Message}");
                     throw new BadRequestException("Wystąpił błąd podczas aktualizacji bazy danych");
                 }
             }

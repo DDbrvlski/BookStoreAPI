@@ -10,10 +10,8 @@ namespace BookStoreAPI.Helpers.BaseController
     {
         private readonly string claimType = typeof(TEntity).Name;
         public CRUDController
-            (BookStoreContext context, 
-            IBaseService<TEntity> baseService,            
-            ILogger<TEntity> logger)
-            : base(context, baseService, logger)
+            (IBaseService<TEntity> baseService)
+            : base(baseService)
         {
         }
 

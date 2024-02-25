@@ -14,7 +14,7 @@ namespace BookStoreAPI.Controllers.Rentals.Dictionaries
     [ApiController]
     public class RentalTypeController : CRUDController<RentalType>
     {
-        public RentalTypeController(BookStoreContext context, IBaseService<RentalType> baseService, ILogger<RentalType> logger) : base(context, baseService, logger)
+        public RentalTypeController(IBaseService<RentalType> baseService) : base(baseService)
         {
         }
     }

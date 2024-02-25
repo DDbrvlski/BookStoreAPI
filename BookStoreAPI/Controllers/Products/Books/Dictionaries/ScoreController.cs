@@ -14,7 +14,7 @@ namespace BookStoreAPI.Controllers.Products.Books.Dictionaries
     [ApiController]
     public class ScoreController : CRUDController<Score>
     {
-        public ScoreController(BookStoreContext context, IBaseService<Score> baseService, ILogger<Score> logger) : base(context, baseService, logger)
+        public ScoreController(IBaseService<Score> baseService) : base(baseService)
         {
         }
     }
