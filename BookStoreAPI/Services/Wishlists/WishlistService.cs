@@ -8,6 +8,7 @@ using BookStoreData.Models.Wishlist;
 using BookStoreDto.Dtos.Products.Books.Dictionaries;
 using BookStoreDto.Dtos.Wishlists;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BookStoreAPI.Services.Wishlists
 {
@@ -19,7 +20,7 @@ namespace BookStoreAPI.Services.Wishlists
         Task UpdateWishlistAsync(int bookItemId, bool isWishlisted);
         Task DeactivateWishlistAsync(int customerId);
         Task<bool> IsBookItemWishlistedByCustomer(int bookItemId);
-        Task<Wishlist?> GetWishlistByDataAsync(Func<Wishlist, bool> wishlistFunction);
+        Task<Wishlist?> GetWishlistByDataAsync(Expression<Func<Wishlist, bool>> wishlistFunction);
     }
     public class WishlistService(BookStoreContext context, IUserContextService userContextService, IBookDiscountService bookDiscountService) : IWishlistService
     {
@@ -170,9 +171,9 @@ namespace BookStoreAPI.Services.Wishlists
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
 
-        public async Task<Wishlist?> GetWishlistByDataAsync(Func<Wishlist, bool> wishlistFunction)
+        public async Task<Wishlist?> GetWishlistByDataAsync(Expression<Func<Wishlist, bool>> wishlistFunction)
         {
-            return await context.Wishlist.FirstOrDefaultAsync(x => wishlistFunction(x) && x.IsActive);
+            return await context.Wishlist.Where(x => x.IsActive).FirstOrDefaultAsync(wishlistFunction);
         }
     }
 }
