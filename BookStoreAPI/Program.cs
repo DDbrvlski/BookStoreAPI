@@ -37,9 +37,6 @@ using BookStoreDto.Dtos.Accounts.Account;
 using BookStoreDto.Dtos.Invoices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -109,12 +106,6 @@ namespace BookStoreAPI
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddTransient<IImageService, ImageService>();
             builder.Services.AddTransient<IBookService, BookService>();
-            builder.Services.AddScoped<IUrlHelper>(factory =>
-            {
-                var actionContext = factory.GetRequiredService<IActionContextAccessor>().ActionContext;
-                return new UrlHelper(actionContext);
-            });
-            builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>

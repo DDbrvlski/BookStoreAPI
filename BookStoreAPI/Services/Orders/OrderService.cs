@@ -1,6 +1,5 @@
 ﻿using BookStoreAPI.Enums;
 using BookStoreAPI.Helpers;
-using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Addresses;
 using BookStoreAPI.Services.BookItems;
 using BookStoreAPI.Services.Customers;

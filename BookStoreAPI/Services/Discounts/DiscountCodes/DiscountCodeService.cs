@@ -1,16 +1,11 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
-using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreBusinessLogic.BusinessLogic.Discounts;
 using BookStoreData.Data;
-using BookStoreData.Models.Customers;
 using BookStoreData.Models.Products.BookItems;
 using BookStoreDto.Dtos.Orders;
-using BookStoreDto.Dtos.Products.BookItems;
 using BookStoreDto.Dtos.Products.DiscountCodes;
-using BookStoreDto.Dtos.Products.Discounts;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace BookStoreAPI.Services.Discounts.DiscountCodes
@@ -44,7 +39,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
                 }).FirstAsync();
 
             var todaysDate = DateTime.Now.Date;
-            code.IsAvailable = (todaysDate >= code.StartingDate.Date && todaysDate <= code.ExpiryDate.AddDays(1).Date);
+            code.IsAvailable = (todaysDate >= code.StartingDate.Date && todaysDate <= code.ExpiryDate.Date);
 
             return code;
         }
@@ -66,7 +61,7 @@ namespace BookStoreAPI.Services.Discounts.DiscountCodes
                 })
                 .ToListAsync();
 
-            codes.ForEach(x => x.IsAvailable = todaysDate >= x.StartingDate.Date && todaysDate <= x.ExpiryDate.AddDays(1).Date);
+            codes.ForEach(x => x.IsAvailable = todaysDate >= x.StartingDate.Date && todaysDate <= x.ExpiryDate.Date);
 
             return codes;
         }

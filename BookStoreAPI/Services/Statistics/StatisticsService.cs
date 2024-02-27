@@ -1,5 +1,4 @@
 ﻿using BookStoreAPI.Helpers;
-using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Orders;
 using BookStoreAPI.Services.Supplies;
 using BookStoreBusinessLogic.BusinessLogic.CMS;

@@ -1,6 +1,4 @@
 ﻿using BookStoreAPI.Services.PageElements;
-using BookStoreData.Models.Accounts;
-using BookStoreData.Models.PageContent;
 using BookStoreDto.Dtos.PageContent.News;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

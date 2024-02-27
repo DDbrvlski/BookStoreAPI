@@ -3,7 +3,6 @@ using BookStoreData.Data;
 using BookStoreData.Models.Products.Books;
 using BookStoreDto.Dtos.Products.Books;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace BookStoreAPI.Services.Books.Dictionaries
 {
@@ -18,7 +17,7 @@ namespace BookStoreAPI.Services.Books.Dictionaries
     {
         public async Task AddAuthorsForBookAsync(BookPostDto book, List<int>? authorIds = null)
         {
-            //Reużywalność funkcji dla dodawania nowych autorów i aktualizowania
+            //Możliwość ponownego użycia funkcji dla dodawania nowych autorów i aktualizowania
             if(authorIds == null)
             {
                 authorIds = book.ListOfBookAuthors.Select(x => x.Id).ToList();

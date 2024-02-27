@@ -1,10 +1,6 @@
-﻿using BookStoreAPI.Helpers;
-using BookStoreAPI.Helpers.BaseController;
+﻿using BookStoreAPI.Helpers.BaseController;
 using BookStoreAPI.Helpers.BaseService;
-using BookStoreData.Data;
 using BookStoreData.Models.PageContent;
-using BookStoreData.Models.Transactions.Dictionaries;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers.PageContent

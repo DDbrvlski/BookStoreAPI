@@ -1,7 +1,4 @@
 ﻿using BookStoreAPI.Services.PageElements;
-using BookStoreData.Data;
-using BookStoreData.Models.PageContent;
-using BookStoreDto.Dtos.PageContent.Banners;
 using BookStoreDto.Dtos.PageContent.CategoryElements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

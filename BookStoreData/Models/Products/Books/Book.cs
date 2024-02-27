@@ -34,7 +34,7 @@ namespace BookStoreData.Models.Products.Books
         [JsonIgnore]
         public virtual Publisher? Publisher { get; set; }
         #endregion
-        #region Navigation properties
+
         [JsonIgnore]
         public List<BookItem>? BookItems { get; set; }
         [JsonIgnore]
@@ -45,6 +45,6 @@ namespace BookStoreData.Models.Products.Books
         public List<BookDiscount>? BookDiscounts { get; set; }
         [JsonIgnore]
         public List<BookImages>? BookImages { get; set; }
-        #endregion
+
     }
 }

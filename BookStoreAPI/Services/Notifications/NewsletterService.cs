@@ -1,8 +1,6 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
-using BookStoreAPI.Services.Customers;
 using BookStoreAPI.Services.Email;
-using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
 using BookStoreData.Models.Customers;
 using BookStoreData.Models.Notifications;
@@ -53,13 +51,11 @@ namespace BookStoreAPI.Services.Notifications
 
             await AddToNewsletterSubscribersAsync(email);
         }
-
         public async Task CreateNewsletterAsync(Newsletter newsletter)
         {
             await context.Newsletter.AddAsync(newsletter);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-
         public async Task AddToNewsletterSubscribersAsync(string email)
         {
             var newNewsletterUser = new NewsletterSubscribers()
@@ -70,19 +66,15 @@ namespace BookStoreAPI.Services.Notifications
             await context.NewsletterSubscribers.AddAsync(newNewsletterUser);
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-
         public async Task RemoveFromNewsletterSubscribersAsync(string email)
         {
             var subscriberToRemove = await context.NewsletterSubscribers.FirstOrDefaultAsync(x => x.Email == email && x.IsActive);
-            if (subscriberToRemove == null)
+            if (subscriberToRemove != null)
             {
-                throw new BadRequestException("Podany adres e-mail nie jest zasubskrybowany do newslettera.");
-            }
-
-            subscriberToRemove.IsActive = false;
-            await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+                subscriberToRemove.IsActive = false;
+                await DatabaseOperationHandler.TryToSaveChangesAsync(context);
+            }            
         }
-
         public async Task SendNewsletterToSubscribersAsync()
         {
             //var newslettersToSend = await context.Newsletter.Where(x => x.IsActive && x.PublicationDate.ToShortDateString == DateTime.Now.ToShortDateString).ToListAsync();
@@ -99,7 +91,6 @@ namespace BookStoreAPI.Services.Notifications
                 }
             }
         }
-
         public async Task<bool> IsAlreadySubscribed(string email) =>
             (await context.NewsletterSubscribers.FirstOrDefaultAsync(x => x.Email == email && x.IsActive)) != null;
 

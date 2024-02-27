@@ -35,7 +35,7 @@ namespace BookStoreAPI.Services.Media
 
         public async Task AddNewImagesForBookAsync(BookPostDto book, List<ImageDto?>? imagesToAdd = null)
         {
-            //Reużywalność kodu dla update
+            //Możliwość ponownego użycia funkcji dla aktualizacji i dodawania
             if (imagesToAdd == null)
             {
                 imagesToAdd = book.ListOfBookImages.ToList();
@@ -68,7 +68,6 @@ namespace BookStoreAPI.Services.Media
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }
         }
-
         public async Task DeactivateAllImagesForBookAsync(int? bookId)
         {
             var bookImages = await context.BookImages
@@ -86,8 +85,6 @@ namespace BookStoreAPI.Services.Media
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-
-
         public async Task DeactivateChosenImagesForBookAsync(int? bookId, List<int> imageIds)
         {
             var bookImages = await context.BookImages
@@ -105,7 +102,6 @@ namespace BookStoreAPI.Services.Media
 
             await DatabaseOperationHandler.TryToSaveChangesAsync(context);
         }
-
         public async Task DeactivateSingleImageByIdAsync(int? imageId)
         {
             Images image = await context.Images.FirstOrDefaultAsync(x => x.Id == imageId);
@@ -117,7 +113,6 @@ namespace BookStoreAPI.Services.Media
                 await DatabaseOperationHandler.TryToSaveChangesAsync(context);
             }
         }
-
         public async Task UpdateImagesForBookAsync(BookPostDto book)
         {
             List<ImageDto> images = book.ListOfBookImages.ToList();

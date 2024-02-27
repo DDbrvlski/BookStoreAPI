@@ -2,7 +2,6 @@
 using BookStoreDto.Dtos.Products.StockAmount;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Controllers.Products.BookItems
 {

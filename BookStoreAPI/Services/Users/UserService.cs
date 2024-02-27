@@ -1,18 +1,15 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreAPI.Services.Addresses;
-using BookStoreAPI.Services.Auth;
 using BookStoreAPI.Services.Customers;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
 using BookStoreDto.Dtos.Accounts.User;
-using BookStoreDto.Dtos.Customers;
 using BookStoreDto.Dtos.Customers.Address;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
-using System.Security.Claims;
 
 namespace BookStoreAPI.Services.Users
 {

@@ -6,8 +6,6 @@ using BookStoreDto.Dtos.Orders;
 using BookStoreDto.Dtos.Products.BookItems;
 using BookStoreDto.Dtos.Wishlists;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 
 namespace BookStoreAPI.Services.Discounts.Discounts
 {

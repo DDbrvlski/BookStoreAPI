@@ -21,13 +21,13 @@ namespace BookStoreAPI.Services.Discounts.Discounts
     {
         public async Task<DiscountDetailsCMSDto> GetDiscountByIdCMSAsync(int id)
         {
-            var currentDate = DateTime.Now;
+            var currentDate = DateTime.Now.Date;
             return await context.Discount
                 .Where(x => x.Id == id && x.IsActive)
                 .Select(x => new DiscountDetailsCMSDto()
                 {
                     Id = x.Id,
-                    IsAvailable = currentDate >= x.StartingDate && currentDate <= x.ExpiryDate.AddDays(1),
+                    IsAvailable = currentDate >= x.StartingDate.Date && currentDate <= x.ExpiryDate.Date,
                     Description = x.Description,
                     ExpiryDate = x.ExpiryDate,
                     StartingDate = x.StartingDate,
@@ -49,13 +49,13 @@ namespace BookStoreAPI.Services.Discounts.Discounts
 
         public async Task<IEnumerable<DiscountCMSDto>> GetAllDiscountsCMSAsync()
         {
-            var currentDate = DateTime.Now;
+            var currentDate = DateTime.Now.Date;
             return await context.Discount
                 .Where(x => x.IsActive == true)
                 .Select(x => new DiscountCMSDto
                 {
                     Id = x.Id,
-                    IsAvailable = currentDate >= x.StartingDate && currentDate <= x.ExpiryDate.AddDays(1),
+                    IsAvailable = currentDate >= x.StartingDate.Date && currentDate <= x.ExpiryDate.Date,
                     Description = x.Description,
                     PercentOfDiscount = x.PercentOfDiscount,
                     Title = x.Title,

@@ -6,6 +6,5 @@ namespace BookStoreData.Models.Orders.Dictionaries
     {
         public decimal Price { get; set; }
 
-        //1 = kurier, 2 = inpost
     }
 }

@@ -1,10 +1,7 @@
-﻿using BookStoreData.Data;
-using BookStoreAPI.Helpers.BaseController;
+﻿using BookStoreAPI.Helpers.BaseController;
+using BookStoreAPI.Helpers.BaseService;
 using BookStoreData.Models.Orders.Dictionaries;
 using Microsoft.AspNetCore.Mvc;
-using BookStoreAPI.Helpers.BaseService;
-using BookStoreAPI.Helpers;
-using BookStoreData.Models.Transactions.Dictionaries;
 
 namespace BookStoreAPI.Controllers.Orders.Dictionaries
 {

@@ -1,6 +1,5 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Services.Customers;
-using BookStoreAPI.Services.Stock;
 using BookStoreData.Data;
 using BookStoreData.Models.Rental;
 using BookStoreDto.Dtos.Rentals;

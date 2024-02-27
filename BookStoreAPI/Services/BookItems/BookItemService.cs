@@ -1,7 +1,5 @@
-﻿using BookStoreAPI.Enums;
-using BookStoreAPI.Helpers;
+﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
-using BookStoreAPI.Services.Availability;
 using BookStoreAPI.Services.Discounts.Discounts;
 using BookStoreAPI.Services.Reviews;
 using BookStoreAPI.Services.Stock;
@@ -14,7 +12,6 @@ using BookStoreDto.Dtos.Orders;
 using BookStoreDto.Dtos.Products.BookItems;
 using BookStoreDto.Dtos.Products.Books.Dictionaries;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace BookStoreAPI.Services.BookItems
 {
@@ -210,6 +207,7 @@ namespace BookStoreAPI.Services.BookItems
                     await DatabaseOperationHandler.TryToSaveChangesAsync(context);
 
                     await stockAmountService.CreateStockAmountAsync(bookItem.Id, bookItemModel.StockAmount);
+                    await transaction.CommitAsync();
                 }
                 catch (Exception ex)
                 {

@@ -1,13 +1,6 @@
-﻿using BookStoreAPI.Helpers;
-using BookStoreAPI.Infrastructure.Exceptions;
-using BookStoreAPI.Services.Orders;
-using BookStoreAPI.Services.Supplies;
-using BookStoreBusinessLogic.BusinessLogic.CMS;
-using BookStoreData.Data;
-using BookStoreData.Models.CMS;
+﻿using BookStoreData.Data;
 using BookStoreData.Models.Helpers;
 using BookStoreDto.Dtos.CMS;
-using BookStoreDto.Dtos.Statistics;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Services.CMS

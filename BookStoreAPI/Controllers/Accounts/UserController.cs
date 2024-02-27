@@ -5,7 +5,6 @@ using BookStoreDto.Dtos.Accounts.User;
 using BookStoreDto.Dtos.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookStoreAPI.Controllers.Accounts
 {

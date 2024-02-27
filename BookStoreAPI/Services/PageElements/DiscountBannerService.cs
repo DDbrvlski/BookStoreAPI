@@ -2,7 +2,6 @@
 using BookStoreAPI.Services.Media;
 using BookStoreData.Data;
 using BookStoreData.Models.PageContent;
-using BookStoreDto.Dtos.PageContent.Banners;
 using BookStoreDto.Dtos.PageContent.DiscountBanners;
 using Microsoft.EntityFrameworkCore;
 

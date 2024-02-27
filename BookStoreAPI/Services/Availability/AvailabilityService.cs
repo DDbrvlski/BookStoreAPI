@@ -2,7 +2,6 @@
 using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
 using BookStoreData.Data;
-using BookStoreData.Models.Products.BookItems;
 using BookStoreDto.Dtos.Availability;
 using Microsoft.EntityFrameworkCore;
 

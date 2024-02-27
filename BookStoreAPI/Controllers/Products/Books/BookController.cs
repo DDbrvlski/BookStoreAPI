@@ -1,5 +1,4 @@
-﻿using BookStoreAPI.Infrastructure.Exceptions;
-using BookStoreAPI.Services.Books;
+﻿using BookStoreAPI.Services.Books;
 using BookStoreDto.Dtos.Products.Books;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

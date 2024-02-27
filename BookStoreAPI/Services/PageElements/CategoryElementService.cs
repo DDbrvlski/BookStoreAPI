@@ -2,7 +2,6 @@
 using BookStoreAPI.Services.Media;
 using BookStoreData.Data;
 using BookStoreData.Models.PageContent;
-using BookStoreDto.Dtos.PageContent.Banners;
 using BookStoreDto.Dtos.PageContent.CategoryElements;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,7 +42,6 @@ namespace BookStoreAPI.Services.PageElements
             }
             
         }
-
         public async Task DeactivateCategoryElementAsync(int categoryElementId)
         {
             using (var transaction = context.Database.BeginTransaction())
@@ -67,7 +65,6 @@ namespace BookStoreAPI.Services.PageElements
             }
             
         }
-
         public async Task EditCategoryElementAsync(int categoryElementId, CategoryElementPostDto categoryElementModel)
         {
             using (var transaction = context.Database.BeginTransaction())
@@ -97,7 +94,6 @@ namespace BookStoreAPI.Services.PageElements
             }
             
         }
-
         public async Task<IEnumerable<CategoryElementDto>> GetAllCategoryElementsAsync()
         {
             return await context.CategoryElement
@@ -115,7 +111,6 @@ namespace BookStoreAPI.Services.PageElements
                     CategoryName = x.Category.Name
                 }).ToListAsync();
         }
-
         public async Task<CategoryElementDto> GetCategoryElementByIdAsync(int categoryElementId)
         {
             return await context.CategoryElement

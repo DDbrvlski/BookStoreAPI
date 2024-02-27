@@ -9,7 +9,7 @@ namespace BookStoreDto.Dtos.Invoices
     public class SellerInvoiceDto
     {
         public string Name { get; set; }
-        public string TaxIdentificationNumber { get; set; } //NIP
+        public string TaxIdentificationNumber { get; set; }
         public string Street { get; set; }
         public string StreetNumber { get; set; }
         public string? HouseNumber { get; set; }

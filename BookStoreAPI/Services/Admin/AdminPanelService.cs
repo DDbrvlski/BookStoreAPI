@@ -1,6 +1,5 @@
 ﻿using BookStoreAPI.Helpers;
 using BookStoreAPI.Infrastructure.Exceptions;
-using BookStoreAPI.Services.Customers;
 using BookStoreAPI.Services.Users;
 using BookStoreData.Data;
 using BookStoreData.Models.Accounts;
@@ -9,7 +8,6 @@ using BookStoreDto.Dtos.Admin;
 using BookStoreDto.Dtos.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Security.Claims;
 
 namespace BookStoreAPI.Services.Admin

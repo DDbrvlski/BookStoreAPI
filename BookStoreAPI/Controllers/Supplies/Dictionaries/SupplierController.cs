@@ -1,12 +1,7 @@
-﻿using BookStoreData.Data;
-using BookStoreAPI.Helpers.BaseController;
-using BookStoreData.Models.Supplies.Dictionaries;
-using Microsoft.AspNetCore.Mvc;
-using BookStoreAPI.Helpers.BaseService;
-using BookStoreAPI.Helpers;
-using BookStoreAPI.Services.Supplies;
+﻿using BookStoreAPI.Services.Supplies;
 using BookStoreDto.Dtos.Supply;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers.Supplies.Dictionaries
 {

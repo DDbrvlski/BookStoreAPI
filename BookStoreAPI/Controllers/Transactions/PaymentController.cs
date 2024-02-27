@@ -1,5 +1,4 @@
 ﻿using BookStoreAPI.Services.Payments;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPI.Controllers.Transactions

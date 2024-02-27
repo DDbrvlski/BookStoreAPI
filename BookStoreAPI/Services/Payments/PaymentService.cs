@@ -17,7 +17,7 @@ namespace BookStoreAPI.Services.Payments
     {
         public async Task<Payment> CreateNewPayment(int paymentMethodId, decimal amount)
         {
-            //Ustawienie statusu transakcji na sztywno ze względu na płatność
+            //Ustawienie statusu transakcji ze względu na płatność
             //Zakończone dla płatności online/kartą
             //Niezakończone dla płatności gotówką
             int transactionStatusId;

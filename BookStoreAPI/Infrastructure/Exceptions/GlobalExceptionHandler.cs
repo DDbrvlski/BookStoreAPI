@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace BookStoreAPI.Infrastructure.Exceptions
 {

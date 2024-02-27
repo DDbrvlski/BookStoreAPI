@@ -9,7 +9,7 @@ namespace BookStoreAPI.Controllers.Wishlist
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class WishlistController(BookStoreContext context, IWishlistService wishlistService) : ControllerBase
+    public class WishlistController(IWishlistService wishlistService) : ControllerBase
     {
         [HttpGet]
         [Route("{publicIdentifier}")]

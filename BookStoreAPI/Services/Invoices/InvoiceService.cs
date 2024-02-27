@@ -100,12 +100,17 @@ namespace BookStoreAPI.Services.Invoices
             };
             return fields;
         }
+        /// <summary>
+        /// Creates pdf invoice using QuestPDF
+        /// </summary>
         public async Task<InvoiceDocument> CreateInvoice(int orderId)
         {
             var invoiceData = await GetCustomerInvoiceDataAsync(orderId);
             return new InvoiceDocument(invoiceData);
         }
-
+        /// <summary>
+        /// Creates pdf invoice using Spire.Doc
+        /// </summary>
         public async Task<byte[]> CreateInvoiceByDocxTemplate(int orderId)
         {
             var invoiceData = await GetCustomerInvoiceDataAsync(orderId);

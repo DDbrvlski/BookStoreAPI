@@ -17,7 +17,7 @@ namespace BookStoreAPI.Services.Books.Dictionaries
     {
         public async Task AddCategoriesForBookAsync(BookPostDto book, List<int>? categoryIds = null)
         {
-            //Reużywalność funkcji dla dodawania nowych kategorii i aktualizowania
+            //Możliwość ponownego użycia funkcji dla dodawania nowych kategorii i aktualizowania
             if (categoryIds == null)
             {
                 categoryIds = book.ListOfBookCategories.Select(x => x.Id).ToList();
