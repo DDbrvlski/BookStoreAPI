@@ -12,6 +12,9 @@ Autor projektu frontendu to [https://github.com/kmilosia].
 
 ## Wykorzystane technologie:
 
+### .NET:
+8.0
+
 ### Język programowania: 
 - C#
 
