@@ -54,14 +54,14 @@ namespace BookStoreAPI.Services.Auth
             }
 
             var isUserInUserRole = await userManager.IsInRoleAsync(user, "User");
-            if (loginData.Audience == "CMS")
-            {                
+            if (loginData.Audience.Equals("CMS"))
+            {
                 if (isUserInUserRole)
                 {
                     throw new BadRequestException("Brak możliwości zalogowania się do systemu pracowników.");
                 }
             }
-            else
+            else if (!loginData.Audience.Equals("API"))
             {
                 if (!isUserInUserRole)
                 {
