@@ -46,3 +46,58 @@ Autor projektu frontendu to [https://github.com/kmilosia].
   - Wysyłanie wiadomości email do klienta
 
  ## Prezentacja funkcjonalności:
+
+### Zdjęcia
+
+![Produkty](Images/MainPage.JPG)
+<p align="center">Obraz 1. Strona główna.</p>
+
+----
+![Produkty](Images/Shop.JPG)
+<p align="center">Obraz 2. Sklep.</p>
+
+----
+![Produkty](Images/Product1.JPG)
+<p align="center">Obraz 3. Produkt 1.</p>
+
+![Produkty](Images/Product2.JPG)
+<p align="center">Obraz 4. Produkt 2.</p>
+
+----
+![Produkty](Images/Order.JPG)
+<p align="center">Obraz 5. Zamówienie.</p>
+
+----
+![Produkty](Images/Wishlist.JPG)
+<p align="center">Obraz 6. Wishlista.</p>
+
+----
+![Produkty](Images/CMSMainPage.JPG)
+<p align="center">Obraz 7. Strona główna w systemie CMS.</p>
+
+----
+![Produkty](Images/CMSCreate.JPG)
+<p align="center">Obraz 8. Dodawanie nowego produktu w systemie CMS.</p>
+
+----
+![Produkty](Images/CMSPermissions.JPG)
+<p align="center">Obraz 9. Zarządzanie uprawnieniami w systemie CMS.</p>
+
+----
+![Produkty](Images/CMSTemplates.JPG)
+<p align="center">Obraz 10. Zarządzanie szablonami dokumentów w systemie CMS.</p>
+
+----
+![Produkty](Images/InvoicePDF.JPG)
+<p align="center">Obraz 11. Przykładowa faktura z szablonem.</p>
+
+----
+
+### Wideo
+
+ #### Sklep internetowy
+ [![Web App](https://img.youtube.com/vi/w2DbDEpGDzY/0.jpg)](https://www.youtube.com/watch?v=w2DbDEpGDzY)
+
+----
+ #### System CMS
+ [![CMS](https://img.youtube.com/vi/pFkqJ6W-Y0k/0.jpg)](https://www.youtube.com/watch?v=pFkqJ6W-Y0k)
